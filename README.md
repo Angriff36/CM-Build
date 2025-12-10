@@ -37,7 +37,10 @@ api/           # OpenAPI specs + lint config
 docs/          # Architecture, ADRs, diagrams
 tests/         # Playwright + smoke fixtures (future)
 tooling/       # CLI scripts, GitHub workflows
-```
+
+## Architecture
+
+*   [Component Overview](./docs/diagrams/component_overview.puml): Visual breakdown of apps, shared libraries, Supabase services, and external infrastructure (PlantUML).
 
 ## Environment & Tooling Notes
 
@@ -51,3 +54,4 @@ tooling/       # CLI scripts, GitHub workflows
 - Flesh out Supabase schema + migrations under `supabase/migrations`.
 - Add remaining apps (`caterking`, `admin-crm`, `display`) and shared libs.
 - Document Doppler template + Github Actions workflows in `/docs` and `/tooling`.
+```

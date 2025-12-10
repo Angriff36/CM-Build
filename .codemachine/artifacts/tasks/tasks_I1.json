@@ -25,9 +25,7 @@
     "input_files": [],
     "deliverables": "Markdown table capturing roles, allowed operations (tasks, recipes, media, display), corresponding Supabase policies, and feature-flag notes.",
     "acceptance_criteria": "Table covers all core entities; references Supabase policy names; includes notes on undo scope and kiosk visibility; reviewed with architects.",
-    "dependencies": [
-      "I1.T1"
-    ],
+    "dependencies": ["I1.T1"],
     "parallelizable": true,
     "done": true
   },
@@ -42,11 +40,9 @@
     "input_files": [],
     "deliverables": "PlantUML diagram with legend, tags, and narrative snippet summarizing interactions.",
     "acceptance_criteria": "Diagram renders without errors; shows all core apps/libs/services; matches naming conventions; linked from README/architecture index.",
-    "dependencies": [
-      "I1.T1"
-    ],
+    "dependencies": ["I1.T1"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I1.T4",
@@ -59,10 +55,7 @@
     "input_files": [],
     "deliverables": "SQL migration with tables, enums, company_id foreign keys, indexes, baseline RLS policies; ERD diagram; seed script with demo tenant.",
     "acceptance_criteria": "`supabase db lint` passes; ERD renders; migration docs undo steps; seeds create staff/manager sample for Playwright.",
-    "dependencies": [
-      "I1.T1",
-      "I1.T2"
-    ],
+    "dependencies": ["I1.T1", "I1.T2"],
     "parallelizable": false,
     "done": false
   },
@@ -77,9 +70,7 @@
     "input_files": [],
     "deliverables": "PlantUML deployment view with nodes, containers, edges annotated for secrets + telemetry.",
     "acceptance_criteria": "Diagram compiles; matches hosting mandates; referenced in architecture index.",
-    "dependencies": [
-      "I1.T1"
-    ],
+    "dependencies": ["I1.T1"],
     "parallelizable": true,
     "done": false
   },
@@ -94,9 +85,7 @@
     "input_files": [],
     "deliverables": "Markdown guide with step-by-step instructions, required tooling, automation hooks, sign-off checklist.",
     "acceptance_criteria": "References tasks, seeds, RLS tests; includes verification commands; cross-links to Access Matrix and diagrams.",
-    "dependencies": [
-      "I1.T4"
-    ],
+    "dependencies": ["I1.T4"],
     "parallelizable": false,
     "done": false
   },
@@ -111,9 +100,7 @@
     "input_files": [],
     "deliverables": "Token definitions, stubbed components, shared enums for roles/status, Supabase client wrapper with env guards, workspace-wide lint/test configs.",
     "acceptance_criteria": "Storybook builds with placeholder stories; lint passes; Supabase client throws if missing Doppler vars; tokens match Section 6.1 palette.",
-    "dependencies": [
-      "I1.T1"
-    ],
+    "dependencies": ["I1.T1"],
     "parallelizable": true,
     "done": false
   },
@@ -128,12 +115,7 @@
     "input_files": [],
     "deliverables": "Docs index linking to diagrams/specs/ops guides, ADR template capturing context/decision/impact/anchors, contribution blurb guiding future authors.",
     "acceptance_criteria": "Index lists every artifact path, includes anchor IDs, and ADR template cites Access Matrix + migration playbook; README linked from root documentation section.",
-    "dependencies": [
-      "I1.T2",
-      "I1.T3",
-      "I1.T4",
-      "I1.T5"
-    ],
+    "dependencies": ["I1.T2", "I1.T3", "I1.T4", "I1.T5"],
     "parallelizable": true,
     "done": false
   },
@@ -148,11 +130,7 @@
     "input_files": [],
     "deliverables": "Workflow file with pnpm cache, Turbo tasks, Supabase CLI validation, artifact upload for Playwright; CONTRIBUTING section describing CI prerequisites and failure triage.",
     "acceptance_criteria": "Workflow runs lint/test/build on push + PR; secrets pulled via Doppler action; documentation links to migration playbook and runbook; dry-run logs captured.",
-    "dependencies": [
-      "I1.T1",
-      "I1.T4",
-      "I1.T6"
-    ],
+    "dependencies": ["I1.T1", "I1.T4", "I1.T6"],
     "parallelizable": true,
     "done": false
   },
@@ -167,10 +145,7 @@
     "input_files": [],
     "deliverables": "Markdown doc specifying required MFA, Doppler scopes, Supabase role usage, feature flag governance, audit log monitoring steps.",
     "acceptance_criteria": "Document references Access Matrix, migration playbook, and describes incident escalation; approved by security owner.",
-    "dependencies": [
-      "I1.T2",
-      "I1.T6"
-    ],
+    "dependencies": ["I1.T2", "I1.T6"],
     "parallelizable": true,
     "done": false
   },
@@ -185,9 +160,7 @@
     "input_files": [],
     "deliverables": "Telemetry helper exporting trace/span creators, logger factory referencing Doppler env, doc explaining log levels + pipeline.",
     "acceptance_criteria": "Helpers compile under strict TS; doc ties events to metrics; placeholder exporters ready for instrumentation in future iterations.",
-    "dependencies": [
-      "I1.T1"
-    ],
+    "dependencies": ["I1.T1"],
     "parallelizable": true,
     "done": false
   }
