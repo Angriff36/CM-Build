@@ -1,0 +1,195 @@
+[
+  {
+    "task_id": "I5.T1",
+    "iteration_id": "I5",
+    "iteration_goal": "Finalize performance testing, compliance docs, rollout scripts, support playbooks, and cross-team sign-offs to ship MVP confidently.",
+    "description": "Conduct load + chaos tests (task surge, realtime drop, media backlog) using k6 or artillery scripts; document results and remediation backlog.",
+    "agent_type_hint": "PerformanceEngineer",
+    "inputs": "Performance doc, hooks, display snapshot.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Load scripts, chaos scenarios, summarized metrics + mitigation plan appended to performance doc.",
+    "acceptance_criteria": "Tests simulate peak load; outputs stored for regression comparison; action items logged.",
+    "dependencies": [
+      "I4.T6",
+      "I4.T3"
+    ],
+    "parallelizable": false,
+    "done": false
+  },
+  {
+    "task_id": "I5.T2",
+    "iteration_id": "I5",
+    "iteration_goal": "Finalize performance testing, compliance docs, rollout scripts, support playbooks, and cross-team sign-offs to ship MVP confidently.",
+    "description": "Complete compliance pack (audit log retention, GDPR/CCPA workflows, media retention overrides) referencing Access Matrix + security baseline.",
+    "agent_type_hint": "SecurityAgent",
+    "inputs": "Security baseline, runbooks.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Compliance doc covering data retention, export/deletion scripts, audit log review cadence, owner assignments.",
+    "acceptance_criteria": "Document signed by security lead; cross-links to runbooks + release checklist; action plan for upcoming audits.",
+    "dependencies": [
+      "I4.T7"
+    ],
+    "parallelizable": true,
+    "done": false
+  },
+  {
+    "task_id": "I5.T3",
+    "iteration_id": "I5",
+    "iteration_goal": "Finalize performance testing, compliance docs, rollout scripts, support playbooks, and cross-team sign-offs to ship MVP confidently.",
+    "description": "Finalize kiosk + mobile accessibility audit (WCAG heuristics) and backlog items; update libs/ui tokens or components as needed.",
+    "agent_type_hint": "UXEngineer",
+    "inputs": "UI components, accessibility checklist.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Audit doc summarizing tests (Axe, manual, keyboard), updated components reflecting fixes, backlog for non-critical items.",
+    "acceptance_criteria": "Checklist items covered; high-contrast + focus ring verified; doc stored under docs/quality.",
+    "dependencies": [
+      "I3.T6",
+      "I3.T4"
+    ],
+    "parallelizable": true,
+    "done": false
+  },
+  {
+    "task_id": "I5.T4",
+    "iteration_id": "I5",
+    "iteration_goal": "Finalize performance testing, compliance docs, rollout scripts, support playbooks, and cross-team sign-offs to ship MVP confidently.",
+    "description": "Execute release dry-run: apply migrations on staging, run CI, deploy to staging Vercel, verify doppler secrets + feature flags; capture timeline + sign-offs.",
+    "agent_type_hint": "DevOpsAgent",
+    "inputs": "Release guard workflow, runbooks.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Completed checklist with timestamps, automation output logs, post-release report template.",
+    "acceptance_criteria": "Dry-run replicable; gating script verifies migrations; report stored; issues logged as tickets.",
+    "dependencies": [
+      "I4.T11"
+    ],
+    "parallelizable": false,
+    "done": false
+  },
+  {
+    "task_id": "I5.T5",
+    "iteration_id": "I5",
+    "iteration_goal": "Finalize performance testing, compliance docs, rollout scripts, support playbooks, and cross-team sign-offs to ship MVP confidently.",
+    "description": "Build customer support toolkit: FAQ, troubleshooting flows (task not syncing, kiosk offline, media stuck), template responses referencing docs.",
+    "agent_type_hint": "DocumentationAgent",
+    "inputs": "Runbooks, telemetry plan, UI flows.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Support docs with step-by-step instructions, sample reply macros, linking to runbooks + diagnostics scripts.",
+    "acceptance_criteria": "Coverage for staff/manager/common scenarios; versioned references; accessible from docs index + README.",
+    "dependencies": [
+      "I4.T7",
+      "I4.T5"
+    ],
+    "parallelizable": true,
+    "done": false
+  },
+  {
+    "task_id": "I5.T6",
+    "iteration_id": "I5",
+    "iteration_goal": "Finalize performance testing, compliance docs, rollout scripts, support playbooks, and cross-team sign-offs to ship MVP confidently.",
+    "description": "Implement analytics hooks (task efficiency, combine adoption, recipe view counts) writing to Supabase views + dashboards for leadership.",
+    "agent_type_hint": "DataEngineer",
+    "inputs": "Telemetry events, Supabase views.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Metrics views (task throughput, combine acceptance, recipe drawer dwell), Admin insights tab, catalog updates.",
+    "acceptance_criteria": "Views efficient; insights tab renders charts; doc describes metric definitions + owners.",
+    "dependencies": [
+      "I3.T9",
+      "I4.T6"
+    ],
+    "parallelizable": false,
+    "done": false
+  },
+  {
+    "task_id": "I5.T7",
+    "iteration_id": "I5",
+    "iteration_goal": "Finalize performance testing, compliance docs, rollout scripts, support playbooks, and cross-team sign-offs to ship MVP confidently.",
+    "description": "Perform security penetration checks (role escalation attempts, API abuse, storage access) and patch findings; update security baseline.",
+    "agent_type_hint": "SecurityAgent",
+    "inputs": "RLS tests, security doc.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Automated scan script or steps, remediation summary, baseline updates.",
+    "acceptance_criteria": "Findings resolved or tracked; doc lists next review date.",
+    "dependencies": [
+      "I2.T10",
+      "I5.T2"
+    ],
+    "parallelizable": false,
+    "done": false
+  },
+  {
+    "task_id": "I5.T8",
+    "iteration_id": "I5",
+    "iteration_goal": "Finalize performance testing, compliance docs, rollout scripts, support playbooks, and cross-team sign-offs to ship MVP confidently.",
+    "description": "Finalize manifest + documentation cross-check (anchors, plan manifest JSON) ensuring all artifacts addressable; run doc lint.",
+    "agent_type_hint": "DocumentationAgent",
+    "inputs": "Entire doc set, plan requirement.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Valid manifest referencing anchors, doc lint job results, README updates.",
+    "acceptance_criteria": "Manifest passes JSON schema; doc lint clean; README includes quick links.",
+    "dependencies": [],
+    "parallelizable": false,
+    "done": false
+  },
+  {
+    "task_id": "I5.T9",
+    "iteration_id": "I5",
+    "iteration_goal": "Finalize performance testing, compliance docs, rollout scripts, support playbooks, and cross-team sign-offs to ship MVP confidently.",
+    "description": "Prepare go-live communication pack (internal announcement, change log, training schedule) and align with operations calendar.",
+    "agent_type_hint": "ProjectManager",
+    "inputs": "Walkthrough doc, support toolkit, release plan.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Change log for MVP, comm plan with audience-specific messaging, training timeline referencing docs.",
+    "acceptance_criteria": "Stakeholders listed; plan approved; change log covers features + flags.",
+    "dependencies": [
+      "I3.T11",
+      "I5.T5"
+    ],
+    "parallelizable": true,
+    "done": false
+  },
+  {
+    "task_id": "I5.T10",
+    "iteration_id": "I5",
+    "iteration_goal": "Finalize performance testing, compliance docs, rollout scripts, support playbooks, and cross-team sign-offs to ship MVP confidently.",
+    "description": "Execute PITR + rollback drill combining Supabase restore + Vercel rollback; capture steps, timings, lessons.",
+    "agent_type_hint": "DevOpsAgent",
+    "inputs": "Release checklist, runbooks, Supabase CLI.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Script automating PITR restore, documented drill results, updates to runbooks with actual timings.",
+    "acceptance_criteria": "Drill completes within SLA; doc stored; action items tracked.",
+    "dependencies": [
+      "I4.T11",
+      "I5.T4"
+    ],
+    "parallelizable": false,
+    "done": false
+  },
+  {
+    "task_id": "I5.T11",
+    "iteration_id": "I5",
+    "iteration_goal": "Finalize performance testing, compliance docs, rollout scripts, support playbooks, and cross-team sign-offs to ship MVP confidently.",
+    "description": "Final QA regression (PrepChef, Admin, Display, Notifications) plus sign-off checklist capturing owners, tests run, outstanding risks.",
+    "agent_type_hint": "QualityAgent",
+    "inputs": "Testing matrix, new features, support toolkit.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Consolidated regression suite, updated matrix showing 100% coverage for MVP features, final release checklist sign-offs.",
+    "acceptance_criteria": "Regression passes; matrix flagged green; release checklist signed by Eng/Ops/Product.",
+    "dependencies": [
+      "I5.T1",
+      "I5.T10"
+    ],
+    "parallelizable": false,
+    "done": false
+  }
+]

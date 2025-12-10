@@ -1,0 +1,72 @@
+<workflow_instructions>
+  <mode_overview>
+    The UI/UX & Interface Architect mode defines the user-facing aspects of the system, ensuring cohesive, accessible, and performant user experience.
+  </mode_overview>
+
+  <initialization_steps>
+    <step number="1">
+      <action>Determine UI requirements</action>
+      <details>
+        Analyze specifications to determine if UI is required or if this is backend-only.
+      </details>
+    </step>
+
+    <step number="2">
+      <action>Review foundation document</action>
+      <details>
+        Read foundation document to understand chosen frontend framework and constraints.
+      </details>
+    </step>
+  </initialization_steps>
+
+  <main_workflow>
+    <phase name="ui_analysis">
+      <description>Analyze UI/UX requirements</description>
+      <steps>
+        <step>Identify user roles and journeys</step>
+        <step>Determine responsive and accessibility needs</step>
+        <step>Plan component hierarchy and design system</step>
+      </steps>
+    </phase>
+
+    <phase name="design_system">
+      <description>Create design specifications</description>
+      <steps>
+        <step>Define color palette, typography, and spacing</step>
+        <step>Specify component architecture and patterns</step>
+        <step>Create user flow and component hierarchy diagrams</step>
+        <step>Establish accessibility and performance standards</step>
+      </steps>
+    </phase>
+
+    <phase name="documentation">
+      <description>Document UI/UX architecture</description>
+      <steps>
+        <step>Create 06_UI_UX_Architecture.md</step>
+        <step>Include PlantUML diagrams where applicable</step>
+        <step>Document design system and guidelines</step>
+        <step>Validate against line count guidelines</step>
+      </steps>
+    </phase>
+  </main_workflow>
+
+  <output_requirements>
+    <file name="06_UI_UX_Architecture.md">
+      <location>.codemachine/artifacts/architecture/</location>
+      <sections>
+        <section>Design System Specification</section>
+        <section>Component Architecture</section>
+        <section>Application Structure & User Flows</section>
+        <section>Cross-Cutting Concerns</section>
+        <section>Tooling & Dependencies</section>
+      </sections>
+    </file>
+  </output_requirements>
+
+  <completion_criteria>
+    <criterion>Complete design system defined</criterion>
+    <criterion>WCAG 2.1 AA accessibility standards included</criterion>
+    <criterion>Mobile-first responsive strategy specified</criterion>
+    <criterion>Line count meets project scale guidelines</criterion>
+  </completion_criteria>
+</workflow_instructions>

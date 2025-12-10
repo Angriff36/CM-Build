@@ -1,0 +1,564 @@
+{
+  "files": {
+    "01_Blueprint_Foundation.md": [
+      {
+        "key": "blueprint-foundation",
+        "line": 1,
+        "start_anchor": "<!-- anchor: blueprint-foundation -->",
+        "description": "01_Blueprint_Foundation.md"
+      },
+      {
+        "key": "1-0-project-scale-directives",
+        "line": 4,
+        "start_anchor": "<!-- anchor: 1-0-project-scale-directives -->",
+        "description": "1.0 Project Scale & Directives for Architects**"
+      },
+      {
+        "key": "2-0-the-standard-kit",
+        "line": 51,
+        "start_anchor": "<!-- anchor: 2-0-the-standard-kit -->",
+        "description": "2.0 The \"Standard Kit\" (Mandatory Technology Stack)**"
+      },
+      {
+        "key": "3-0-the-rulebook",
+        "line": 99,
+        "start_anchor": "<!-- anchor: 3-0-the-rulebook -->",
+        "description": "3.0 The \"Rulebook\" (Cross-Cutting Concerns)**"
+      },
+      {
+        "key": "4-0-the-blueprint",
+        "line": 145,
+        "start_anchor": "<!-- anchor: 4-0-the-blueprint -->",
+        "description": "4.0 The \"Blueprint\" (Core Components & Boundaries)**"
+      },
+      {
+        "key": "5-0-the-contract",
+        "line": 223,
+        "start_anchor": "<!-- anchor: 5-0-the-contract -->",
+        "description": "5.0 The \"Contract\" (API & Data Definitions)**"
+      },
+      {
+        "key": "6-0-the-safety-net",
+        "line": 290,
+        "start_anchor": "<!-- anchor: 6-0-the-safety-net -->",
+        "description": "6.0 The \"Safety Net\" (Ambiguities & Assumptions)**"
+      }
+    ],
+    "02_System_Structure_and_Data.md": [
+      {
+        "key": "system-architecture-blueprint",
+        "line": 1,
+        "start_anchor": "<!-- anchor: system-architecture-blueprint -->",
+        "description": "System Architecture Blueprint: CaterKing"
+      },
+      {
+        "key": "1-introduction-goals",
+        "line": 8,
+        "start_anchor": "<!-- anchor: 1-introduction-goals -->",
+        "description": "1. Introduction & Goals"
+      },
+      {
+        "key": "2-architectural-drivers",
+        "line": 47,
+        "start_anchor": "<!-- anchor: 2-architectural-drivers -->",
+        "description": "2. Architectural Drivers"
+      },
+      {
+        "key": "3-proposed-architecture",
+        "line": 78,
+        "start_anchor": "<!-- anchor: 3-proposed-architecture -->",
+        "description": "3. Proposed Architecture (Structural View)"
+      },
+      {
+        "key": "structural-data-architect-output",
+        "line": 984,
+        "start_anchor": "<!-- anchor: structural-data-architect-output -->",
+        "description": "Structural & Data Architect Output - `02_System_Structure_and_Data.md`"
+      }
+    ],
+    "03_Behavior_and_Communication.md": [
+      {
+        "key": "3-0-proposed-architecture-behavioral-view",
+        "line": 1,
+        "start_anchor": "<!-- anchor: 3-0-proposed-architecture-behavioral-view -->",
+        "description": "3. Proposed Architecture (Behavioral View)"
+      }
+    ],
+    "06_UI_UX_Architecture.md": [
+      {
+        "key": "ui-ux-architecture",
+        "line": 1,
+        "start_anchor": "<!-- anchor: ui-ux-architecture -->",
+        "description": "UI/UX Architecture: CaterKing Platform"
+      },
+      {
+        "key": "1-0-design-system-spec",
+        "line": 5,
+        "start_anchor": "<!-- anchor: 1-0-design-system-spec -->",
+        "description": "1. Design System Specification"
+      },
+      {
+        "key": "1-1-color-palette",
+        "line": 9,
+        "start_anchor": "<!-- anchor: 1-1-color-palette -->",
+        "description": "1.1 Color Palette"
+      },
+      {
+        "key": "1-1-1-base-neutrals",
+        "line": 46,
+        "start_anchor": "<!-- anchor: 1-1-1-base-neutrals -->",
+        "description": "1.1.1 Base Neutral Surfaces"
+      },
+      {
+        "key": "1-1-2-semantic-status",
+        "line": 52,
+        "start_anchor": "<!-- anchor: 1-1-2-semantic-status -->",
+        "description": "1.1.2 Semantic Status Scales"
+      },
+      {
+        "key": "1-1-3-tag-palette",
+        "line": 60,
+        "start_anchor": "<!-- anchor: 1-1-3-tag-palette -->",
+        "description": "1.1.3 Tag & Event Palette"
+      },
+      {
+        "key": "1-1-4-overlay-gradients",
+        "line": 69,
+        "start_anchor": "<!-- anchor: 1-1-4-overlay-gradients -->",
+        "description": "1.1.4 Overlay & Gradient Tokens"
+      },
+      {
+        "key": "1-2-typography",
+        "line": 76,
+        "start_anchor": "<!-- anchor: 1-2-typography -->",
+        "description": "1.2 Typography"
+      },
+      {
+        "key": "1-2-1-display-scale",
+        "line": 80,
+        "start_anchor": "<!-- anchor: 1-2-1-display-scale -->",
+        "description": "1.2.1 Display Scale"
+      },
+      {
+        "key": "1-2-2-body-scale",
+        "line": 92,
+        "start_anchor": "<!-- anchor: 1-2-2-body-scale -->",
+        "description": "1.2.2 Body Scale"
+      },
+      {
+        "key": "1-2-3-mono-scale",
+        "line": 103,
+        "start_anchor": "<!-- anchor: 1-2-3-mono-scale -->",
+        "description": "1.2.3 Numeric & Monospace Usage"
+      },
+      {
+        "key": "1-3-spacing",
+        "line": 110,
+        "start_anchor": "<!-- anchor: 1-3-spacing -->",
+        "description": "1.3 Spacing & Sizing Scale"
+      },
+      {
+        "key": "1-3-1-grid",
+        "line": 132,
+        "start_anchor": "<!-- anchor: 1-3-1-grid -->",
+        "description": "1.3.1 Grid & Layout"
+      },
+      {
+        "key": "1-3-2-elevation",
+        "line": 139,
+        "start_anchor": "<!-- anchor: 1-3-2-elevation -->",
+        "description": "1.3.2 Elevation & Shadows"
+      },
+      {
+        "key": "1-3-3-radius",
+        "line": 147,
+        "start_anchor": "<!-- anchor: 1-3-3-radius -->",
+        "description": "1.3.3 Border Radius Tokens"
+      },
+      {
+        "key": "1-4-component-tokens",
+        "line": 157,
+        "start_anchor": "<!-- anchor: 1-4-component-tokens -->",
+        "description": "1.4 Component Tokens"
+      },
+      {
+        "key": "1-4-2-focus",
+        "line": 166,
+        "start_anchor": "<!-- anchor: 1-4-2-focus -->",
+        "description": "1.4.2 Focus Rings & A11y Overlays"
+      },
+      {
+        "key": "1-4-3-motion",
+        "line": 173,
+        "start_anchor": "<!-- anchor: 1-4-3-motion -->",
+        "description": "1.4.3 Motion & Micro-Interactions"
+      },
+      {
+        "key": "1-5-iconography",
+        "line": 181,
+        "start_anchor": "<!-- anchor: 1-5-iconography -->",
+        "description": "1.5 Iconography & Imagery"
+      },
+      {
+        "key": "1-6-data-density",
+        "line": 189,
+        "start_anchor": "<!-- anchor: 1-6-data-density -->",
+        "description": "1.6 Data Density Guidelines"
+      },
+      {
+        "key": "1-7-accessibility-tokens",
+        "line": 197,
+        "start_anchor": "<!-- anchor: 1-7-accessibility-tokens -->",
+        "description": "1.7 Accessibility Tokens"
+      },
+      {
+        "key": "1-8-tone-microcopy",
+        "line": 205,
+        "start_anchor": "<!-- anchor: 1-8-tone-microcopy -->",
+        "description": "1.8 Tone & Microcopy Guidance"
+      },
+      {
+        "key": "2-0-component-architecture",
+        "line": 213,
+        "start_anchor": "<!-- anchor: 2-0-component-architecture -->",
+        "description": "2. Component Architecture"
+      },
+      {
+        "key": "2-1-overview",
+        "line": 217,
+        "start_anchor": "<!-- anchor: 2-1-overview -->",
+        "description": "2.1 Methodology & Composition Overview"
+      },
+      {
+        "key": "2-2-atomic-structure",
+        "line": 221,
+        "start_anchor": "<!-- anchor: 2-2-atomic-structure -->",
+        "description": "2.2 Atomic Structure"
+      },
+      {
+        "key": "2-2-1-atom-catalog",
+        "line": 225,
+        "start_anchor": "<!-- anchor: 2-2-1-atom-catalog -->",
+        "description": "2.2.1 Atom Catalog (20)"
+      },
+      {
+        "key": "2-2-2-molecule-catalog",
+        "line": 248,
+        "start_anchor": "<!-- anchor: 2-2-2-molecule-catalog -->",
+        "description": "2.2.2 Molecule Catalog (20)"
+      },
+      {
+        "key": "2-2-3-organism-catalog",
+        "line": 271,
+        "start_anchor": "<!-- anchor: 2-2-3-organism-catalog -->",
+        "description": "2.2.3 Organism Catalog (20)"
+      },
+      {
+        "key": "2-2-4-template-library",
+        "line": 294,
+        "start_anchor": "<!-- anchor: 2-2-4-template-library -->",
+        "description": "2.2.4 Template Library (10)"
+      },
+      {
+        "key": "2-3-component-hierarchy-diagram",
+        "line": 307,
+        "start_anchor": "<!-- anchor: 2-3-component-hierarchy-diagram -->",
+        "description": "2.3 Component Hierarchy Diagram (PlantUML)"
+      },
+      {
+        "key": "2-4-interaction-patterns",
+        "line": 347,
+        "start_anchor": "<!-- anchor: 2-4-interaction-patterns -->",
+        "description": "2.4 Interaction Patterns & State Sync"
+      },
+      {
+        "key": "2-5-device-guidance",
+        "line": 355,
+        "start_anchor": "<!-- anchor: 2-5-device-guidance -->",
+        "description": "2.5 Device-Specific Component Guidance"
+      },
+      {
+        "key": "2-6-motion-guidelines",
+        "line": 378,
+        "start_anchor": "<!-- anchor: 2-6-motion-guidelines -->",
+        "description": "2.6 Motion & Micro-Interaction Scripts"
+      },
+      {
+        "key": "2-7-content-modularity",
+        "line": 386,
+        "start_anchor": "<!-- anchor: 2-7-content-modularity -->",
+        "description": "2.7 Content Modularity & Feature Flags"
+      },
+      {
+        "key": "2-8-component-qa",
+        "line": 390,
+        "start_anchor": "<!-- anchor: 2-8-component-qa -->",
+        "description": "2.8 Component QA & Storybook Coverage"
+      },
+      {
+        "key": "3-0-application-structure",
+        "line": 394,
+        "start_anchor": "<!-- anchor: 3-0-application-structure -->",
+        "description": "3. Application Structure & User Flows"
+      },
+      {
+        "key": "3-1-routes",
+        "line": 398,
+        "start_anchor": "<!-- anchor: 3-1-routes -->",
+        "description": "3.1 Route Definitions"
+      },
+      {
+        "key": "3-2-layout-patterns",
+        "line": 421,
+        "start_anchor": "<!-- anchor: 3-2-layout-patterns -->",
+        "description": "3.2 Layout Patterns & Contextual Variations"
+      },
+      {
+        "key": "3-3-navigation",
+        "line": 428,
+        "start_anchor": "<!-- anchor: 3-3-navigation -->",
+        "description": "3.3 Navigation & Context Switching"
+      },
+      {
+        "key": "3-4-data-contexts",
+        "line": 435,
+        "start_anchor": "<!-- anchor: 3-4-data-contexts -->",
+        "description": "3.4 Screen Data Contexts"
+      },
+      {
+        "key": "3-5-critical-flows",
+        "line": 443,
+        "start_anchor": "<!-- anchor: 3-5-critical-flows -->",
+        "description": "3.5 Critical User Journeys (PlantUML)"
+      },
+      {
+        "key": "3-5-1-task-claim",
+        "line": 446,
+        "start_anchor": "<!-- anchor: 3-5-1-task-claim -->",
+        "description": "3.5.1 Task Claim and Completion Journey"
+      },
+      {
+        "key": "3-5-2-recipe-reference",
+        "line": 473,
+        "start_anchor": "<!-- anchor: 3-5-2-recipe-reference -->",
+        "description": "3.5.2 Recipe Reference Within Task Flow"
+      },
+      {
+        "key": "3-5-3-manager-assign",
+        "line": 498,
+        "start_anchor": "<!-- anchor: 3-5-3-manager-assign -->",
+        "description": "3.5.3 Manager Assignment Flow"
+      },
+      {
+        "key": "3-5-4-combine-approval",
+        "line": 526,
+        "start_anchor": "<!-- anchor: 3-5-4-combine-approval -->",
+        "description": "3.5.4 Combine Suggestion Approval Flow"
+      },
+      {
+        "key": "3-5-5-media-upload",
+        "line": 552,
+        "start_anchor": "<!-- anchor: 3-5-5-media-upload -->",
+        "description": "3.5.5 Media Upload & Method Update Flow"
+      },
+      {
+        "key": "3-5-6-role-change",
+        "line": 577,
+        "start_anchor": "<!-- anchor: 3-5-6-role-change -->",
+        "description": "3.5.6 Role Change & RBAC Confirmation Flow"
+      },
+      {
+        "key": "3-5-7-undo-flow",
+        "line": 605,
+        "start_anchor": "<!-- anchor: 3-5-7-undo-flow -->",
+        "description": "3.5.7 Undo Completion Safety Flow"
+      },
+      {
+        "key": "3-5-8-recipe-create",
+        "line": 632,
+        "start_anchor": "<!-- anchor: 3-5-8-recipe-create -->",
+        "description": "3.5.8 Recipe Creation & Publish Flow"
+      },
+      {
+        "key": "3-6-multi-device",
+        "line": 659,
+        "start_anchor": "<!-- anchor: 3-6-multi-device -->",
+        "description": "3.6 Multi-Device Continuity & Session Presence"
+      },
+      {
+        "key": "3-7-wall-display",
+        "line": 663,
+        "start_anchor": "<!-- anchor: 3-7-wall-display -->",
+        "description": "3.7 Wall Display Experience"
+      },
+      {
+        "key": "3-8-error-fallbacks",
+        "line": 670,
+        "start_anchor": "<!-- anchor: 3-8-error-fallbacks -->",
+        "description": "3.8 Error & Offline Fallbacks"
+      },
+      {
+        "key": "4-0-cross-cutting",
+        "line": 677,
+        "start_anchor": "<!-- anchor: 4-0-cross-cutting -->",
+        "description": "4. Cross-Cutting Concerns"
+      },
+      {
+        "key": "4-1-state-management",
+        "line": 681,
+        "start_anchor": "<!-- anchor: 4-1-state-management -->",
+        "description": "4.1 State Management"
+      },
+      {
+        "key": "4-2-realtime",
+        "line": 685,
+        "start_anchor": "<!-- anchor: 4-2-realtime -->",
+        "description": "4.2 Realtime Synchronization"
+      },
+      {
+        "key": "4-3-responsive",
+        "line": 689,
+        "start_anchor": "<!-- anchor: 4-3-responsive -->",
+        "description": "4.3 Responsive Design & Breakpoints"
+      },
+      {
+        "key": "4-4-accessibility",
+        "line": 702,
+        "start_anchor": "<!-- anchor: 4-4-accessibility -->",
+        "description": "4.4 Accessibility Strategy"
+      },
+      {
+        "key": "4-5-performance",
+        "line": 706,
+        "start_anchor": "<!-- anchor: 4-5-performance -->",
+        "description": "4.5 Performance & Optimization"
+      },
+      {
+        "key": "4-6-backend-integration",
+        "line": 710,
+        "start_anchor": "<!-- anchor: 4-6-backend-integration -->",
+        "description": "4.6 Backend Integration & Error Handling"
+      },
+      {
+        "key": "4-7-error-handling",
+        "line": 714,
+        "start_anchor": "<!-- anchor: 4-7-error-handling -->",
+        "description": "4.7 Error States & Messaging"
+      },
+      {
+        "key": "4-8-localization",
+        "line": 718,
+        "start_anchor": "<!-- anchor: 4-8-localization -->",
+        "description": "4.8 Localization & Copy Flexibility"
+      },
+      {
+        "key": "4-9-security",
+        "line": 722,
+        "start_anchor": "<!-- anchor: 4-9-security -->",
+        "description": "4.9 Security & Privacy Considerations"
+      },
+      {
+        "key": "4-10-observability",
+        "line": 726,
+        "start_anchor": "<!-- anchor: 4-10-observability -->",
+        "description": "4.10 Observability & Telemetry"
+      },
+      {
+        "key": "5-0-tooling",
+        "line": 730,
+        "start_anchor": "<!-- anchor: 5-0-tooling -->",
+        "description": "5. Tooling & Dependencies"
+      },
+      {
+        "key": "5-1-core-dependencies",
+        "line": 734,
+        "start_anchor": "<!-- anchor: 5-1-core-dependencies -->",
+        "description": "5.1 Core Dependencies"
+      },
+      {
+        "key": "5-2-dev-tooling",
+        "line": 745,
+        "start_anchor": "<!-- anchor: 5-2-dev-tooling -->",
+        "description": "5.2 Development Tooling & Workflow"
+      },
+      {
+        "key": "5-3-design-ops",
+        "line": 755,
+        "start_anchor": "<!-- anchor: 5-3-design-ops -->",
+        "description": "5.3 DesignOps & Collaboration"
+      },
+      {
+        "key": "5-4-testing",
+        "line": 762,
+        "start_anchor": "<!-- anchor: 5-4-testing -->",
+        "description": "5.4 Testing & Validation Pipelines"
+      },
+      {
+        "key": "6-0-appendices",
+        "line": 772,
+        "start_anchor": "<!-- anchor: 6-0-appendices -->",
+        "description": "6. Appendices & Validation"
+      },
+      {
+        "key": "6-1-accessibility-checklist",
+        "line": 777,
+        "start_anchor": "<!-- anchor: 6-1-accessibility-checklist -->",
+        "description": "6.1 Accessibility Checklist"
+      },
+      {
+        "key": "6-2-task-state-dictionary",
+        "line": 801,
+        "start_anchor": "<!-- anchor: 6-2-task-state-dictionary -->",
+        "description": "6.2 Task State Dictionary"
+      },
+      {
+        "key": "6-3-telemetry-events",
+        "line": 814,
+        "start_anchor": "<!-- anchor: 6-3-telemetry-events -->",
+        "description": "6.3 Telemetry Events & Metadata"
+      },
+      {
+        "key": "6-4-responsive-cases",
+        "line": 840,
+        "start_anchor": "<!-- anchor: 6-4-responsive-cases -->",
+        "description": "6.4 Responsive Pattern Case Matrix"
+      },
+      {
+        "key": "6-5-copy-style",
+        "line": 864,
+        "start_anchor": "<!-- anchor: 6-5-copy-style -->",
+        "description": "6.5 Copy Style & Localization Keys"
+      },
+      {
+        "key": "6-6-qa-heuristics",
+        "line": 900,
+        "start_anchor": "<!-- anchor: 6-6-qa-heuristics -->",
+        "description": "6.6 QA Heuristics & Scenario Matrix"
+      },
+      {
+        "key": "6-7-undo-playbook",
+        "line": 925,
+        "start_anchor": "<!-- anchor: 6-7-undo-playbook -->",
+        "description": "6.7 Undo & Notification Playbook"
+      },
+      {
+        "key": "6-8-deployment-checklist",
+        "line": 949,
+        "start_anchor": "<!-- anchor: 6-8-deployment-checklist -->",
+        "description": "6.8 Deployment & Validation Checklist"
+      },
+      {
+        "key": "6-9-kiosk-monitoring",
+        "line": 974,
+        "start_anchor": "<!-- anchor: 6-9-kiosk-monitoring -->",
+        "description": "6.9 Kiosk Monitoring Notes"
+      },
+      {
+        "key": "6-10-observability-metrics",
+        "line": 999,
+        "start_anchor": "<!-- anchor: 6-10-observability-metrics -->",
+        "description": "6.10 Observability Metrics"
+      }
+    ]
+  }
+}

@@ -1,0 +1,125 @@
+<best_practices>
+  <general_principles>
+    <principle priority="high">
+      <name>Single Source of Truth</name>
+      <description>You are the authoritative foundation for all architectural decisions. All other architects must adhere to your decisions without deviation.</description>
+      <rationale>Ensures architectural coherence and prevents conflicting decisions across the team.</rationale>
+      <example>
+        <good>When defining the technology stack, state choices as mandatory rather than suggestions.</good>
+        <bad>Avoid phrases like "could use" or "might consider" - use "MUST use" and "SHALL implement".</bad>
+      </example>
+    </principle>
+
+    <principle priority="high">
+      <name>Separation of Concerns</name>
+      <description>Establish clear boundaries between components and services. Define explicit contracts for inter-component communication.</description>
+      <rationale>Prevents tight coupling and enables independent scaling and maintenance of components.</rationale>
+      <example>
+        <good>Define API contracts with specific data formats and communication protocols.</good>
+        <bad>Allow components to share databases directly without defined interfaces.</bad>
+      </example>
+    </principle>
+
+    <principle priority="medium">
+      <name>Scale-Appropriate Decisions</name>
+      <description>Choose architectural patterns and technologies appropriate to the project's scale classification.</description>
+      <rationale>Avoid over-engineering small projects or under-engineering large ones.</rationale>
+      <example>
+        <good>For medium-scale projects, prefer standard practices over enterprise-level complexity.</good>
+        <bad>Implementing microservices for a small utility application.</bad>
+      </example>
+    </principle>
+  </general_principles>
+
+  <architectural_decisions>
+    <decision category="technology_stack">
+      <rule>Define a complete, mandatory technology stack including architectural style, frameworks, databases, and infrastructure.</rule>
+      <examples>
+        <good>Architectural Style: Layered Monolith, Frontend: React/Next.js, Backend: Node.js/Express, Database: PostgreSQL</good>
+        <bad>Vague statements like "use modern web technologies" without specific choices.</bad>
+      </examples>
+    </decision>
+
+    <decision category="cross_cutting_concerns">
+      <rule>Establish system-wide strategies for observability, security, feature flags, and other cross-cutting concerns.</rule>
+      <examples>
+        <good>Feature Flag Strategy: Use LaunchDarkly for all new features, disabled by default in production.</good>
+        <bad>Leaving monitoring and logging strategies undefined for other architects to decide.</bad>
+      </examples>
+    </decision>
+
+    <decision category="component_boundaries">
+      <rule>Define core components with clear responsibilities and explicit boundaries.</rule>
+      <examples>
+        <good>WebApp: Serves user interface, ApiService: Provides business logic via REST API, AuthService: Handles authentication</good>
+        <bad>Generic components like "Backend" without specific responsibilities.</bad>
+      </examples>
+    </decision>
+  </architectural_decisions>
+
+  <documentation_standards>
+    <standard category="language">
+      <rule>Use clear, direct, and authoritative language. Avoid ambiguity and conditional statements.</rule>
+      <examples>
+        <good>"The system MUST use PostgreSQL as the primary database."</good>
+        <bad>"PostgreSQL could be a good choice for the database."</bad>
+      </examples>
+    </standard>
+
+    <standard category="structure">
+      <rule>Follow the exact markdown structure specified, including section headers and formatting.</rule>
+      <examples>
+        <good>Use proper heading levels and consistent formatting throughout the document.</good>
+        <bad>Mixing different heading styles or omitting required sections.</bad>
+      </examples>
+    </standard>
+
+    <standard category="assumptions">
+      <rule>Document all assumptions and ambiguities with clear, actionable statements.</rule>
+      <examples>
+        <good>Assumption: User authentication will use email/password only, not social login.</good>
+        <bad>Leaving unanswered questions for other architects to resolve.</bad>
+      </examples>
+    </standard>
+  </documentation_standards>
+
+  <common_pitfalls>
+    <pitfall>
+      <description>Over-engineering for small projects</description>
+      <why_problematic>Creates unnecessary complexity and slows development velocity.</why_problematic>
+      <correct_approach>Classify correctly and choose simple, proven patterns for small-scale projects.</correct_approach>
+    </pitfall>
+
+    <pitfall>
+      <description>Under-engineering for large projects</description>
+      <why_problematic>Leads to technical debt and scalability issues as the project grows.</why_problematic>
+      <correct_approach>Design with future growth in mind, implementing proper boundaries and contracts.</correct_approach>
+    </pitfall>
+
+    <pitfall>
+      <description>Leaving architectural decisions open</description>
+      <why_problematic>Creates inconsistency and conflicts between different architects.</why_problematic>
+      <correct_approach>Make definitive choices and document them as mandatory constraints.</correct_approach>
+    </pitfall>
+  </common_pitfalls>
+
+  <quality_checklist>
+    <category name="before_starting">
+      <item>Thoroughly read and understand all project specifications</item>
+      <item>Identify the correct project scale classification</item>
+      <item>Review existing architectural patterns and best practices</item>
+    </category>
+    <category name="during_creation">
+      <item>Use mandatory language for all architectural decisions</item>
+      <item>Define clear boundaries and contracts between components</item>
+      <item>Document all assumptions and resolve ambiguities</item>
+      <item>Follow the exact required document structure</item>
+    </category>
+    <category name="before_completion">
+      <item>Validate against line count guidelines for the project scale</item>
+      <item>Ensure all required sections are present and complete</item>
+      <item>Review for clarity and lack of ambiguity</item>
+      <item>Confirm the document can serve as a master plan for other architects</item>
+    </category>
+  </quality_checklist>
+</best_practices>

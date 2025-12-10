@@ -1,0 +1,200 @@
+[
+  {
+    "task_id": "I4.T1",
+    "iteration_id": "I4",
+    "iteration_goal": "Finalize notification/undo runtime, display snapshot contracts, kiosk hardening, and operational automation (runbooks, synthetic monitors) to prepare for production readiness work.",
+    "description": "Implement Notification & Undo service (client + server), shared toast queue, Supabase channel `company:{id}:notifications`, TTL enforcement, telemetry hooks.",
+    "agent_type_hint": "FullStackAgent",
+    "inputs": "Undo spec, hooks, telemetry helpers.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Notification context w/ TTL timers, undo button, cross-app panel; docs describing payload contract.",
+    "acceptance_criteria": "Toasts dedupe via idempotency; undo window enforced; tests validate TTL + telemetry emission.",
+    "dependencies": [
+      "I2.T5",
+      "I3.T1"
+    ],
+    "parallelizable": false,
+    "done": false
+  },
+  {
+    "task_id": "I4.T2",
+    "iteration_id": "I4",
+    "iteration_goal": "Finalize notification/undo runtime, display snapshot contracts, kiosk hardening, and operational automation (runbooks, synthetic monitors) to prepare for production readiness work.",
+    "description": "Draft Display Snapshot JSON Schema + implement API/backfill job storing snapshots, kiosk fallback caching, and manifest entry for contract.",
+    "agent_type_hint": "BackendAgent",
+    "inputs": "Display requirements, realtime fallback plan.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "JSON Schema validating kiosk payload, SQL migration for snapshot table, Next.js API route returning schema-compliant payload, cron job script for scheduled captures.",
+    "acceptance_criteria": "Schema validated via ajv; API returns `schema_version`; cron script documented; kiosk fallback uses schema.",
+    "dependencies": [
+      "I2.T8",
+      "I3.T4"
+    ],
+    "parallelizable": false,
+    "done": false
+  },
+  {
+    "task_id": "I4.T3",
+    "iteration_id": "I4",
+    "iteration_goal": "Finalize notification/undo runtime, display snapshot contracts, kiosk hardening, and operational automation (runbooks, synthetic monitors) to prepare for production readiness work.",
+    "description": "Enhance display app with offline cache (IndexedDB), heartbeat monitor, and admin-labeled kiosk identities; update docs with monitoring checklist.",
+    "agent_type_hint": "FrontendAgent",
+    "inputs": "Display snapshot contract, kiosk monitoring plan.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "IndexedDB caching, heartbeat indicator, monitoring doc referencing metrics + runbook.",
+    "acceptance_criteria": "Offline fallback uses last snapshot; monitors log late heartbeats; doc outlines alert thresholds.",
+    "dependencies": [
+      "I4.T2"
+    ],
+    "parallelizable": true,
+    "done": false
+  },
+  {
+    "task_id": "I4.T4",
+    "iteration_id": "I4",
+    "iteration_goal": "Finalize notification/undo runtime, display snapshot contracts, kiosk hardening, and operational automation (runbooks, synthetic monitors) to prepare for production readiness work.",
+    "description": "Build Admin CRM Kanban board for assignments (drag/drop by status/station) with realtime updates + audit log viewer panel.",
+    "agent_type_hint": "FrontendAgent",
+    "inputs": "Admin shell, RPCs, notifications.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Drag/drop board, audit sidebar showing realtime entries, manual assignment actions hooking into RPCs.",
+    "acceptance_criteria": "Drag accessible via keyboard; assignments update within 150ms; audit panel filters by entity.",
+    "dependencies": [
+      "I3.T8",
+      "I2.T4"
+    ],
+    "parallelizable": false,
+    "done": false
+  },
+  {
+    "task_id": "I4.T5",
+    "iteration_id": "I4",
+    "iteration_goal": "Finalize notification/undo runtime, display snapshot contracts, kiosk hardening, and operational automation (runbooks, synthetic monitors) to prepare for production readiness work.",
+    "description": "Implement Synthetic Monitor scripts hitting `/tasks`, `/admin/events`, `/display`, `/api/health/realtime`, logging to observability stack per Section 3.5.",
+    "agent_type_hint": "DevOpsAgent",
+    "inputs": "Observability plan, telemetry helper.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Script scheduling HTTP checks + SSE tests, GitHub Action or cron config, doc updates describing alerts.",
+    "acceptance_criteria": "Monitor sends results to telemetry sink; failure pipeline notifies Slack/email; doc lists run cadence.",
+    "dependencies": [
+      "I1.T11",
+      "I3.T4"
+    ],
+    "parallelizable": true,
+    "done": false
+  },
+  {
+    "task_id": "I4.T6",
+    "iteration_id": "I4",
+    "iteration_goal": "Finalize notification/undo runtime, display snapshot contracts, kiosk hardening, and operational automation (runbooks, synthetic monitors) to prepare for production readiness work.",
+    "description": "Optimize performance (React Profiler + Supabase EXPLAIN) for PrepChef list + Admin board; implement pagination/cursor strategies; document guidance.",
+    "agent_type_hint": "PerformanceEngineer",
+    "inputs": "Hooks, API, Supabase queries.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Cursor-based pagination, server component streaming improvements, doc summarizing budgets + profiling results.",
+    "acceptance_criteria": "Task list TTI <3s; Admin board initial load <4s; doc references metrics + future tuning items.",
+    "dependencies": [
+      "I3.T1",
+      "I3.T4"
+    ],
+    "parallelizable": false,
+    "done": false
+  },
+  {
+    "task_id": "I4.T7",
+    "iteration_id": "I4",
+    "iteration_goal": "Finalize notification/undo runtime, display snapshot contracts, kiosk hardening, and operational automation (runbooks, synthetic monitors) to prepare for production readiness work.",
+    "description": "Formalize incident response runbooks (realtime outage, Supabase downtime, storage backlog, feature flag drift, undo failure) referencing Section 3.7 guidelines.",
+    "agent_type_hint": "DocumentationAgent",
+    "inputs": "Ops blueprint, monitoring plan.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Runbooks describing symptoms, steps, rollback levers, communication template references.",
+    "acceptance_criteria": "Each runbook lists owners, SLAs, post-incident checklist; cross-linked from docs index.",
+    "dependencies": [
+      "I1.T6",
+      "I3.T9"
+    ],
+    "parallelizable": true,
+    "done": false
+  },
+  {
+    "task_id": "I4.T8",
+    "iteration_id": "I4",
+    "iteration_goal": "Finalize notification/undo runtime, display snapshot contracts, kiosk hardening, and operational automation (runbooks, synthetic monitors) to prepare for production readiness work.",
+    "description": "Build Admin staff management page (role changes, invites, notification preferences) using Access Matrix + new notification service.",
+    "agent_type_hint": "FrontendAgent",
+    "inputs": "Access matrix, notification service.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Staff table with filters, role-change modal requiring confirmation, preference toggles writing to Supabase.",
+    "acceptance_criteria": "Role changes log audit entries + send notifications; invites integrate Supabase Auth; UI enforces RBAC.",
+    "dependencies": [
+      "I2.T10",
+      "I4.T1"
+    ],
+    "parallelizable": false,
+    "done": false
+  },
+  {
+    "task_id": "I4.T9",
+    "iteration_id": "I4",
+    "iteration_goal": "Finalize notification/undo runtime, display snapshot contracts, kiosk hardening, and operational automation (runbooks, synthetic monitors) to prepare for production readiness work.",
+    "description": "Automate presence heatmap + kiosk alerts by extending Supabase cron job to compute load metrics, writing to new table consumed by display + admin dashboards.",
+    "agent_type_hint": "BackendAgent",
+    "inputs": "Presence tables, display components.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Function computing station load, storage of metrics, UI updates showing heatmap + alerts.",
+    "acceptance_criteria": "Cron runs hourly; UI updates within SLA; doc updated with metric definitions.",
+    "dependencies": [
+      "I2.T8",
+      "I4.T3"
+    ],
+    "parallelizable": true,
+    "done": false
+  },
+  {
+    "task_id": "I4.T10",
+    "iteration_id": "I4",
+    "iteration_goal": "Finalize notification/undo runtime, display snapshot contracts, kiosk hardening, and operational automation (runbooks, synthetic monitors) to prepare for production readiness work.",
+    "description": "Extend QA to include kiosk offline scenarios, notification flood tests, and admin role-change flows; capture findings in testing matrix.",
+    "agent_type_hint": "QualityAgent",
+    "inputs": "Notification service, display snapshot, runbooks.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Additional Playwright suites with fixtures, matrix updates linking coverage.",
+    "acceptance_criteria": "Tests stable; matrix updated; results feed into runbooks for regression reproduction.",
+    "dependencies": [
+      "I4.T1",
+      "I4.T2",
+      "I4.T8"
+    ],
+    "parallelizable": true,
+    "done": false
+  },
+  {
+    "task_id": "I4.T11",
+    "iteration_id": "I4",
+    "iteration_goal": "Finalize notification/undo runtime, display snapshot contracts, kiosk hardening, and operational automation (runbooks, synthetic monitors) to prepare for production readiness work.",
+    "description": "Integrate release governance automation (Changesets tagging, Doppler promotion script, Supabase migration verification) to enforce change control.",
+    "agent_type_hint": "DevOpsAgent",
+    "inputs": "Deployment diagram, runbooks, CI pipeline.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Script verifying migrations applied + Flagsmith states before tagging, workflow automating Doppler env promotion, checklist for CAB approval.",
+    "acceptance_criteria": "Release workflow blocks on guard script; documentation outlines approvals; logs stored for audit.",
+    "dependencies": [
+      "I1.T9",
+      "I1.T6"
+    ],
+    "parallelizable": true,
+    "done": false
+  }
+]

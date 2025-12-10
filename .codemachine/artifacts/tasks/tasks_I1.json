@@ -1,0 +1,194 @@
+[
+  {
+    "task_id": "I1.T1",
+    "iteration_id": "I1",
+    "iteration_goal": "Stand up the Turbo monorepo, base Supabase schema, architectural artifacts, and governance docs so future iterations can work in parallel against typed contracts.",
+    "description": "Initialize pnpm + Turbo workspace, create `apps/` and `libs/` scaffolding, configure root lint/test/build scripts, and document setup in README so agents have a runnable baseline.",
+    "agent_type_hint": "SetupAgent",
+    "inputs": "Requirements overview, desired directory tree (Section 3).",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Bootstrapped repo with pnpm workspace, Turbo pipeline, placeholder app/library packages, root README describing install/run commands.",
+    "acceptance_criteria": "pnpm install succeeds; `turbo run lint --dry` resolves scripts; README documents workspace commands and references Supabase/Flagsmith prerequisites.",
+    "dependencies": [],
+    "parallelizable": false,
+    "done": false
+  },
+  {
+    "task_id": "I1.T2",
+    "iteration_id": "I1",
+    "iteration_goal": "Stand up the Turbo monorepo, base Supabase schema, architectural artifacts, and governance docs so future iterations can work in parallel against typed contracts.",
+    "description": "Produce Access Control Matrix spec mapping Staff/Manager/Event Lead/Owner to CRUD actions, Supabase RLS expectations, and UI affordances; store in `docs/specs/access_matrix.md`.",
+    "agent_type_hint": "DocumentationAgent",
+    "inputs": "Role requirements (Section 3.6, Permissions).",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Markdown table capturing roles, allowed operations (tasks, recipes, media, display), corresponding Supabase policies, and feature-flag notes.",
+    "acceptance_criteria": "Table covers all core entities; references Supabase policy names; includes notes on undo scope and kiosk visibility; reviewed with architects.",
+    "dependencies": [
+      "I1.T1"
+    ],
+    "parallelizable": true,
+    "done": false
+  },
+  {
+    "task_id": "I1.T3",
+    "iteration_id": "I1",
+    "iteration_goal": "Stand up the Turbo monorepo, base Supabase schema, architectural artifacts, and governance docs so future iterations can work in parallel against typed contracts.",
+    "description": "Draft Component Diagram in PlantUML depicting apps, shared libs, Supabase services, feature flag + observability tooling, aligning with Section 2 components.",
+    "agent_type_hint": "DiagrammingAgent",
+    "inputs": "Section 2 Core Architecture, directory structure.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "PlantUML diagram with legend, tags, and narrative snippet summarizing interactions.",
+    "acceptance_criteria": "Diagram renders without errors; shows all core apps/libs/services; matches naming conventions; linked from README/architecture index.",
+    "dependencies": [
+      "I1.T1"
+    ],
+    "parallelizable": true,
+    "done": false
+  },
+  {
+    "task_id": "I1.T4",
+    "iteration_id": "I1",
+    "iteration_goal": "Stand up the Turbo monorepo, base Supabase schema, architectural artifacts, and governance docs so future iterations can work in parallel against typed contracts.",
+    "description": "Define initial Supabase schema migrations for companies, users, events, tasks, combined_task_groups, recipes, method_documents, media_assets, and audit_logs; generate Mermaid ERD documenting relationships.",
+    "agent_type_hint": "DatabaseAgent",
+    "inputs": "Data model overview, Access Control Matrix.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "SQL migration with tables, enums, company_id foreign keys, indexes, baseline RLS policies; ERD diagram; seed script with demo tenant.",
+    "acceptance_criteria": "`supabase db lint` passes; ERD renders; migration docs undo steps; seeds create staff/manager sample for Playwright.",
+    "dependencies": [
+      "I1.T1",
+      "I1.T2"
+    ],
+    "parallelizable": false,
+    "done": false
+  },
+  {
+    "task_id": "I1.T5",
+    "iteration_id": "I1",
+    "iteration_goal": "Stand up the Turbo monorepo, base Supabase schema, architectural artifacts, and governance docs so future iterations can work in parallel against typed contracts.",
+    "description": "Produce Deployment Diagram in PlantUML covering GitHub Actions, Vercel, Supabase (DB/Auth/Storage/Realtime/Functions), Doppler, Flagsmith, Observability sinks.",
+    "agent_type_hint": "DiagrammingAgent",
+    "inputs": "Section 2 tech stack, operational blueprint.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "PlantUML deployment view with nodes, containers, edges annotated for secrets + telemetry.",
+    "acceptance_criteria": "Diagram compiles; matches hosting mandates; referenced in architecture index.",
+    "dependencies": [
+      "I1.T1"
+    ],
+    "parallelizable": true,
+    "done": false
+  },
+  {
+    "task_id": "I1.T6",
+    "iteration_id": "I1",
+    "iteration_goal": "Stand up the Turbo monorepo, base Supabase schema, architectural artifacts, and governance docs so future iterations can work in parallel against typed contracts.",
+    "description": "Create Supabase migration playbook detailing CLI commands, pgTAP usage, rollback protocol, Doppler integration, and checklist for schema changes.",
+    "agent_type_hint": "DocumentationAgent",
+    "inputs": "Section 4 directives, migration workflow.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Markdown guide with step-by-step instructions, required tooling, automation hooks, sign-off checklist.",
+    "acceptance_criteria": "References tasks, seeds, RLS tests; includes verification commands; cross-links to Access Matrix and diagrams.",
+    "dependencies": [
+      "I1.T4"
+    ],
+    "parallelizable": false,
+    "done": false
+  },
+  {
+    "task_id": "I1.T7",
+    "iteration_id": "I1",
+    "iteration_goal": "Stand up the Turbo monorepo, base Supabase schema, architectural artifacts, and governance docs so future iterations can work in parallel against typed contracts.",
+    "description": "Scaffold `libs/ui` tokens + Tailwind config, `libs/shared` TypeScript base (enums, DTO placeholders), `libs/supabase` client factory, and configure lint/test harnesses.",
+    "agent_type_hint": "FrontendAgent",
+    "inputs": "Directory structure, Section 2 tech stack.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Token definitions, stubbed components, shared enums for roles/status, Supabase client wrapper with env guards, workspace-wide lint/test configs.",
+    "acceptance_criteria": "Storybook builds with placeholder stories; lint passes; Supabase client throws if missing Doppler vars; tokens match Section 6.1 palette.",
+    "dependencies": [
+      "I1.T1"
+    ],
+    "parallelizable": true,
+    "done": false
+  },
+  {
+    "task_id": "I1.T8",
+    "iteration_id": "I1",
+    "iteration_goal": "Stand up the Turbo monorepo, base Supabase schema, architectural artifacts, and governance docs so future iterations can work in parallel against typed contracts.",
+    "description": "Establish docs index + ADR template referencing blueprint anchors, ensuring all diagrams/specs are discoverable via `docs/README.md` with anchor metadata for manifest generation.",
+    "agent_type_hint": "DocumentationAgent",
+    "inputs": "Existing documentation set (Sections 1�4), artifacts list.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Docs index linking to diagrams/specs/ops guides, ADR template capturing context/decision/impact/anchors, contribution blurb guiding future authors.",
+    "acceptance_criteria": "Index lists every artifact path, includes anchor IDs, and ADR template cites Access Matrix + migration playbook; README linked from root documentation section.",
+    "dependencies": [
+      "I1.T2",
+      "I1.T3",
+      "I1.T4",
+      "I1.T5"
+    ],
+    "parallelizable": true,
+    "done": false
+  },
+  {
+    "task_id": "I1.T9",
+    "iteration_id": "I1",
+    "iteration_goal": "Stand up the Turbo monorepo, base Supabase schema, architectural artifacts, and governance docs so future iterations can work in parallel against typed contracts.",
+    "description": "Configure CI skeleton (GitHub Actions) running lint, typecheck, tests, and Supabase CLI dry-run, ensuring Doppler tokens pulled securely; document pipeline in CONTRIBUTING.",
+    "agent_type_hint": "DevOpsAgent",
+    "inputs": "Section 2 tooling, directives.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Workflow file with pnpm cache, Turbo tasks, Supabase CLI validation, artifact upload for Playwright; CONTRIBUTING section describing CI prerequisites and failure triage.",
+    "acceptance_criteria": "Workflow runs lint/test/build on push + PR; secrets pulled via Doppler action; documentation links to migration playbook and runbook; dry-run logs captured.",
+    "dependencies": [
+      "I1.T1",
+      "I1.T4",
+      "I1.T6"
+    ],
+    "parallelizable": true,
+    "done": false
+  },
+  {
+    "task_id": "I1.T10",
+    "iteration_id": "I1",
+    "iteration_goal": "Stand up the Turbo monorepo, base Supabase schema, architectural artifacts, and governance docs so future iterations can work in parallel against typed contracts.",
+    "description": "Author security baseline doc outlining Doppler usage, secret rotation cadence, feature flag access policy, and checklist for onboarding engineers to sensitive tooling.",
+    "agent_type_hint": "SecurityAgent",
+    "inputs": "Section 4 directives, requirements security section.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Markdown doc specifying required MFA, Doppler scopes, Supabase role usage, feature flag governance, audit log monitoring steps.",
+    "acceptance_criteria": "Document references Access Matrix, migration playbook, and describes incident escalation; approved by security owner.",
+    "dependencies": [
+      "I1.T2",
+      "I1.T6"
+    ],
+    "parallelizable": true,
+    "done": false
+  },
+  {
+    "task_id": "I1.T11",
+    "iteration_id": "I1",
+    "iteration_goal": "Stand up the Turbo monorepo, base Supabase schema, architectural artifacts, and governance docs so future iterations can work in parallel against typed contracts.",
+    "description": "Set up observability stubs (OpenTelemetry config, Pino logger wrapper) shared via `libs/shared/telemetry`, plus plan logging destinations in doc.",
+    "agent_type_hint": "BackendAgent",
+    "inputs": "Section 2 Observability stack.",
+    "target_files": [],
+    "input_files": [],
+    "deliverables": "Telemetry helper exporting trace/span creators, logger factory referencing Doppler env, doc explaining log levels + pipeline.",
+    "acceptance_criteria": "Helpers compile under strict TS; doc ties events to metrics; placeholder exporters ready for instrumentation in future iterations.",
+    "dependencies": [
+      "I1.T1"
+    ],
+    "parallelizable": true,
+    "done": false
+  }
+]

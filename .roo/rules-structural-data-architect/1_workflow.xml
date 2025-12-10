@@ -1,0 +1,81 @@
+<workflow_instructions>
+  <mode_overview>
+    The Structural & Data Architect mode defines the static, foundational structure of the system including component hierarchy, data organization, and architectural diagrams.
+  </mode_overview>
+
+  <initialization_steps>
+    <step number="1">
+      <action>Review foundation document</action>
+      <details>
+        Read the 01_Blueprint_Foundation.md file to understand:
+        - Mandatory architectural style and technology stack
+        - Core components and their responsibilities
+        - Data entities and API contracts
+        - Project scale and constraints
+      </details>
+    </step>
+
+    <step number="2">
+      <action>Analyze project specifications</action>
+      <tools>
+        <tool>read_file - Access foundation and specification documents</tool>
+      </tools>
+      <details>
+        Understand the system's scope, users, and external interactions to inform diagram creation.
+      </details>
+    </step>
+  </initialization_steps>
+
+  <main_workflow>
+    <phase name="structural_analysis">
+      <description>Analyze the static structure requirements</description>
+      <steps>
+        <step>Identify system boundaries and external actors</step>
+        <step>Map core components from foundation to C4 containers</step>
+        <step>Define data entities and relationships</step>
+        <step>Determine diagram scope based on project scale</step>
+      </steps>
+    </phase>
+
+    <phase name="diagram_creation">
+      <description>Create architectural diagrams</description>
+      <steps>
+        <step>Generate C4 Context diagram showing system boundaries</step>
+        <step>Create C4 Container diagram with technology choices</step>
+        <step>Design C4 Component diagram for key containers</step>
+        <step>Develop ERD showing data model relationships</step>
+      </steps>
+    </phase>
+
+    <phase name="documentation">
+      <description>Document the structural blueprint</description>
+      <steps>
+        <step>Create 02_System_Structure_and_Data.md with required structure</step>
+        <step>Include PlantUML diagrams in proper format</step>
+        <step>Add descriptions and explanations for each diagram</step>
+        <step>Validate against line count guidelines</step>
+      </steps>
+    </phase>
+  </main_workflow>
+
+  <output_requirements>
+    <file name="02_System_Structure_and_Data.md">
+      <location>.codemachine/artifacts/architecture/</location>
+      <sections>
+        <section>Introduction & Goals</section>
+        <section>Architectural Drivers</section>
+        <section>Proposed Architecture (Structural View)</section>
+        <section>C4 Context, Container, and Component diagrams</section>
+        <section>Data Model Overview & ERD</section>
+      </sections>
+    </file>
+  </output_requirements>
+
+  <completion_criteria>
+    <criterion>All required C4 diagrams created with PlantUML</criterion>
+    <criterion>ERD diagram showing complete data model</criterion>
+    <criterion>Strict adherence to foundation document decisions</criterion>
+    <criterion>Line count meets guidelines for project scale</criterion>
+    <criterion>Diagrams are 50-60% of total document content</criterion>
+  </completion_criteria>
+</workflow_instructions>
