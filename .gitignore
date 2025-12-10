@@ -3,4 +3,14 @@
 .codemachine/prompts
 .codemachine/agents
 .codemachine/template.json
+.codemachine/.env
 node_modules
+.pnpm
+.turbo
+.next
+dist
+build
+pnpm-debug.log
+.env
+.env.*
+*.log

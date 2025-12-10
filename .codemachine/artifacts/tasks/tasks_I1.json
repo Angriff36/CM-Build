@@ -12,7 +12,7 @@
     "acceptance_criteria": "pnpm install succeeds; `turbo run lint --dry` resolves scripts; README documents workspace commands and references Supabase/Flagsmith prerequisites.",
     "dependencies": [],
     "parallelizable": false,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I1.T2",

@@ -1,0 +1,8 @@
+packages:
+  - apps/*
+  - libs/*
+  - supabase/*
+  - docs/*
+  - api/*
+  - tests/*
+  - tooling/*

@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["dom", "dom.iterable", "es2022"],
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "allowJs": false,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "types": [],
+    "baseUrl": ".",
+    "paths": {
+      "@caterkingapp/ui": ["libs/ui/src"],
+      "@caterkingapp/ui/*": ["libs/ui/src/*"],
+      "@caterkingapp/shared/*": ["libs/shared/src/*"]
+    }
+  },
+  "include": ["apps", "libs", "tooling", "tests"],
+  "exclude": ["node_modules", "dist", ".turbo"]
+}

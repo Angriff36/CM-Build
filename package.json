@@ -1,0 +1,41 @@
+{
+  "name": "caterking-platform",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Turbo monorepo for the CaterKing kitchen management suite",
+  "engines": {
+    "node": ">=20.10.0",
+    "pnpm": ">=8.10.0"
+  },
+  "packageManager": "pnpm@10.16.1",
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.15.0",
+    "@typescript-eslint/parser": "^7.15.0",
+    "eslint": "^9.3.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-turbo": "^2.0.6",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.7",
+    "prettier": "^3.3.2",
+    "turbo": "^2.0.6",
+    "typescript": "^5.4.5"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ],
+    "*.{json,css,md,ts,tsx,js,jsx}": [
+      "prettier --write"
+    ]
+  }
+}
