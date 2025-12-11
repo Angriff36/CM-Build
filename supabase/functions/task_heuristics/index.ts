@@ -74,12 +74,18 @@ function computeSimilarity(task1: Task, task2: Task): number {
   const name1 = normalizeName(task1.name);
   const name2 = normalizeName(task2.name);
 
-  // Simple word overlap
+  // Early exit for tasks with very different names
+  if (name1.length === 0 || name2.length === 0) return 0;
+
+  // Simple word overlap with early exit optimization
   const set1 = new Set(name1);
   const set2 = new Set(name2);
   const intersection = new Set([...set1].filter((x) => set2.has(x)));
   const union = new Set([...set1, ...set2]);
   const nameSimilarity = intersection.size / union.size;
+
+  // Early exit for low name similarity (<0.3)
+  if (nameSimilarity < 0.3) return 0;
 
   // Unit compatibility
   const unit1 = normalizeUnit(task1.unit);
@@ -95,7 +101,10 @@ function computeSimilarity(task1: Task, task2: Task): number {
   }
 
   // Weighted score: 0.6 name, 0.3 unit, 0.1 quantity
-  return 0.6 * nameSimilarity + 0.3 * unitMatch + 0.1 * quantitySimilarity;
+  const finalScore = 0.6 * nameSimilarity + 0.3 * unitMatch + 0.1 * quantitySimilarity;
+
+  // Early exit for low final scores (<0.5 threshold)
+  return finalScore < 0.5 ? 0 : finalScore;
 }
 
 Deno.serve(async (req) => {

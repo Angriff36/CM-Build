@@ -113,6 +113,53 @@ Run tests: `pnpm test --filter=<package>`
 
 ## Quality Gates
 
+### Performance Thresholds
+
+#### API Response Times (SLA Requirements)
+
+- **95th Percentile**: <200ms for all endpoints (critical SLA)
+- **99th Percentile**: <500ms for all endpoints (burst tolerance)
+- **Heuristics Endpoint**: <200ms for 200 tasks with early exits
+- **Task Board Queries**: <150ms for filtered task lists
+- **Real-time Subscriptions**: <100ms latency from DB to UI
+
+#### Resource Usage Limits
+
+- **Heuristics Execution**: <10 seconds for 200 tasks (timeout at 30s)
+- **Memory Usage**: <100MB peak during operations (alert at 80MB)
+- **CPU Usage**: <90% sustained (auto-scale at 80%)
+- **Database Connections**: <50 concurrent (pool at 20)
+- **Real-time Channels**: <8 per event (throttle above)
+
+#### Client-side Performance
+
+- **Page Load Times**: <3 seconds for initial loads
+- **Board Render Time**: <200ms for 200 tasks with virtualization
+- **DnD Operations**: <100ms drag end latency
+- **Real-time Updates**: Throttle at >10 updates/second per client
+- **Component Memory**: <30MB for task board with 200 tasks
+
+#### Load Testing Benchmarks (k6)
+
+- **Baseline Load**: 20 concurrent users, 85 req/s throughput
+- **Peak Load**: 50 concurrent users, 195 req/s throughput
+- **Burst Testing**: 3 rapid calls, <650ms 99th percentile
+- **Error Rate**: <5% under all load conditions
+- **Sustained Load**: 24-hour stress test, stable performance
+
+#### Database Query Performance (with indexes)
+
+- **Task Fetch (company+status)**: <20ms (idx_tasks_company_status)
+- **Board Filter (company+event+status)**: <25ms (idx_tasks_company_event_status)
+- **Assignment Lookup (company+user)**: <15ms (idx_tasks_company_assigned_user)
+- **Similarity Suggestions**: <30ms (idx_task_similarity_suggestions_company_score)
+
+#### Gating & Alert Thresholds
+
+- **Critical Alerts**: Heuristics >10s, DB latency >500ms, Memory >100MB
+- **Warning Alerts**: Render >200ms, DnD >100ms, Realtime >150ms
+- **Automated Responses**: Auto-scale at 80% CPU, Throttle at 10 req/min, Fallback to polling
+
 ### Pre-commit Hooks
 
 Git hooks enforce:
@@ -126,6 +173,7 @@ Git hooks enforce:
 - Lint, typecheck, and test on every PR
 - Supabase migration verification
 - Visual regression tests for UI changes
+- Performance benchmarks against thresholds
 - Blocks merges until all gates pass
 
 ## Checklist for Autonomous Agents

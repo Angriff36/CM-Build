@@ -138,7 +138,7 @@
     "acceptance_criteria": "Benchmarks recorded; indexes migrates; doc references instrumentation metrics; gating thresholds added to runbooks.",
     "dependencies": ["I4.T1", "I4.T4"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I4.T8",
