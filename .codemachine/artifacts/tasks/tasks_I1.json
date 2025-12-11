@@ -57,7 +57,7 @@
     "acceptance_criteria": "`supabase db lint` passes; ERD renders; migration docs undo steps; seeds create staff/manager sample for Playwright.",
     "dependencies": ["I1.T1", "I1.T2"],
     "parallelizable": false,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I1.T5",

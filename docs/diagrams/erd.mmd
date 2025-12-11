@@ -1,0 +1,109 @@
+erDiagram
+    companies ||--|{ users : "has members"
+    companies ||--|{ events : "organizes"
+    companies ||--|{ tasks : "tracks"
+    companies ||--|{ combined_task_groups : "aggregates"
+    companies ||--|{ recipes : "owns"
+    companies ||--|{ media_assets : "stores"
+    companies ||--|{ audit_logs : "logs"
+
+    events ||--|{ tasks : "generates"
+    users ||--|{ tasks : "assigned"
+    
+    recipes ||--|{ tasks : "instantiated as"
+    recipes ||--|{ method_documents : "documented by"
+
+    companies {
+        uuid id PK
+        string name
+        string timezone
+        jsonb settings
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    users {
+        uuid id PK "FK to auth.users"
+        uuid company_id FK
+        enum role "owner, manager, event_lead, staff"
+        string display_name
+        string status
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    events {
+        uuid id PK
+        uuid company_id FK
+        string name
+        timestamp scheduled_at
+        string status
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    tasks {
+        uuid id PK
+        uuid company_id FK
+        uuid event_id FK
+        uuid assigned_user_id FK
+        uuid recipe_id FK
+        string name
+        numeric quantity
+        string unit
+        enum status "pending, claimed, completed, verified"
+        string priority
+        string undo_token
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    combined_task_groups {
+        uuid id PK
+        uuid company_id FK
+        uuid[] base_task_ids
+        numeric aggregated_quantity
+        timestamp created_at
+    }
+
+    recipes {
+        uuid id PK
+        uuid company_id FK
+        string name
+        jsonb ingredients
+        jsonb steps
+        string version
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    method_documents {
+        uuid id PK
+        uuid recipe_id FK
+        uuid company_id FK
+        string content_url
+        string type
+        timestamp created_at
+    }
+
+    media_assets {
+        uuid id PK
+        uuid company_id FK
+        string url
+        string type
+        string status
+        string storage_path
+        string checksum
+        timestamp created_at
+    }
+
+    audit_logs {
+        uuid id PK
+        uuid company_id FK
+        uuid actor_id FK
+        string entity_type
+        uuid entity_id
+        string action
+        jsonb diff
+        timestamp created_at
+    }
