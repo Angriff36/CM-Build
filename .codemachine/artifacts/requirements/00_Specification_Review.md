@@ -1,6 +1,6 @@
-﻿# Specification Review & Recommendations: KitchenFlow Nexus
+# Specification Review & Recommendations: CaterKing
 
-**Date:** 2025-12-10
+**Date:** Thu Dec 11 2025
 **Status:** Awaiting Specification Enhancement
 
 ### **1.0 Executive Summary**
@@ -11,66 +11,61 @@ This document is an automated analysis of the provided project specifications. I
 
 ### **2.0 Synthesized Project Vision**
 
-*Based on the provided data, the core project objective is to engineer a system that:*
-
-Delivers a multi-tenant, real-time kitchen command platform that centralizes prep tasks, recipes, training, and staff coordination. The experience prioritizes mobile-first execution for staff while supplying managers with cross-event visibility, task aggregation, and operational controls through shared monorepo applications. Supabase provides the transactional, realtime, and media backbone while Next.js apps orchestrate UI, workflows, and edge APIs.
+Based on the provided data, the core project objective is to engineer a real-time, multi-tenant kitchen management platform that centralizes task execution, recipe management, and workflow coordination for commercial kitchens. The system aims to reduce duplicated work, standardize recipes, and provide live visibility across staff, managers, and owners through mobile and web interfaces.
 
 ### **3.0 Critical Assertions & Required Clarifications**
 
 ---
 
-#### **Assertion 1: Task Similarity Computation Ownership**
+#### **Assertion 1: Authentication Architecture**
 
-*   **Observation:** Task consolidation requires fuzzy text matching and ingredient normalization, yet the specification does not state where the similarity engine runs, when it executes, or how suggestions are persisted for review, leaving compute budgets and reliability undefined.
-*   **Architectural Impact:** Placement of the similarity algorithm determines latency characteristics, Supabase resource sizing, data freshness guarantees, and whether mobile clients operate deterministically.
-    *   **Path A (Edge Function Orchestrator):** Supabase Edge Functions react to task inserts or updates, compute similarity, and store candidate combinations for all clients to consume with guaranteed tenant isolation.
-    *   **Path B (Next.js Background Worker):** A dedicated Next.js route or cron job scans tasks periodically, which simplifies coding but introduces drift between edits and available suggestions.
-    *   **Path C (Client-Initiated Heuristics):** Mobile clients compute similarity locally and propose merges, which lowers backend cost but risks inconsistent grouping and exposes business logic on devices.
-*   **Default Assumption & Required Action:** To protect multi-tenant consistency, the system will assume **Path A** with Supabase Edge Functions triggered by task mutations that emit deterministic suggestions back into a `task_similarity_candidates` table. **Update the specification** with the definitive component, trigger model, and expected SLA so infrastructure and library boundaries can be finalized.
-
----
-
-#### **Assertion 2: Combined Task Lifecycle & Persistence Model**
-
-*   **Observation:** The specification states that users can combine similar tasks and receive standardized instructions, yet it does not define whether combined work is represented as a new parent record, a virtual grouping, or inline edits to source tasks, nor how undo, progress tracking, or audit trails behave for grouped work.
-*   **Architectural Impact:** The lifecycle definition controls schema design, optimistic update flows, Supabase RLS policies, and whether event dashboards operate on derived aggregates or canonical tasks.
-    *   **Path A (Materialized Parent Task):** Create a `combined_tasks` entity that becomes the single actionable record while original tasks reference it, enabling precise ownership but introducing more tables and synchronization logic.
-    *   **Path B (Virtual Tagging):** Keep each original task active and merely tag them with a shared identifier, letting clients render combined views without changing write paths, at the cost of complex UX for claim and completion.
-    *   **Path C (One-Way Merge):** Replace original tasks with a consolidated record, simplifying UI but losing historical granularity and complicating undo requirements.
-*   **Default Assumption & Required Action:** Implementation will assume **Path A** by maintaining a canonical combined task per suggestion with child membership rows and mirrored status transitions so that completion, undo, and audit logs stay traceable. **Update the specification** to confirm lifecycle semantics, required undo scope, and whether both parent and child tasks remain visible in analytics.
+- **Observation:** The specification references Supabase Auth for registration, login, and session management, but does not specify the exact authentication mechanisms or identity providers.
+- **Architectural Impact:** This decision affects security models, user onboarding friction, integration with external systems, and compliance requirements.
+  - **Path A (Self-Contained):** Email/password authentication with optional email verification. Minimizes dependencies but limits SSO options.
+  - **Path B (Federated):** OAuth/OIDC integration with providers like Google or Microsoft. Enhances user experience but adds complexity and external dependencies.
+- **Default Assumption & Required Action:** To prioritize simplicity and rapid development, the system will assume **Path A (Self-Contained)**. **The specification must be updated** to define the required authentication mechanisms and any supported identity providers.
 
 ---
 
-#### **Assertion 3: Quantity Scaling & Unit Normalization Strategy**
+#### **Assertion 2: Data Persistence & Scalability Tier**
 
-*   **Observation:** Auto-scaling and unit conversion are mandated, yet the source of truth for ingredient units, allowed measurement vocabularies, rounding rules, and per-company overrides remain unspecified, preventing deterministic calculations.
-*   **Architectural Impact:** The conversion strategy influences database schemas (JSONB vs structured tables), shared library design, validation pipelines, and whether Supabase RPCs can guarantee accurate math across metric, imperial, and volumetric units.
-    *   **Path A (Central Measurement Dictionary):** Maintain a canonical measurement registry in `libs/shared` plus supporting tables so every ingredient references a base unit with conversion factors, ensuring predictable scaling across tenants.
-    *   **Path B (Recipe-Scoped Conversions):** Allow each recipe to embed conversion metadata inside JSONB, which accelerates authoring but multiplies risk of inconsistent units and complicates aggregation.
-    *   **Path C (External Measurement Service):** Rely on a third-party conversion API or microservice that standardizes units, adding latency and cost but guaranteeing scientific accuracy.
-*   **Default Assumption & Required Action:** The build will assume **Path A** with a curated unit graph stored centrally, including rounding and precision policies enforced via Zod validators and Supabase constraints. **Update the specification** to state whether tenants can override conversions, how precision should be displayed, and what fallback behavior applies when conversions fail.
-
----
-
-#### **Assertion 4: Media Upload & Processing Pipeline**
-
-*   **Observation:** Recipes and methods include images and video uploads with optional transcoding, yet the ingest path, file size expectations, authentication method, and background processing responsibilities remain undefined.
-*   **Architectural Impact:** Upload topology dictates client SDK integration, signed URL policies, Doppler secret distribution, bandwidth planning, and whether Supabase storage alone suffices for high-volume media.
-    *   **Path A (Direct Supabase Signed Uploads):** Clients request signed URLs from Next.js, upload directly to Supabase Storage, and invoke Supabase Functions for thumbnailing, minimizing server load.
-    *   **Path B (Next.js Proxy Upload):** Media flows through Next.js API routes for validation before storage, simplifying ACLs but heavily taxing Vercel bandwidth quotas.
-    *   **Path C (External Media Pipeline):** Integrate a dedicated media service (e.g., Mux, Cloudinary) to handle encoding, adding cost but providing robust streaming and analytics.
-*   **Default Assumption & Required Action:** Delivery will assume **Path A** with strict file-size limits enforced in shared validation utilities, plus asynchronous Supabase Functions for thumbnail generation stored alongside originals. **Update the specification** to document maximum file sizes, required codecs, retention rules, and whether kiosk displays need adaptive streaming so infrastructure provisioning can commence.
+- **Observation:** The specification outlines scalability targets for single-location kitchens with limited events and tasks, but lacks explicit performance benchmarks and growth projections.
+- **Architectural Impact:** This influences database selection, caching strategies, infrastructure costs, and the need for horizontal scaling.
+  - **Tier 1 (Prototype Scale):** Supports up to 1,000 users and low-throughput operations. Suitable for a single-node database with basic caching.
+  - **Tier 2 (Production Scale):** Handles 10,000+ users and high concurrency. Requires managed, scalable databases with advanced caching and load balancing.
+- **Default Assumption & Required Action:** The architecture will assume **Tier 1 (Prototype Scale)** to align with initial MVP constraints. **The specification must be updated** to specify target user load, data volume, and performance metrics such as latency and throughput.
 
 ---
 
-#### **Assertion 5: Role-Based Permission Granularity & RLS Matrix**
+#### **Assertion 3: Task Consolidation Logic**
 
-*   **Observation:** Roles are listed (staff, manager, event lead, owner) with general capabilities, yet the precise CRUD permissions for tasks, events, recipes, media, and combination approvals are unspecified, making it impossible to codify RLS policies or UI gating rules.
-*   **Architectural Impact:** A definitive authorization matrix is required to design Supabase policies, JWT claim structures, optimistic updates, and to prevent privilege escalation across tenants.
-    *   **Path A (Operational Constraint):** Staff may only claim, unclaim, and complete tasks; managers and event leads handle creation, assignment, and combination approval; owners manage recipes, media, and user role changes.
-    *   **Path B (Collaborative Edit):** Staff can also create or edit tasks during service, demanding nuanced RLS policies and UI safeguards for collisions.
-    *   **Path C (Owner-Delegated Admin):** Owners delegate subsets of administrative power to managers via configurable scopes, requiring schema support for granular permission flags and more complex policy expressions.
-*   **Default Assumption & Required Action:** The implementation will proceed with **Path A** to minimize RLS complexity for MVP while reserving space for future scope expansion. **Update the specification** with a full CRUD-per-role matrix, escalation rules, and any kiosk-specific visibility exceptions so the database policies and shared hooks can be generated confidently.
+- **Observation:** The specification describes heuristic matching for task similarity using fuzzy text comparison and ingredient normalization, but does not detail the algorithm's precision, thresholds, or edge cases.
+- **Architectural Impact:** This affects data processing complexity, user experience in task suggestions, and potential for false positives in automation.
+  - **Path A (Rule-Based):** Simple keyword matching and exact ingredient overlap. Easy to implement but may miss nuanced similarities.
+  - **Path B (ML-Enhanced):** Incorporate machine learning for semantic similarity. Improves accuracy but increases development overhead and computational requirements.
+- **Default Assumption & Required Action:** To maintain MVP simplicity, the system will assume **Path A (Rule-Based)**. **The specification must be updated** to define the consolidation algorithm, similarity thresholds, and handling of edge cases like partial matches.
+
+---
+
+#### **Assertion 4: Real-Time Synchronization Strategy**
+
+- **Observation:** The specification mandates real-time updates via Supabase Realtime with optimistic UI patterns, but does not address conflict resolution during concurrent edits or network interruptions.
+- **Architectural Impact:** This impacts data consistency, user trust in the system, and the need for rollback mechanisms.
+  - **Path A (Last-Write-Wins):** Server timestamp determines final state. Simple but risks data loss in conflicts.
+  - **Path B (Conflict Resolution UI):** Prompt users to resolve conflicts manually. Ensures data integrity but adds UI complexity.
+- **Default Assumption & Required Action:** The system will assume **Path A (Last-Write-Wins)** for initial implementation. **The specification must be updated** to outline conflict resolution policies and offline handling beyond the stated online-only requirement.
+
+---
+
+#### **Assertion 5: Multi-Tenant Security Model**
+
+- **Observation:** The specification enforces multi-tenancy via Row-Level Security (RLS) and company_id scoping, but does not specify additional isolation measures or audit logging for compliance.
+- **Architectural Impact:** This affects data breach risks, regulatory compliance, and operational overhead in shared environments.
+  - **Path A (RLS-Only):** Rely solely on database-level RLS policies. Cost-effective but may not suffice for high-security needs.
+  - **Path B (Enhanced Isolation):** Add application-level tenant checks and audit logs. Improves security but increases complexity.
+- **Default Assumption & Required Action:** The system will assume **Path A (RLS-Only)** to leverage Supabase's built-in features. **The specification must be updated** to define any additional security layers, audit requirements, or compliance standards.
+
+---
 
 ### **4.0 Next Steps**
 

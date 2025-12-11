@@ -1,29 +1,30 @@
-// Workflow override to force OpenCode free models (grok-code / big-pickle) and avoid Codex.
-const resolveStep = (agentId, overrides = {}) => ({ agentId, ...overrides });
-
+// Official CodeMachine workflow structure with multi-model OpenCode + Claude Code strategy
 export default {
-  name: 'codemachine-opencode',
+  name: 'CodeMachine Workflow (opencode + claude)',
   steps: [
-    // One-time strategic setup steps
-    resolveStep('arch-agent', { engine: 'opencode', model: 'opencode/grok-code', modelReasoningEffort: 'high', executeOnce: true }),
-    resolveStep('plan-agent', { engine: 'opencode', model: 'opencode/grok-code', modelReasoningEffort: 'high', executeOnce: true }),
-    resolveStep('task-breakdown', { engine: 'opencode', model: 'opencode/grok-code', modelReasoningEffort: 'high', executeOnce: true }),
-
-    // Main task loop: context → code → cleanup → runtime prep (first pass) → sanity check → commit
-    resolveStep('context-manager', { engine: 'opencode', model: 'opencode/grok-code', modelReasoningEffort: 'medium' }),
-    resolveStep('code-generation', { engine: 'opencode', model: 'opencode/grok-code', modelReasoningEffort: 'medium' }),
-    resolveStep('cleanup-code-fallback', { engine: 'opencode', model: 'opencode/big-pickle', modelReasoningEffort: 'low' }),
-    resolveStep('runtime-prep', { engine: 'opencode', model: 'opencode/big-pickle', modelReasoningEffort: 'low', executeOnce: true }),
-    resolveStep('task-sanity-check', { engine: 'opencode', model: 'opencode/grok-code', modelReasoningEffort: 'medium' }),
-    resolveStep('git-commit', { engine: 'opencode', model: 'opencode/big-pickle', modelReasoningEffort: 'low' }),
-
-    // Single-pass check
-    resolveStep('check-task', {
-      engine: 'opencode',
-      model: 'opencode/grok-code',
-      modelReasoningEffort: 'medium',
-      executeOnce: true
-    })
+    resolveStep('init', { executeOnce: true, engine: 'opencode', model: 'opencode/grok-code', modelReasoningEffort: 'low' }),
+    resolveStep('principal-analyst', { executeOnce: true, engine: 'claude' }),
+    resolveUI('∴ Planning Phase ∴'),
+    resolveStep('blueprint-orchestrator', { executeOnce: true, engine: 'opencode', model: 'opencode/glm-4.6' }),
+    resolveStep('plan-agent', { executeOnce: true, engine: 'opencode', model: 'opencode/glm-4.6', notCompletedFallback: 'plan-fallback' }),
+    resolveStep('task-breakdown', { executeOnce: true, engine: 'claude' }),
+    resolveStep('git-commit', { executeOnce: true, engine: 'opencode', model: 'opencode/gpt-5.1-codex-max' }),
+    resolveUI('⟲ Development Cycle ⟲'),
+    resolveStep('context-manager', { engine: 'opencode', model: 'opencode/grok-code' }),
+    resolveStep('code-generation', { engine: 'claude' }),
+    resolveStep('runtime-prep', { executeOnce: true, engine: 'claude' }),
+    resolveStep('task-sanity-check', { engine: 'opencode', model: 'opencode/glm-4.6' }),
+    resolveStep('git-commit', { engine: 'opencode', model: 'opencode/gpt-5.1-codex-max' }),
+    resolveUI('◈◈ Iteration Gate ◈◈'),
+    resolveModule('check-task', { engine: 'opencode', model: 'opencode/grok-code', loopSteps: 6, loopMaxIterations: 20, loopSkip: ['runtime-prep'] }),
+  ],
+  subAgentIds: [
+    'founder-architect',
+    'structural-data-architect',
+    'behavior-architect',
+    'ui-ux-architect',
+    'operational-architect',
+    'file-assembler'
   ]
 };
 

@@ -36,7 +36,17 @@ Highlights and suggests similar tasks as potential combinations to users (not au
 
 Users can opt-in to combine suggested tasks
 
-Task similarity is determined via heuristic matching (fuzzy text comparison and ingredient normalization) requiring user confirmation before merging
+Task similarity uses advanced heuristic matching beyond simple keyword matching (Path B):
+
+Fuzzy text comparison (Levenshtein distance or similar algorithms)
+
+Ingredient normalization and semantic equivalence (e.g., "diced onion" ≈ "onion, diced")
+
+Unit-aware quantity matching (2 cups ≈ 16 oz when applicable)
+
+Context-aware bundling logic considering prep method, timing, and equipment
+
+Requires user confirmation before merging to prevent false positives
 
 Auto-calculates unit conversions and scaling across volume/weight systems when tasks are combined
 
@@ -260,25 +270,61 @@ Increase efficiency during peak hours
 Architecture Pattern
 Turbo Monorepo with Next.js Applications and Shared Libraries
 
+Modular, Extensible Design
+
+The system is designed as a modular platform enabling third-party and internal applications to integrate seamlessly. Other apps (staffing/payroll, kanban boards, scheduling, etc.) can:
+
+Leverage shared Supabase schema and RLS policies
+
+Subscribe to Realtime events via company-scoped channels
+
+Invoke shared domain logic through libs/shared exports
+
+Access authenticated user context via Supabase JWT claims
+
+Build isolated UIs while maintaining unified real-time state
+
 Workspace Structure
 
 The project is organized as a Turbo monorepo with the following structure:
 
 apps/ — Next.js application shells (routing + minimal composition)
-  - prepchef/ — Full-featured catering operations app
-  - caterking/ — Simplified catering operations app
-  - admin-crm/ — Admin CRM dashboard app
+  - prepchef/ — Full-featured catering operations app (core MVP)
+  - caterking/ — Simplified catering operations app (core MVP)
+  - admin-crm/ — Admin CRM dashboard app (core MVP)
+  - [future apps] — Staffing/payroll, scheduling, kanban, analytics, etc. (extensible)
 
 libs/ — Shared libraries with typed exports
   - ui/ — All ShadCN/Tailwind components, design system, and UI primitives
-  - supabase/ — Typed Supabase client, query helpers, RLS-safe operations
-  - shared/ — Domain models, Zod validators, cross-app utilities
+  - supabase/ — Typed Supabase client, query helpers, RLS-safe operations, Realtime adapters
+  - shared/ — Domain models, Zod validators, cross-app utilities, integration hooks
   - rag/ — Document ingestion and RAG processing (Python-based)
   - mcp/ — MCP integrations and tooling
+  - [extensibility] — Integration points, plugin architecture, event schemas (future)
 
 supabase/ — Database migrations, policies, seeds
+  - Schema supports multi-app ecosystem; extensible tables with JSONB metadata fields
+  - RLS policies account for multiple application contexts
 
-All applications compose functionality from shared libraries. No duplicated logic, hooks, or data access layers are allowed inside apps.
+All applications compose functionality from shared libraries. No duplicated logic, hooks, or data access layers are allowed inside apps. Third-party apps must integrate via documented shared libs and Realtime channels, not by direct database access.
+
+Integration & Extensibility
+
+Third-party and future internal applications integrate via:
+
+Shared Supabase schema with documented RLS policies
+
+Shared domain models and validators (libs/shared)
+
+Realtime channel subscriptions for cross-app state synchronization
+
+Common authentication context (Supabase JWT claims)
+
+Documented API contracts for task, recipe, user, and event entities
+
+Apps maintain isolated feature domains (e.g., payroll app manages payroll-specific tables) while respecting company-level RLS enforcement
+
+Future extensibility may include event-driven architecture or webhook dispatchers for loosely coupled integrations
 
 Frontend + Backend Integration
 
@@ -298,9 +344,13 @@ Real-time Integration
 
 Supabase Realtime broadcasts DB changes to all connected clients instantly
 
-Real-time channels follow naming convention: company:{company_id}:{entity_type}
-Examples: company:123:prep_lists, company:123:tasks
+Real-time channels follow naming convention: company:{company_id}:{entity_type}:{optional_app_context}
+Examples: company:123:tasks, company:123:recipes, company:123:staffing:payroll
 All subscriptions scoped by company_id for tenant isolation
+
+Third-party apps subscribe to relevant channels and trigger local state updates via their own React Query invalidation
+
+Cross-app awareness enabled through shared event schemas published to Realtime broadcasts
 
 Infrastructure Goals
 
@@ -352,7 +402,15 @@ Final state always reconciles against Supabase Realtime events
 
 Local cache invalidated on realtime confirmation
 
-Conflicts resolved in favor of server timestamp
+Conflict Resolution (Last-Write-Wins - Path A):
+
+Server timestamp determines final state in concurrent edit scenarios
+
+Simple deterministic behavior: latest database write wins
+
+Minimal risk of data loss for task state mutations (claims, completions)
+
+Future iterations may implement manual conflict resolution UI if needed
 
 Offline Support
 
@@ -539,15 +597,15 @@ User-Interface-Design
 
 Authentication Process
 
-Supabase Auth manages:
+Supabase Auth manages (Self-Contained - Path A):
 
-Registration
+Email/password registration and login
 
-Login
+Optional email verification
 
-Identity
+Identity management
 
-Role assignment
+Role assignment via JWT claims
 
 Session management:
 
@@ -556,6 +614,8 @@ Secure JWT token storage
 Automatic rotation
 
 Multi-context persistence
+
+Note: SSO/federated identity providers (Google, Microsoft) deferred to post-MVP; current implementation prioritizes simplicity
 
 Roles
 
@@ -576,6 +636,16 @@ Roles (staff, manager, event lead, owner) map directly to JWT claims and RLS pol
 All sensitive operations protected at database level via RLS policies
 
 Every database action is guarded by tenant-scoped RLS rules
+
+Security Model (RLS-Only - Path A):
+
+Relies solely on database-level RLS policies for tenant isolation
+
+No additional application-layer tenant checks required at MVP stage
+
+Cost-effective approach leveraging Supabase built-in features
+
+Audit logging implemented via trigger-based audit tables (optional for MVP)
 
 Multi-tenant enforcement:
 

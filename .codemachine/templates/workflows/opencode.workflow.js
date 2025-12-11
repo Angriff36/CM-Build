@@ -4,7 +4,7 @@ const resolveStep = (agentId, overrides = {}) => ({ agentId, ...overrides });
 const resolveModule = (moduleId, overrides = {}) => ({ moduleId, ...overrides, type: 'module' });
 
 export default {
-  name: 'codemachine-codex-max',
+  name: 'CodeMachine Workflow (opencode)',
   steps: [
     // One-time strategic setup steps
     resolveStep('arch-agent', { engine: 'opencode', model: 'opencode/grok-code', modelReasoningEffort: 'high', executeOnce: true }),
