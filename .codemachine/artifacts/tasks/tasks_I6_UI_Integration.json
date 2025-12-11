@@ -49,7 +49,7 @@
         "libs/shared/src/hooks/useRecipe.ts",
         "__tests__/RecipeViewer.test.tsx"
       ],
-      "done": true
+      "done": false
     },
     {
       "id": "I6.T3",
@@ -70,7 +70,8 @@
         "apps/prepchef/components/CombinationSuggestion.tsx",
         "libs/shared/src/hooks/useCombinationSuggestions.ts",
         "__tests__/CombinationSuggestion.test.tsx"
-      ]
+      ],
+      "done": false
     },
     {
       "id": "I6.T4",
@@ -92,7 +93,8 @@
         "apps/display/components/StatusSummary.tsx",
         "apps/display/components/RealtimeUpdater.tsx",
         "__tests__/Display.integration.test.tsx"
-      ]
+      ],
+      "done": false
     },
     {
       "id": "I6.T5",
@@ -117,7 +119,8 @@
         "apps/admin-crm/components/EventForm.tsx",
         "apps/admin-crm/components/RecipeEditor.tsx",
         "__tests__/AdminCRM.test.tsx"
-      ]
+      ],
+      "done": false
     },
     {
       "id": "I6.T6",
@@ -138,7 +141,8 @@
         "libs/shared/src/hooks/useRealtimeSync.ts",
         "libs/shared/src/utils/realtimeSubscriptions.ts",
         "__tests__/RealtimeIntegration.integration.test.tsx"
-      ]
+      ],
+      "done": false
     },
     {
       "id": "I6.T7",
@@ -165,7 +169,8 @@
         "tests/e2e/admin-workflows.spec.ts",
         "tests/e2e/kiosk-realtime.spec.ts",
         "playwright.config.ts (updated)"
-      ]
+      ],
+      "done": false
     },
     {
       "id": "I6.T8",
@@ -192,7 +197,8 @@
         "docs/testing/security-checklist.md",
         ".github/workflows/validation.yml",
         "DEPLOYMENT.md (final checklist)"
-      ]
+      ],
+      "done": false
     }
   ],
   "summary": {
