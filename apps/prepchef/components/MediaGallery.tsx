@@ -123,21 +123,25 @@ export function MediaGallery({ mediaUrls, className }: MediaGalleryProps) {
                 className="w-full h-auto rounded-lg"
               />
             ) : (
-              <video controls className="w-full max-h-96 rounded-lg" preload="metadata">
-                <source src={url} />
-                Your browser does not support the video tag.
+              <div>
+                <video controls className="w-full max-h-96 rounded-lg" preload="metadata">
+                  <source src={url} />
+                  Your browser does not support the video tag.
+                </video>
                 <div className="p-4 text-center">
-                  <p className="mb-2">Video playback is not supported in your browser.</p>
-                  <a
-                    href={url}
-                    className="text-blue-500 underline hover:text-blue-600"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Download video instead
-                  </a>
+                  <p className="mb-2 text-sm text-gray-600">
+                    If video doesn't play, you can{' '}
+                    <a
+                      href={url}
+                      className="text-blue-500 underline hover:text-blue-600"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      download it instead
+                    </a>
+                  </p>
                 </div>
-              </video>
+              </div>
             )}
           </div>
         </div>

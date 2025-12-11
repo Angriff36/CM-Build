@@ -13,7 +13,7 @@ interface RecipeViewerProps {
 
 export function RecipeViewer({ recipeId, onClose, taskQuantity }: RecipeViewerProps) {
   const [activeTab, setActiveTab] = useState('steps');
-  const [scale, setScale] = useState(1);
+  const [scale, setScale] = useState(taskQuantity || 1);
   const drawerRef = useRef<HTMLDivElement>(null);
   const firstFocusableRef = useRef<HTMLButtonElement>(null);
 
@@ -88,7 +88,7 @@ export function RecipeViewer({ recipeId, onClose, taskQuantity }: RecipeViewerPr
           </button>
         </header>
 
-        <nav className="flex border-b">
+        <nav className="flex border-b" role="tablist" aria-label="Recipe sections">
           {['steps', 'ingredients', 'media', 'notes'].map((tab) => (
             <button
               key={tab}
@@ -96,6 +96,10 @@ export function RecipeViewer({ recipeId, onClose, taskQuantity }: RecipeViewerPr
               className={`flex-1 py-2 px-4 text-center capitalize ${
                 activeTab === tab ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'
               }`}
+              role="tab"
+              aria-selected={activeTab === tab}
+              aria-controls={`${tab}-panel`}
+              id={`${tab}-tab`}
             >
               {tab}
             </button>
@@ -104,7 +108,7 @@ export function RecipeViewer({ recipeId, onClose, taskQuantity }: RecipeViewerPr
 
         <main className="p-4 overflow-y-auto max-h-[calc(100vh-200px)]">
           {activeTab === 'steps' && (
-            <div>
+            <div role="tabpanel" id="steps-panel" aria-labelledby="steps-tab">
               {recipe.steps.map((step, index) => (
                 <div key={index} className="mb-4">
                   <h3 className="font-semibold">Step {index + 1}</h3>
@@ -117,7 +121,7 @@ export function RecipeViewer({ recipeId, onClose, taskQuantity }: RecipeViewerPr
           )}
 
           {activeTab === 'ingredients' && (
-            <div>
+            <div role="tabpanel" id="ingredients-panel" aria-labelledby="ingredients-tab">
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">Scale: {scale.toFixed(1)}x</label>
                 <input
@@ -140,10 +144,14 @@ export function RecipeViewer({ recipeId, onClose, taskQuantity }: RecipeViewerPr
             </div>
           )}
 
-          {activeTab === 'media' && <MediaGallery mediaUrls={recipe.media_urls} />}
+          {activeTab === 'media' && (
+            <div role="tabpanel" id="media-panel" aria-labelledby="media-tab">
+              <MediaGallery mediaUrls={recipe.media_urls} />
+            </div>
+          )}
 
           {activeTab === 'notes' && (
-            <div>
+            <div role="tabpanel" id="notes-panel" aria-labelledby="notes-tab">
               <p>No notes available.</p>
             </div>
           )}
