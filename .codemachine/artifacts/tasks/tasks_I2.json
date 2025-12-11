@@ -54,7 +54,7 @@
     "acceptance_criteria": "`pnpm test api` passes; handlers reject invalid payloads with 422; idempotent replays return previous success payloads; OTEL spans recorded in logs.",
     "dependencies": ["I2.T2"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I2.T4",
@@ -72,7 +72,7 @@
     "acceptance_criteria": "Diagram renders, includes undo failure branch, uses ASCII names, and is referenced by Task 2.7 instructions.",
     "dependencies": ["I2.T3"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I2.T5",
@@ -87,7 +87,7 @@
     "acceptance_criteria": "`pnpm spectral lint api/openapi.yaml` passes; contract test fails if schema drifts; spec references iteration tasks for provenance.",
     "dependencies": ["I2.T3"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I2.T6",
@@ -111,7 +111,7 @@
     "acceptance_criteria": "`pnpm test:ui` + Storybook build succeed; real-time updates reflected; optimistic claim/rescind works; layout respects gloves-friendly requirements.",
     "dependencies": ["I2.T3", "I2.T4"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I2.T7",
@@ -134,7 +134,7 @@
     "acceptance_criteria": "Hooks tested via Vitest; toasts show copy + countdown; presence updates color avatars; reconnection fallback triggers polling.",
     "dependencies": ["I2.T4", "I2.T6"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I2.T8",
@@ -157,6 +157,6 @@
     "acceptance_criteria": "Test passes locally and in CI; failure screenshots saved; docs updated with troubleshooting steps.",
     "dependencies": ["I2.T6", "I2.T7"],
     "parallelizable": true,
-    "done": false
+    "done": true
   }
 ]
