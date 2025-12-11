@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Providers } from './providers';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [isKiosk, setIsKiosk] = useState(false);
@@ -70,8 +71,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className={isKiosk ? 'cursor-none' : ''}>
-        {children}
-        {isKiosk && (
+        <Providers>
+          {children}
+          {isKiosk && (
           <div className="fixed bottom-2 right-2 text-xs text-gray-500 bg-black bg-opacity-50 p-1 rounded">
             Hold Shift + type ADMIN for settings
           </div>
@@ -99,6 +101,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         )}
+        </Providers>
       </body>
     </html>
   );
