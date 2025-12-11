@@ -168,6 +168,6 @@
     "acceptance_criteria": "Suite passes; sign-off doc signed by QA + ops leads; gating tasks tracked in issue tracker.",
     "dependencies": ["I5.T1", "I5.T7"],
     "parallelizable": false,
-    "done": false
+    "done": true
   }
 ]

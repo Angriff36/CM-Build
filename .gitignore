@@ -20,4 +20,7 @@ __pycache__/
 *.tmp
 *.swp
 supabase/.temp/
+# Test artifacts
+tests/playwright-report/
+tests/test-results/
 

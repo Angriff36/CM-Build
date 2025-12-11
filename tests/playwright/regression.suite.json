@@ -1,0 +1,47 @@
+{
+  "description": "Final Playwright Regression Suite for I5.T8",
+  "purpose": "Consolidated regression testing for display, PrepChef, Admin CRM, notifications, feature flags, and undo flows under production-like data",
+  "version": "1.0",
+  "date": "2025-12-11",
+  "tags": ["@PrepChef", "@AdminCRM", "@Display", "@Resilience"],
+  "specs": [
+    {
+      "file": "prepchef.tasks.spec.ts",
+      "tags": ["@PrepChef"],
+      "scenarios": 5,
+      "coverage": "Task management workflows, claiming, completion, realtime updates, accessibility"
+    },
+    {
+      "file": "prepchef.combine.spec.ts",
+      "tags": ["@PrepChef"],
+      "scenarios": 8,
+      "coverage": "Task combination suggestions, approval workflows, conflict resolution, undo expiration"
+    },
+    {
+      "file": "admin.board.spec.ts",
+      "tags": ["@AdminCRM"],
+      "scenarios": 6,
+      "coverage": "Drag-and-drop assignment, event filtering, staff presence, priority indicators, accessibility"
+    },
+    {
+      "file": "resilience-drills.spec.ts",
+      "tags": ["@Display", "@Resilience"],
+      "scenarios": 10,
+      "coverage": "Realtime outages, offline modes, media backlogs, display resilience, conflict resolution"
+    }
+  ],
+  "config": "../playwright.config.ts",
+  "runCommand": "npx playwright test --grep \"@PrepChef|@AdminCRM|@Display|@Resilience\"",
+  "environment": "staging",
+  "browsers": ["chromium", "firefox", "webkit"],
+  "timeout": 30000,
+  "retries": 2,
+  "notes": "Includes chaos simulation using RealtimeChaosHelper for realtime outages, offline modes, and conflict scenarios. Verifies accessibility compliance, fallback mechanisms, user messaging, and data integrity. All tests use production-like data volumes and realistic user scenarios.",
+  "acceptance_criteria": {
+    "functional": "All critical user journeys working correctly",
+    "performance": "Response times <3s, drag interactions <500ms",
+    "accessibility": "WCAG 2.1 AA compliance verified",
+    "resilience": "Fallback mechanisms working for all failure scenarios",
+    "security": "RBAC enforcement and audit logging verified"
+  }
+}

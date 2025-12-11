@@ -5,7 +5,7 @@ import { RealtimeChaosHelper } from './helpers/realtimeChaos';
  * Comprehensive Resilience Drill Tests
  * Simulates various failure scenarios to test system resilience and verify fallback mechanisms
  */
-test.describe('Resilience Drills', () => {
+test.describe('@Display @Resilience Resilience Drills', () => {
   let chaosHelper: RealtimeChaosHelper;
 
   test.beforeEach(async ({ page }) => {
@@ -211,7 +211,7 @@ test.describe('Resilience Drills', () => {
   });
 });
 
-test.describe('Resilience Drill Verification', () => {
+test.describe('@Display @Resilience Resilience Drill Verification', () => {
   test('Verify audit logging during drills', async ({ page }) => {
     console.log('Starting Audit Logging Verification');
 

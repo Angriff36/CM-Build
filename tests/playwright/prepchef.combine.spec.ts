@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { RealtimeChaosHelper } from './helpers/realtimeChaos';
 
-test.describe('PrepChef Task Combine Flows', () => {
+test.describe('@PrepChef PrepChef Task Combine Flows', () => {
   let chaosHelper: RealtimeChaosHelper;
 
   test.beforeEach(async ({ page }) => {

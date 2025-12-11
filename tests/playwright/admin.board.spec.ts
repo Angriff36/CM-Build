@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { RealtimeChaosHelper } from './helpers/realtimeChaos';
 
-test.describe('Admin Task Board', () => {
+test.describe('@AdminCRM Admin Task Board', () => {
   let chaosHelper: RealtimeChaosHelper;
 
   test.beforeEach(async ({ page }) => {
