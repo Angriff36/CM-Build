@@ -6,6 +6,7 @@ import { createClient } from '@caterkingapp/supabase/client';
 import { useTasks } from '@caterkingapp/shared/hooks/useTasks';
 import { TaskFilters } from './TaskFilters';
 import { TaskRow } from './TaskRow';
+import { CombinationSuggestion } from './CombinationSuggestion';
 
 interface Task {
   id: string;
@@ -28,6 +29,7 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
     eventId,
   });
   const [userId, setUserId] = useState<string | null>(null);
+  const [companyId, setCompanyId] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
   const supabase = createClient();
@@ -38,6 +40,7 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
         data: { user },
       } = await supabase.auth.getUser();
       setUserId(user?.id || null);
+      setCompanyId(user?.user_metadata?.company_id || null);
     };
     getUser();
   }, [supabase]);
@@ -55,6 +58,25 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
       supabase.removeChannel(channel);
     };
   }, [supabase, queryClient]);
+
+  // Realtime for suggestions
+  useEffect(() => {
+    if (!companyId) return;
+    const channel = supabase
+      .channel(`company:${companyId}:task_similarity_suggestions`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'task_similarity_suggestions' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['combinationSuggestions'] });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [supabase, queryClient, companyId]);
 
   const { data: tasks = [], isLoading, error } = useTasks(filters);
 
@@ -101,6 +123,8 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
       </header>
 
       <TaskFilters onFilterChange={setFilters} initialFilters={filters} />
+
+      {companyId && <CombinationSuggestion companyId={companyId} />}
 
       {isLoading ? (
         <div className="text-center py-8" role="status" aria-live="polite">
