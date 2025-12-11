@@ -1,63 +1,63 @@
 <!-- anchor: iteration-4-plan -->
 
-### Iteration 4: UI Implementation
+### Iteration 4: Task Consolidation & Advanced Features
 
 - **Iteration ID:** `I4`
-- **Goal:** Develop full UI for PrepChef, Admin CRM, and Display apps with responsive design.
-- **Prerequisites:** I3
+- **Goal:** Implement task consolidation heuristics, advanced filtering, and enhanced user experience
+- **Prerequisites:** `I3`
 - **Tasks:**
   - **Task 4.1:**
     - **Task ID:** `I4.T1`
-    - **Description:** Complete PrepChef mobile UI with task list, filters, and recipe drawer.
-    - **Agent Type Hint:** FrontendAgent
-    - **Inputs:** UI requirements
-    - **Input Files:** libs/ui/src/components/
-    - **Target Files:** apps/prepchef/app/tasks/page.tsx, apps/prepchef/components/FilterSheet.tsx
-    - **Deliverables:** Full PrepChef task dashboard.
-    - **Acceptance Criteria:** UI supports claiming, filtering, and recipe reference.
-    - **Dependencies:** []
+    - **Description:** Implement task similarity heuristic matching engine
+    - **Agent Type Hint:** `BackendAgent`
+    - **Inputs:** Heuristic requirements, task consolidation specifications
+    - **Input Files**: Task data models, similarity algorithms
+    - **Target Files:** `supabase/functions/task_heuristics/index.ts`, `libs/shared/src/heuristics/taskMatcher.ts`
+    - **Deliverables:** Heuristic engine for detecting similar tasks
+    - **Acceptance Criteria:** Engine identifies similar tasks based on ingredients, units, and methods with configurable thresholds
+    - **Dependencies:** `I2.T2`
     - **Parallelizable:** Yes
   - **Task 4.2:**
     - **Task ID:** `I4.T2`
-    - **Description:** Build Admin CRM with event management and staff assignment.
-    - **Agent Type Hint:** FrontendAgent
-    - **Inputs:** UI requirements
-    - **Input Files:** libs/ui/src/components/
-    - **Target Files:** apps/admin-crm/app/dashboard/page.tsx, apps/admin-crm/components/EventForm.tsx
-    - **Deliverables:** Admin dashboard UI.
-    - **Acceptance Criteria:** UI allows event creation and staff management.
-    - **Dependencies:** []
-    - **Parallelizable:** Yes
+    - **Description:** Create task combination suggestion UI
+    - **Agent Type Hint:** `FrontendAgent`
+    - **Inputs:** Heuristic engine results, UI requirements
+    - **Input Files**: Heuristic engine API, UI components
+    - **Target Files:** `apps/prepchef/components/CombineSuggestions.tsx`, `apps/prepchef/components/SuggestionCard.tsx`
+    - **Deliverables:** UI for displaying and acting on task combination suggestions
+    - **Acceptance Criteria:** Users can view suggested combinations, accept or reject suggestions, see breakdown of combined tasks
+    - **Dependencies:** `I4.T1`, `I2.T3`
+    - **Parallelizable:** No
   - **Task 4.3:**
     - **Task ID:** `I4.T3`
-    - **Description:** Implement Display kiosk app with passive task monitoring.
-    - **Agent Type Hint:** FrontendAgent
-    - **Inputs:** UI requirements
-    - **Input Files:** libs/ui/src/components/
-    - **Target Files:** apps/display/app/page.tsx
-    - **Deliverables:** Kiosk display UI.
-    - **Acceptance Criteria:** UI shows aggregated statuses and updates passively.
-    - **Dependencies:** []
+    - **Description:** Implement advanced filtering and search functionality
+    - **Agent Type Hint:** `FrontendAgent`
+    - **Inputs:** Filtering requirements, task data
+    - **Input Files**: Task components, data models
+    - **Target Files:** `apps/prepchef/components/FilterPanel.tsx`, `apps/prepchef/components/SearchBar.tsx`, `libs/shared/src/hooks/useTaskFilters.ts`
+    - **Deliverables:** Advanced filtering system with multiple criteria
+    - **Acceptance Criteria:** Users can filter by event, station, status, user, priority; search functionality works across task attributes
+    - **Dependencies:** `I2.T3`
     - **Parallelizable:** Yes
   - **Task 4.4:**
     - **Task ID:** `I4.T4`
-    - **Description:** Add CaterKing lightweight app for smaller teams.
-    - **Agent Type Hint:** FrontendAgent
-    - **Inputs:** UI requirements
-    - **Input Files:** libs/ui/src/components/
-    - **Target Files:** apps/caterking/app/tasks/page.tsx
-    - **Deliverables:** Simplified task app.
-    - **Acceptance Criteria:** UI provides essential task functions.
-    - **Dependencies:** []
+    - **Description:** Add undo functionality for task operations
+    - **Agent Type Hint:** `BackendAgent`
+    - **Inputs:** Undo requirements, task state management
+    - **Input Files**: Task API endpoints, state models
+    - **Target Files:** `apps/prepchef/app/api/tasks/[id]/undo/route.ts`, `libs/shared/src/undo/undoManager.ts`, `apps/prepchef/components/UndoToast.tsx`
+    - **Deliverables:** Undo system with token-based reversal
+    - **Acceptance Criteria:** Users can undo claim/complete operations within time window, state is properly restored
+    - **Dependencies:** `I2.T2`, `I2.T6`
     - **Parallelizable:** Yes
   - **Task 4.5:**
     - **Task ID:** `I4.T5`
-    - **Description:** Integrate feature flags across apps for controlled features.
-    - **Agent Type Hint:** FrontendAgent
-    - **Inputs:** Technology Stack
-    - **Input Files:** []
-    - **Target Files:** libs/shared/src/flags.ts
-    - **Deliverables:** Flag evaluation in UI.
-    - **Acceptance Criteria:** Flags toggle UI elements.
-    - **Dependencies:** []
+    - **Description:** Implement presence tracking and device health monitoring
+    - **Agent Type Hint:** `BackendAgent`
+    - **Inputs:** Presence requirements, device monitoring needs
+    - **Input Files**: Realtime configuration, user models
+    - **Target Files:** `libs/shared/src/presence/presenceTracker.ts`, `supabase/functions/presence_heartbeat/index.ts`
+    - **Deliverables:** Presence tracking system for devices and users
+    - **Acceptance Criteria:** Device presence is tracked, offline devices are detected, health metrics are collected
+    - **Dependencies:** `I2.T4`
     - **Parallelizable:** Yes

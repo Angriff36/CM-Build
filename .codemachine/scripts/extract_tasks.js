@@ -4,81 +4,62 @@ const fs = require('fs');
 const path = require('path');
 
 function extractIterationGoal(content) {
-  const idMatch = content.match(/- \*\*Iteration ID:\*\*\s+`([^`]+)`/);
+  const idMatch = content.match(/\*\s+\*\*Iteration ID:\*\*\s+`([^`]+)`/);
   const iterationId = idMatch ? idMatch[1] : '';
-  const goalMatch = content.match(/- \*\*Goal:\*\*\s+(.+?)(?=\n- \*\*|\n\n)/s);
+  const goalMatch = content.match(/\*\s+\*\*Goal:\*\*\s+(.+?)(?=\n\*|\n\n)/s);
   const iterationGoal = goalMatch ? goalMatch[1].trim() : '';
   return { iterationId, iterationGoal };
 }
 
 function parseTask(taskText, iterationId, iterationGoal) {
-    const task = {
-        task_id: "",
-        iteration_id: iterationId,
-        iteration_goal: iterationGoal,
-        description: "",
-        agent_type_hint: "",
-        inputs: "",
-        target_files: [],
-        input_files: [],
-        deliverables: "",
-        acceptance_criteria: "",
-        dependencies: [],
-        parallelizable: false,
-        done: false
-    };
+  const task = {
+    task_id: '',
+    iteration_id: iterationId,
+    iteration_goal: iterationGoal,
+    description: '',
+    agent_type_hint: '',
+    inputs: '',
+    target_files: [],
+    input_files: [],
+    deliverables: '',
+    acceptance_criteria: '',
+    dependencies: [],
+    parallelizable: false,
+    done: false,
+  };
 
-    const idMatch = taskText.match(/- \*\*Task ID:\*\*\s+`([^`]+)`/);
-    if (idMatch) task.task_id = idMatch[1];
+  const idMatch = taskText.match(/\*\s+\*\*Task ID:\*\*\s+`([^`]+)`/);
+  if (idMatch) task.task_id = idMatch[1];
 
-    const descMatch = taskText.match(/- \*\*Description:\*\*\s+(.+?)(?=\n\s+- \*\*|\n- \*\*)/s);
-    if (descMatch) task.description = descMatch[1].trim();
+  const descMatch = taskText.match(
+    /\*\s+\*\*Description:\*\*\s+(.+?)(?=\n\s+\*\s+\*\*|\n\*\s+\*\*)/s,
+  );
+  if (descMatch) task.description = descMatch[1].trim();
 
-    const agentMatch = taskText.match(/- \*\*Agent Type Hint:\*\*\s+`([^`]+)`/);
-    if (agentMatch) task.agent_type_hint = agentMatch[1];
+  const agentMatch = taskText.match(/\*\s+\*\*Agent Type Hint:\*\*\s+`([^`]+)`/);
+  if (agentMatch) task.agent_type_hint = agentMatch[1];
 
-    const inputsMatch = taskText.match(/- \*\*Inputs:\*\*\s+(.+?)(?=\n\s+- \*\*|\n- \*\*)/s);
-    if (inputsMatch) task.inputs = inputsMatch[1].trim();
+  const inputsMatch = taskText.match(/\*\s+\*\*Inputs:\*\*\s+(.+?)(?=\n\s+\*\s+\*\*|\n\*\s+\*\*)/s);
+  if (inputsMatch) task.inputs = inputsMatch[1].trim();
 
-    const inputFilesMatch = taskText.match(/- \*\*Input Files:\*\*\s*(\[.+?\])/s);
-    if (inputFilesMatch) {
-        try {
-            task.input_files = JSON.parse(inputFilesMatch[1].replace(/\n/g, '').replace(/\s+/g, ' '));
-        } catch (e) {
-            const files = inputFilesMatch[1].match(/"([^"]+)"/g);
-            task.input_files = files ? files.map(f => f.replace(/"/g, '')) : [];
-        }
+  const inputFilesMatch = taskText.match(/\*\s+\*\*Input Files:\*\*\s+(\[.+?\])/s);
+  if (inputFilesMatch) {
+    try {
+      task.input_files = JSON.parse(inputFilesMatch[1].replace(/\n/g, '').replace(/\s+/g, ' '));
+    } catch (e) {
+      const files = inputFilesMatch[1].match(/"([^"]+)"/g);
+      task.input_files = files ? files.map((f) => f.replace(/"/g, '')) : [];
     }
+  }
 
-    const targetFilesMatch = taskText.match(/- \*\*Target Files:\*\*\s*(.+)$/m);
-    if (targetFilesMatch) {
-        task.target_files = targetFilesMatch[1].split(',').map(s => s.trim()).filter(s => s);
+  const targetFilesMatch = taskText.match(/\*\s+\*\*Target Files:\*\*\s+(\[.+?\])/s);
+  if (targetFilesMatch) {
+    try {
+      task.target_files = JSON.parse(targetFilesMatch[1].replace(/\n/g, '').replace(/\s+/g, ' '));
+    } catch (e) {
+      const files = targetFilesMatch[1].match(/"([^"]+)"/g);
+      task.target_files = files ? files.map((f) => f.replace(/"/g, '')) : [];
     }
-
-    const delivMatch = taskText.match(/- \*\*Deliverables:\*\*\s+(.+?)(?=\n\s+- \*\*|\n- \*\*)/s);
-    if (delivMatch) task.deliverables = delivMatch[1].trim();
-
-    const acceptMatch = taskText.match(/- \*\*Acceptance Criteria:\*\*\s+(.+?)(?=\n\s+- \*\*|\n- \*\*)/s);
-    if (acceptMatch) task.acceptance_criteria = acceptMatch[1].trim();
-
-    const depMatch = taskText.match(/- \*\*Dependencies:\*\*\s+(.+?)(?=\n\s+- \*\*|\n- \*\*|\n\n|$)/s);
-    if (depMatch) {
-        const depText = depMatch[1].trim();
-        if (depText.toLowerCase() === "none" || depText === "[]") {
-            task.dependencies = [];
-        } else {
-            const deps = depText.match(/`([^`]+)`/g);
-            task.dependencies = deps ? deps.map(d => d.replace(/`/g, '')) : [];
-        }
-    }
-
-    const parallelMatch = taskText.match(/- \*\*Parallelizable:\*\*\s+(Yes|No)/i);
-    if (parallelMatch) task.parallelizable = parallelMatch[1].toLowerCase() === "yes";
-
-    return task;
-}
-
-
   }
 
   const delivMatch = taskText.match(
@@ -113,7 +94,7 @@ function parseTask(taskText, iterationId, iterationGoal) {
 function parseIterationFile(filepath) {
   const content = fs.readFileSync(filepath, 'utf-8');
   const { iterationId, iterationGoal } = extractIterationGoal(content);
-  const taskPattern = / - \*\*Task \d+\.\d+:\*\*(.+?)(?= - \*\*Task \d+\.\d+:\*\*|$)/gs;
+  const taskPattern = /<!-- anchor: task-[^>]+ -->(.+?)(?=<!-- anchor: task-|$)/gs;
   const taskMatches = [...content.matchAll(taskPattern)];
 
   const tasks = [];
@@ -134,7 +115,7 @@ function createManifest(outputDir, taskFiles) {
 
   const manifestPath = path.join(outputDir, 'tasks_manifest.json');
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
-    console.log(`✓ Created manifest: ${manifestPath}`);
+  console.log(`✓ Created manifest: $`);
 }
 
 function main() {
@@ -152,7 +133,7 @@ function main() {
     .map((f) => path.join(planDir, f));
 
   if (iterationFiles.length === 0) {
-    console.log('? No iteration files found in .codemachine/artifacts/plan');
+    console.log('⚠ No iteration files found in .codemachine/artifacts/plan');
     return;
   }
 
@@ -170,7 +151,7 @@ function main() {
   }
 
   createManifest(outputDir, taskFiles);
-    console.log(`✓ Conversion complete! Output is in ${outputDir}`);
+  console.log(`✓ Conversion complete! Output is in $`);
 }
 
 if (require.main === module) main();

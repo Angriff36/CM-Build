@@ -2,38 +2,51 @@
 
 ## 5. Verification and Integration Strategy
 
-- **Testing Levels:** Unit tests for shared libraries with Vitest achieving ≥80% coverage; integration tests for API routes and Supabase RPCs; E2E tests with Playwright covering task claim/complete, recipe access, admin assignment, and kiosk display flows.
-- **CI/CD:** GitHub Actions triggers Turbo builds on PRs; Supabase migrations run in CI with dry-run validation; Vercel deploys on main merges with Doppler secret injection.
-- **Code Quality Gates:** Lint, typecheck, and test suites must pass; Storybook visual regressions reviewed; Supabase types regenerated and committed.
-- **Artifact Validation:** Diagrams render via PlantUML; OpenAPI specs linted; JSON schemas validated against samples; migrations tested with RLS impersonation.
+- **Testing Levels:**
+  - Unit tests for domain models, validators, and utility functions (Vitest)
+  - Integration tests for API endpoints and database operations (Supabase test environment)
+  - E2E tests for critical user journeys (Playwright)
+  - Visual regression tests for UI components (Storybook/Chromatic)
+- **CI/CD:**
+  - GitHub Actions workflow running lint, typecheck, and tests on all PRs
+  - Automated deployment to staging environment after merge to main
+  - Production deployment requires manual approval with feature flag validation
+  - Rollback procedures with Vercel deployments and Supabase PITR
+- **Code Quality Gates:**
+  - ESLint and Prettier configuration with custom rules for the monorepo
+  - TypeScript strict mode with no implicit any types
+  - Minimum 80% test coverage for shared libraries
+  - Storybook accessibility tests (axe) must pass for all UI components
+- **Artifact Validation:**
+  - PlantUML diagrams must render without syntax errors
+  - OpenAPI specifications must validate against OpenAPI 3.0 schema
+  - Database migrations must include both forward and rollback scripts
+  - Generated TypeScript types must be kept in sync with database schema
 
 ## 6. Glossary
 
-- **ADR:** Architecture Decision Record for documenting choices.
-- **API Route:** Next.js server action handling requests.
-- **Audit Log:** Table tracking changes for compliance.
-- **Channel:** Supabase realtime topic for broadcasts.
-- **Claim:** Action to assign a task to a user.
-- **Combine:** Merge similar tasks with user approval.
-- **Company:** Tenant entity for multi-tenancy.
-- **ERD:** Entity Relationship Diagram.
-- **Event:** Catering engagement grouping tasks.
-- **Feature Flag:** Toggle for controlled feature rollout.
-- **Heuristic:** Algorithm for task similarity detection.
-- **JSONB:** Flexible JSON storage in Postgres.
-- **Kiosk:** Passive display for status monitoring.
-- **Method:** Procedural guide with media.
-- **Monorepo:** Single repository for all packages.
-- **OpenAPI:** API contract specification.
-- **Optimistic UI:** Immediate UI update before server confirmation.
-- **PWA:** Progressive Web App.
-- **Recipe:** Knowledge base entry with ingredients/steps.
-- **Realtime:** Live updates via websockets.
-- **RLS:** Row-Level Security.
-- **RPC:** Stored procedure in Supabase.
-- **Sequence Diagram:** Interaction flow diagram.
-- **Supabase:** Backend-as-a-Service platform.
-- **Task:** Prep item with status and assignment.
-- **Undo:** Revert action within time window.
-- **Vercel:** Hosting platform for Next.js.
-- **Zod:** Schema validation library.
+- **PWA:** Progressive Web App - A web application that can be installed on mobile devices and works offline
+- **RLS:** Row-Level Security - PostgreSQL feature for enforcing data access rules at the database row level
+- **RPC:** Remote Procedure Call - A function call that executes on the database server
+- **JWT:** JSON Web Token - A compact, URL-safe means of representing claims to be transferred between parties
+- **Supabase:** Open-source Firebase alternative providing database, auth, storage, and realtime services
+- **Turbo:** Monorepo build system for JavaScript/TypeScript projects
+- **pnpm:** Package manager for JavaScript with efficient dependency handling
+- **Next.js:** React framework for building server-side rendered and static web applications
+- **React Query:** Library for managing server state in React applications
+- **Tailwind CSS:** Utility-first CSS framework for rapid UI development
+- **ShadCN UI:** Collection of reusable UI components built with Radix UI and Tailwind CSS
+- **Vercel:** Platform for deploying frontend applications with edge computing capabilities
+- **Doppler:** Secrets management platform for secure configuration handling
+- **Flagsmith:** Feature flag management platform for controlled feature rollouts
+- **OpenTelemetry:** Observability framework for generating and collecting telemetry data
+- **PlantUML:** Tool for generating UML diagrams from text-based descriptions
+- **OpenAPI:** Specification for defining RESTful APIs
+- **Zod:** TypeScript-first schema declaration and validation library
+- **Playwright:** End-to-end testing framework for web applications
+- **Vitest:** Fast unit testing framework with TypeScript support
+- **Storybook:** Development environment for UI components in isolation
+- **Chromatic:** Visual testing platform for Storybook components
+- **JSONB:** JSON binary data type in PostgreSQL for storing structured data
+- **Edge Functions:** Serverless functions that run at the network edge for low latency
+- **Realtime:** WebSocket-based communication for instant data synchronization

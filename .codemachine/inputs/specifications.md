@@ -36,19 +36,19 @@ Highlights and suggests similar tasks as potential combinations to users (not au
 
 Users can opt-in to combine suggested tasks
 
-Task similarity uses advanced heuristic matching beyond simple keyword matching (Path B):
+Task similarity uses rule-based heuristic matching (Path A):
 
-Fuzzy text comparison (Levenshtein distance or similar algorithms)
+Keyword and phrase matching with configurable similarity thresholds
 
-Ingredient normalization and semantic equivalence (e.g., "diced onion" ≈ "onion, diced")
+Basic ingredient normalization using predefined equivalence mappings
 
-Unit-aware quantity matching (2 cups ≈ 16 oz when applicable)
+Simple unit-aware quantity matching for common kitchen units
 
-Context-aware bundling logic considering prep method, timing, and equipment
+Context consideration for prep method and basic workflow logic
 
 Requires user confirmation before merging to prevent false positives
 
-Auto-calculates unit conversions and scaling across volume/weight systems when tasks are combined
+Auto-calculates unit conversions using static conversion tables for standard kitchen units when tasks are combined
 
 Outputs standardized instructions for the combined task
 
@@ -78,11 +78,21 @@ Can include video tutorials and step-by-step instructions
 
 Designed for training, onboarding, and standardization
 
-3.6 Permissions / Roles
+3.6 Permissions / Roles (Path A - Minimal Roles)
 
 Roles: Staff, Manager, Event Lead, Owner
 
-Controls access to task assignment, editing data, and event visibility
+Role-based permissions mapped to JWT claims and enforced via RLS:
+
+**Staff:** Can view tasks, claim/complete own tasks, view recipes and methods. Cannot assign tasks or edit recipes.
+
+**Manager:** Can view all tasks, assign tasks to staff, view events and staff lists, edit recipes and methods. Cannot manage user roles.
+
+**Event Lead:** Can view tasks for assigned events, manually assign tasks within their events, view event details. Cannot edit recipes or manage users.
+
+**Owner:** Can manage all users and roles, edit company settings, upload and manage recipes/methods, view all events and tasks, manage billing and integrations.
+
+All permissions enforced at database level via RLS policies; no role-based UI hiding without backend enforcement.
 
 3.7 Platform Support
 
@@ -157,6 +167,15 @@ Detail view showing tasks, staff, methods, recipes
 Administrative controls for roles, recipes, uploads
 
 6. Non-Functional Requirements
+
+Unit Conversion (Path A)
+
+Supports common kitchen units: cups, tablespoons, teaspoons, ounces, grams, pounds, kilograms, milliliters, liters
+
+Uses static conversion tables for standard conversions
+
+Incompatible unit combinations (e.g., volume + weight without ingredient context) are rejected with user feedback
+
 Real-Time Architecture
 
 Live updates across all user devices
@@ -344,13 +363,15 @@ Real-time Integration
 
 Supabase Realtime broadcasts DB changes to all connected clients instantly
 
-Real-time channels follow naming convention: company:{company_id}:{entity_type}:{optional_app_context}
-Examples: company:123:tasks, company:123:recipes, company:123:staffing:payroll
+Real-time channels use simple company-scoped naming convention (Path A): company:{company_id}:{entity_type}
+Examples: company:123:tasks, company:123:recipes, company:123:users
 All subscriptions scoped by company_id for tenant isolation
 
 Third-party apps subscribe to relevant channels and trigger local state updates via their own React Query invalidation
 
 Cross-app awareness enabled through shared event schemas published to Realtime broadcasts
+
+Channel subscription limits enforced per company to prevent saturation; graceful degradation to polling when limits are approached
 
 Infrastructure Goals
 
@@ -561,15 +582,21 @@ Storage
 
 Supabase Storage (media, images, video)
 
-Media Standards
+Media Standards (Path A - Basic Upload)
 
-Managed transcoding via Supabase Functions with loose encoding standards
+Supported media types: JPEG, PNG, MP4, WebM (for video)
 
-No strict codec enforcement or maximum file size limits
+File size limits: Images max 10MB, Videos max 100MB per file
 
-Thumbnail generation recommended but not mandatory
+Direct upload to Supabase Storage with minimal processing
 
-Minimal validation on upload
+Thumbnail generation optional; not required for MVP
+
+No transcoding required; stored in original format
+
+Basic file type validation on upload; MIME type checking enforced
+
+Media URLs stored in Supabase Storage with signed URL access scoped by company_id
 
 Secrets Management
 

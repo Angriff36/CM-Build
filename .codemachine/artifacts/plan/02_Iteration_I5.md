@@ -1,63 +1,63 @@
 <!-- anchor: iteration-5-plan -->
 
-### Iteration 5: Integration & Verification
+### Iteration 5: Polish, Testing & Optimization
 
 - **Iteration ID:** `I5`
-- **Goal:** Integrate all components, add testing, and prepare for deployment.
-- **Prerequisites:** I4
+- **Goal:** Complete testing suite, optimize performance, implement final UI polish, and prepare for production deployment
+- **Prerequisites:** `I4`
 - **Tasks:**
   - **Task 5.1:**
     - **Task ID:** `I5.T1`
-    - **Description:** Implement media upload and transcoding pipeline.
-    - **Agent Type Hint:** BackendAgent
-    - **Inputs:** Media requirements
-    - **Input Files:** []
-    - **Target Files:** supabase/functions/transcode/index.ts, apps/admin-crm/app/api/media/sign/route.ts
-    - **Deliverables:** Media handling system.
-    - **Acceptance Criteria:** Uploads process and provide access to media.
-    - **Dependencies:** []
+    - **Description:** Implement comprehensive testing suite
+    - **Agent Type Hint:** `TestingAgent`
+    - **Inputs:** Application features, testing requirements
+    - **Input Files**: All application code
+    - **Target Files:** `tests/e2e/task-management.spec.ts`, `tests/integration/realtime.spec.ts`, `tests/unit/taskModels.test.ts`
+    - **Deliverables:** Complete test coverage for all major features
+    - **Acceptance Criteria:** Unit tests cover domain logic, integration tests cover API endpoints, E2E tests cover critical user journeys
+    - **Dependencies:** All previous tasks
     - **Parallelizable:** Yes
   - **Task 5.2:**
     - **Task ID:** `I5.T2`
-    - **Description:** Add unit and integration tests for shared libs and APIs.
-    - **Agent Type Hint:** QA Agent
-    - **Inputs:** Testing Stack
-    - **Input Files:** []
-    - **Target Files:** libs/shared/src/index.test.ts, tests/e2e/task_claim.spec.ts
-    - **Deliverables:** Test suites.
-    - **Acceptance Criteria:** Tests pass and cover key flows.
-    - **Dependencies:** []
+    - **Description:** Optimize performance and implement caching strategies
+    - **Agent Type Hint:** `PerformanceAgent`
+    - **Inputs:** Performance requirements, application metrics
+    - **Input Files**: React Query configuration, API routes
+    - **Target Files:** `libs/shared/src/cache/cacheConfig.ts`, `apps/prepchef/app/cache.tsx`, performance monitoring setup
+    - **Deliverables:** Optimized application with effective caching
+    - **Acceptance Criteria:** Page load times under 3 seconds, API responses under 200ms, effective cache invalidation
+    - **Dependencies:** `I5.T1`
     - **Parallelizable:** Yes
   - **Task 5.3:**
     - **Task ID:** `I5.T3`
-    - **Description:** Set up CI/CD with Turbo and Supabase migrations.
-    - **Agent Type Hint:** DevOps Agent
-    - **Inputs:** CI/CD section
-    - **Input Files:** []
-    - **Target Files:** .github/workflows/ci.yml
-    - **Deliverables:** CI pipeline.
-    - **Acceptance Criteria:** Builds and deploys successfully.
-    - **Dependencies:** []
+    - **Description:** Implement final UI polish and accessibility improvements
+    - **Agent Type Hint:** `FrontendAgent`
+    - **Inputs:** UI requirements, accessibility guidelines
+    - **Input Files**: All UI components
+    - **Target Files:** Updated UI components with polish, accessibility improvements, responsive design fixes
+    - **Deliverables:** Polished user interface with full accessibility support
+    - **Acceptance Criteria:** WCAG 2.1 AA compliance, responsive design works across all devices, micro-interactions are smooth
+    - **Dependencies:** `I5.T2`
     - **Parallelizable:** Yes
   - **Task 5.4:**
     - **Task ID:** `I5.T4`
-    - **Description:** Implement observability and monitoring.
-    - **Agent Type Hint:** BackendAgent
-    - **Inputs:** Observability section
-    - **Input Files:** []
-    - **Target Files:** libs/shared/src/observability.ts
-    - **Deliverables:** Logging and metrics.
-    - **Acceptance Criteria:** Captures telemetry for operations.
-    - **Dependencies:** []
+    - **Description:** Set up production deployment pipeline and monitoring
+    - **Agent Type Hint:** `DevOpsAgent`
+    - **Inputs:** Deployment requirements, monitoring needs
+    - **Input Files**: Application code, infrastructure configuration
+    - **Target Files:** `.github/workflows/deploy.yml`, monitoring dashboard configuration, production environment setup
+    - **Deliverables:** Production-ready deployment pipeline with monitoring
+    - **Acceptance Criteria:** Automated deployment to Vercel, monitoring alerts configured, rollback procedures documented
+    - **Dependencies:** `I5.T3`
     - **Parallelizable:** Yes
   - **Task 5.5:**
     - **Task ID:** `I5.T5`
-    - **Description:** Final integration testing and bug fixes.
-    - **Agent Type Hint:** QA Agent
-    - **Inputs:** Testing Levels
-    - **Input Files:** []
-    - **Target Files:** tests/e2e/full_flow.spec.ts
-    - **Deliverables:** Verified system.
-    - **Acceptance Criteria:** All acceptance criteria met.
-    - **Dependencies:** [I5.T1, I5.T2, I5.T3, I5.T4]
-    - **Parallelizable:** No
+    - **Description:** Create final documentation and user guides
+    - **Agent Type Hint:** `DocumentationAgent`
+    - **Inputs:** Complete application features, user requirements
+    - **Input Files**: All application code and documentation
+    - **Target Files:** `README.md`, `docs/user-guide.md`, `docs/admin-guide.md`, `docs/api/README.md`
+    - **Deliverables:** Comprehensive documentation for users and developers
+    - **Acceptance Criteria:** Documentation covers all features, API reference is complete, user guides are clear and helpful
+    - **Dependencies:** `I5.T4`
+    - **Parallelizable:** Yes
