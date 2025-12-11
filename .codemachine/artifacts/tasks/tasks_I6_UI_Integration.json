@@ -1,0 +1,202 @@
+{
+  "iteration": "I6",
+  "title": "UI Integration & Full System Testing",
+  "description": "Complete remaining UI components and integrate them with backend APIs. Implement comprehensive validation and testing of the full system end-to-end.",
+  "tasks": [
+    {
+      "id": "I6.T1",
+      "title": "Task Dashboard Component",
+      "description": "Build the main task list view component for PrepChef with real-time filtering, claiming, and status updates",
+      "acceptance_criteria": [
+        "Component renders task list with status buttons (unclaimed/claimed/completed)",
+        "Clicking claim/complete updates task state via API and reflects in realtime",
+        "Tasks filter by event, status, and search",
+        "Integrates with useTasks hook from libs/shared",
+        "Unit and integration tests with >80% coverage",
+        "Accessibility (WCAG 2.1 AA) and gloves-friendly UI (large tap targets)",
+        "TypeScript strict mode with no implicit any"
+      ],
+      "dependencies": ["I2.T3"],
+      "parallelizable": true,
+      "deliverables": [
+        "apps/prepchef/components/TaskDashboard.tsx",
+        "apps/prepchef/components/TaskRow.tsx",
+        "apps/prepchef/components/TaskFilters.tsx",
+        "apps/prepchef/app/tasks/page.tsx",
+        "__tests__/TaskDashboard.test.tsx",
+        "apps/prepchef/README.md (updated)"
+      ]
+    },
+    {
+      "id": "I6.T2",
+      "title": "Recipe Viewer Panel Component",
+      "description": "Implement slide-out drawer component for viewing recipes, methods, and media while working on tasks",
+      "acceptance_criteria": [
+        "Drawer opens on task click without full page navigation",
+        "Displays recipe name, ingredients (scaled if combined task), steps, images, video",
+        "Close button always visible and accessible",
+        "Supports markdown rendering for instructions",
+        "Video playback with fallback for unsupported formats",
+        "Unit tests for recipe data loading and media rendering",
+        "Accessibility: keyboard navigation, focus trapping"
+      ],
+      "dependencies": ["I6.T1", "I3.T2"],
+      "parallelizable": true,
+      "deliverables": [
+        "apps/prepchef/components/RecipeViewer.tsx",
+        "apps/prepchef/components/MediaGallery.tsx",
+        "libs/shared/src/hooks/useRecipe.ts",
+        "__tests__/RecipeViewer.test.tsx"
+      ]
+    },
+    {
+      "id": "I6.T3",
+      "title": "Task Combination Suggestion UI",
+      "description": "Implement UI for accepting/rejecting task combination suggestions from heuristics engine",
+      "acceptance_criteria": [
+        "Suggestions appear as dismissible alerts or modal prompts",
+        "Shows side-by-side comparison of tasks to combine",
+        "Accept/reject buttons trigger API calls",
+        "Acceptance updates task state and invalidates React Query cache",
+        "Toast notifications on success/error",
+        "Telemetry logs suggestion acceptance/rejection with timestamps",
+        "Unit tests for suggestion logic"
+      ],
+      "dependencies": ["I4.T1", "I6.T1"],
+      "parallelizable": true,
+      "deliverables": [
+        "apps/prepchef/components/CombinationSuggestion.tsx",
+        "libs/shared/src/hooks/useCombinationSuggestions.ts",
+        "__tests__/CombinationSuggestion.test.tsx"
+      ]
+    },
+    {
+      "id": "I6.T4",
+      "title": "Display Kiosk App Implementation",
+      "description": "Build the wall-mounted passive status display showing aggregated task progress",
+      "acceptance_criteria": [
+        "Displays task counts (available/claimed/completed) with 15-second SLA",
+        "Shows who is working on what via realtime updates",
+        "Auto-refresh every 15 seconds without user interaction",
+        "Large, readable fonts (min 32px)",
+        "Responsive for 4k displays",
+        "No interactive controls (passive display only)",
+        "Integration tests verifying realtime updates within SLA"
+      ],
+      "dependencies": ["I2.T3", "I3.T3"],
+      "parallelizable": true,
+      "deliverables": [
+        "apps/display/app/page.tsx",
+        "apps/display/components/StatusSummary.tsx",
+        "apps/display/components/RealtimeUpdater.tsx",
+        "__tests__/Display.integration.test.tsx"
+      ]
+    },
+    {
+      "id": "I6.T5",
+      "title": "Admin CRM Interface",
+      "description": "Implement event management, staff assignment, and recipe editing views for business owners/managers",
+      "acceptance_criteria": [
+        "Event list view with create/edit/delete actions",
+        "Staff assignment drag-and-drop interface for tasks",
+        "Recipe editor with ingredient list and step builder",
+        "Media upload form with progress indicator",
+        "Role-based UI (owner vs manager vs event_lead)",
+        "Form validation and error messaging",
+        "Success/error toasts on CRUD operations",
+        "Unit tests for form handling and state management"
+      ],
+      "dependencies": ["I3.T2", "I6.T1"],
+      "parallelizable": true,
+      "deliverables": [
+        "apps/admin-crm/app/events/page.tsx",
+        "apps/admin-crm/app/staff/page.tsx",
+        "apps/admin-crm/app/recipes/[id]/page.tsx",
+        "apps/admin-crm/components/EventForm.tsx",
+        "apps/admin-crm/components/RecipeEditor.tsx",
+        "__tests__/AdminCRM.test.tsx"
+      ]
+    },
+    {
+      "id": "I6.T6",
+      "title": "Real-time Synchronization Integration",
+      "description": "Wire Supabase realtime subscriptions into all components for live updates",
+      "acceptance_criteria": [
+        "Supabase realtime channels subscribed in useEffect hooks",
+        "Channel naming follows convention: company:{company_id}:{entity_type}",
+        "Realtime updates trigger React Query cache invalidation",
+        "Fallback to polling on connection loss",
+        "OfflineBanner displays when realtime drops",
+        "Telemetry tracks connection status and channel subscriptions",
+        "Integration tests verify realtime updates flow through components"
+      ],
+      "dependencies": ["I6.T1", "I6.T2", "I6.T4"],
+      "parallelizable": false,
+      "deliverables": [
+        "libs/shared/src/hooks/useRealtimeSync.ts",
+        "libs/shared/src/utils/realtimeSubscriptions.ts",
+        "__tests__/RealtimeIntegration.integration.test.tsx"
+      ]
+    },
+    {
+      "id": "I6.T7",
+      "title": "End-to-End Integration Testing",
+      "description": "Build comprehensive E2E tests covering all user flows with Playwright",
+      "acceptance_criteria": [
+        "Test: Staff claims task → sees realtime update → completes → sees confirmation",
+        "Test: Manager assigns task → triggers notification → staff sees assignment",
+        "Test: Task combination suggestion → accept → verify merged task in list",
+        "Test: Recipe viewer opens → displays media → user can interact",
+        "Test: Offline fallback → browser loses connection → polling activates",
+        "Test: Admin uploads media → verifies storage bucket access",
+        "Test: Kiosk display updates → verifies 15-second SLA compliance",
+        "All tests pass with >95% success rate",
+        "Test execution time <5 minutes"
+      ],
+      "dependencies": ["I6.T1", "I6.T2", "I6.T3", "I6.T4", "I6.T5", "I6.T6"],
+      "parallelizable": false,
+      "deliverables": [
+        "tests/e2e/task-claim-complete.spec.ts",
+        "tests/e2e/task-combination.spec.ts",
+        "tests/e2e/recipe-viewer.spec.ts",
+        "tests/e2e/offline-fallback.spec.ts",
+        "tests/e2e/admin-workflows.spec.ts",
+        "tests/e2e/kiosk-realtime.spec.ts",
+        "playwright.config.ts (updated)"
+      ]
+    },
+    {
+      "id": "I6.T8",
+      "title": "Full System Validation & Performance Testing",
+      "description": "Run comprehensive validation suite covering type safety, performance, accessibility, and security",
+      "acceptance_criteria": [
+        "TypeScript strict mode: zero errors across all packages",
+        "ESLint: all rules pass, no suppressions",
+        "Lighthouse: mobile score >90, desktop score >95",
+        "Accessibility audit (axe): zero violations",
+        "Bundle size: prepchef <200KB (gzipped), admin-crm <250KB",
+        "API response time: <200ms for task operations",
+        "Realtime latency: <500ms from database change to UI update",
+        "Database query performance: task list load <100ms for 200 concurrent tasks",
+        "Security: all API routes validated with Zod, RLS policies enforced",
+        "No hardcoded secrets or environment-specific values",
+        "Documentation: README for each package, architecture diagrams current"
+      ],
+      "dependencies": ["I6.T7"],
+      "parallelizable": false,
+      "deliverables": [
+        "docs/testing/performance-benchmarks.md",
+        "docs/testing/accessibility-audit.md",
+        "docs/testing/security-checklist.md",
+        ".github/workflows/validation.yml",
+        "DEPLOYMENT.md (final checklist)"
+      ]
+    }
+  ],
+  "summary": {
+    "total_tasks": 8,
+    "estimated_effort_days": 10,
+    "critical_path": "I6.T1 → I6.T6 → I6.T7 → I6.T8",
+    "note": "This iteration completes the MVP with full UI, realtime integration, comprehensive testing, and validation. All components integrate with existing backend APIs generated in I1-I5."
+  }
+}
