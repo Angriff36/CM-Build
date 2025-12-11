@@ -6,6 +6,7 @@ interface OfflineBannerProps {
   telemetry?: {
     reconnectAttempts?: number;
     pollingInterval?: number;
+    mediaBacklog?: number;
   };
 }
 
@@ -22,10 +23,13 @@ export function OfflineBanner({ mode, lastSync, telemetry }: OfflineBannerProps)
     const syncInfo = lastSync
       ? ` Last sync: ${Math.floor((Date.now() - lastSync.getTime()) / 60000)} min ago.`
       : '';
+    const mediaInfo = telemetry?.mediaBacklog
+      ? ` Media backlog: ${telemetry.mediaBacklog} items queued.`
+      : '';
     if (isRealtime) {
-      return `Realtime connection lost. Switching to polling mode.${syncInfo}`;
+      return `Realtime connection lost. Switching to polling mode.${syncInfo}${mediaInfo}`;
     }
-    return `Offline mode active. Please check connection.${syncInfo}`;
+    return `Offline mode active. Please check connection.${syncInfo}${mediaInfo}`;
   };
 
   const bannerContent = (

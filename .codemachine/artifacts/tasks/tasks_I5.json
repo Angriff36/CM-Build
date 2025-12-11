@@ -102,7 +102,7 @@
     "acceptance_criteria": "Drills executed; issues logged + tracked; UI banners accessible; docs link to follow-up tickets.",
     "dependencies": ["I5.T1", "I5.T4"],
     "parallelizable": false,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I5.T6",
