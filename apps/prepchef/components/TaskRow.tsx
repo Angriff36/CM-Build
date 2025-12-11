@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@caterkingapp/ui';
+import { RecipeViewer } from './RecipeViewer';
 
 interface Task {
   id: string;
@@ -10,6 +11,7 @@ interface Task {
   priority: string;
   assigned_user_id: string | null;
   event_id: string | null;
+  recipe_id: string | null;
 }
 
 interface TaskRowProps {
@@ -21,6 +23,7 @@ interface TaskRowProps {
 }
 
 export function TaskRow({ task, userId, onClaim, onComplete, isLoading }: TaskRowProps) {
+  const [isRecipeOpen, setIsRecipeOpen] = useState(false);
   const canClaim = task.status === 'available';
   const canComplete = task.status === 'claimed' && task.assigned_user_id === userId;
 
@@ -51,6 +54,16 @@ export function TaskRow({ task, userId, onClaim, onComplete, isLoading }: TaskRo
           </div>
         </div>
         <div className="flex gap-2 ml-4" role="group" aria-label="Task actions">
+          {task.recipe_id && (
+            <Button
+              onClick={() => setIsRecipeOpen(true)}
+              className="h-12 px-6 text-base min-w-[80px]"
+              variant="outline"
+              aria-label={`View recipe for: ${task.name}`}
+            >
+              Recipe
+            </Button>
+          )}
           {canClaim && (
             <Button
               onClick={() => onClaim(task.id)}
@@ -75,6 +88,13 @@ export function TaskRow({ task, userId, onClaim, onComplete, isLoading }: TaskRo
           )}
         </div>
       </div>
+      {isRecipeOpen && task.recipe_id && (
+        <RecipeViewer
+          recipeId={task.recipe_id}
+          onClose={() => setIsRecipeOpen(false)}
+          taskQuantity={task.quantity}
+        />
+      )}
     </article>
   );
 }

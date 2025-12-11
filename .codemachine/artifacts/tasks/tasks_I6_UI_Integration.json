@@ -48,7 +48,8 @@
         "apps/prepchef/components/MediaGallery.tsx",
         "libs/shared/src/hooks/useRecipe.ts",
         "__tests__/RecipeViewer.test.tsx"
-      ]
+      ],
+      "done": true
     },
     {
       "id": "I6.T3",

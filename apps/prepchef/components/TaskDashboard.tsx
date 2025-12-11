@@ -16,6 +16,7 @@ interface Task {
   priority: string;
   assigned_user_id: string | null;
   event_id: string | null;
+  recipe_id: string | null;
 }
 
 interface TaskDashboardProps {

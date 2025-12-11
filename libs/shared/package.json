@@ -14,6 +14,8 @@
     "vitest": "^1.6.0"
   },
   "dependencies": {
+    "@caterkingapp/supabase": "workspace:*",
+    "@tanstack/react-query": "^5.90.12",
     "zod": "^4.1.13"
   }
 }
