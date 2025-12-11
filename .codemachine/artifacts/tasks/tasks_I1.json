@@ -77,7 +77,7 @@
     "acceptance_criteria": "`supabase db lint` passes; ERD renders; seeds load via `supabase db reset`; JSONB columns and indexes align with Section 2 data model; comments reference blueprint anchors and iteration numbers.",
     "dependencies": ["I1.T1"],
     "parallelizable": false,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I1.T5",

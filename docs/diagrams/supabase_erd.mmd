@@ -1,0 +1,201 @@
+erDiagram
+    companies ||--|{ users : "has members"
+    companies ||--|{ events : "organizes"
+    companies ||--|{ tasks : "tracks"
+    companies ||--|{ combined_task_groups : "aggregates"
+    companies ||--|{ recipes : "owns"
+    companies ||--|{ method_documents : "documents"
+    companies ||--|{ media_assets : "stores"
+    companies ||--|{ role_assignments : "assigns roles"
+    companies ||--|{ audit_logs : "logs"
+    companies ||--|{ notification_preferences : "configures"
+    companies ||--|{ realtime_subscriptions : "subscribes"
+    companies ||--|{ stations : "defines"
+    companies ||--|{ staff_schedules : "schedules"
+    companies ||--|{ display_snapshots : "captures"
+
+    events ||--|{ tasks : "generates"
+    events ||--|{ staff_schedules : "schedules for"
+    users ||--|{ tasks : "assigned"
+    users ||--|{ role_assignments : "has roles"
+    users ||--|{ notification_preferences : "prefers"
+    users ||--|{ staff_schedules : "scheduled"
+    users ||--|{ audit_logs : "performs actions"
+    users ||--|{ task_comments : "comments"
+    tasks ||--|{ task_comments : "has comments"
+    tasks ||--|{ combined_task_groups : "grouped in"
+    recipes ||--|{ tasks : "instantiated as"
+    recipes ||--|{ method_documents : "documented by"
+    method_documents ||--|{ tasks : "referenced by instructions_ref"
+
+    companies {
+        uuid id PK
+        string name
+        string timezone
+        jsonb settings
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    users {
+        uuid id PK "FK to auth.users"
+        uuid company_id FK
+        enum role "owner, manager, event_lead, staff"
+        string display_name
+        string avatar_url
+        jsonb contact_info
+        string status
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    events {
+        uuid id PK
+        uuid company_id FK
+        string name
+        timestamp scheduled_at
+        string location
+        string notes
+        enum status "scheduled, active, complete, archived"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    tasks {
+        uuid id PK
+        uuid company_id FK
+        uuid event_id FK
+        string name
+        numeric quantity
+        string unit
+        enum status "available, claimed, in_progress, completed"
+        string priority
+        uuid assigned_user_id FK
+        uuid combined_group_id FK
+        string instructions_ref
+        string undo_token
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    combined_task_groups {
+        uuid id PK
+        uuid company_id FK
+        jsonb base_task_ids
+        numeric aggregated_quantity
+        string unit
+        jsonb heuristic_metadata
+        uuid approved_by_user_id FK
+        timestamp created_at
+    }
+
+    recipes {
+        uuid id PK
+        uuid company_id FK
+        string name
+        jsonb ingredients
+        jsonb steps
+        jsonb media_urls
+        string version
+        text[] tags
+        text[] allergen_flags
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    method_documents {
+        uuid id PK
+        uuid company_id FK
+        string title
+        jsonb steps
+        jsonb video_refs
+        string skill_level
+        uuid last_reviewed_by FK
+        timestamp created_at
+    }
+
+    media_assets {
+        uuid id PK
+        uuid company_id FK
+        string url
+        string type
+        string thumbnail_url
+        numeric duration
+        string status
+        string storage_path
+        string checksum
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    role_assignments {
+        uuid id PK
+        uuid company_id FK
+        uuid user_id FK
+        enum role "owner, manager, event_lead, staff"
+        uuid granted_by FK
+        timestamp granted_at
+        timestamp revoked_at
+    }
+
+    audit_logs {
+        uuid id PK
+        uuid company_id FK
+        uuid user_id FK
+        string entity_type
+        uuid entity_id
+        string action
+        jsonb diff
+        timestamp created_at
+    }
+
+    notification_preferences {
+        uuid id PK
+        uuid company_id FK
+        uuid user_id FK
+        string channel
+        boolean enabled
+        string quiet_hours
+    }
+
+    realtime_subscriptions {
+        uuid id PK
+        uuid company_id FK
+        string channel_name
+        uuid last_seen_event_id
+        string device_id
+    }
+
+    task_comments {
+        uuid id PK
+        uuid task_id FK
+        uuid company_id FK
+        uuid author_id FK
+        string body
+        timestamp created_at
+    }
+
+    stations {
+        uuid id PK
+        uuid company_id FK
+        string name
+        string type
+        integer sort_order
+    }
+
+    staff_schedules {
+        uuid id PK
+        uuid company_id FK
+        uuid user_id FK
+        uuid event_id FK
+        timestamp shift_start
+        timestamp shift_end
+        enum role_override "owner, manager, event_lead, staff"
+    }
+
+    display_snapshots {
+        uuid id PK
+        uuid company_id FK
+        jsonb payload
+        timestamp captured_at
+    }
