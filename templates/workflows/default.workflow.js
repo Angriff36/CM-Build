@@ -10,7 +10,7 @@ export default {
     resolveStep('git-commit', { executeOnce: true, engine: 'opencode', model: 'opencode/gpt-5.1-codex-max' }),
     resolveUI('⟲ Development Cycle ⟲'),
     resolveStep('context-manager', { engine: 'opencode', model: 'opencode/grok-code' }),
-    resolveStep('code-generation', { engine: 'claude' }),
+    resolveStep('code-generation', { executeOnce: true, engine: 'opencode', model: 'opencode/gpt-5.1-codex-max' }),
     resolveStep('runtime-prep', { executeOnce: true, engine: 'claude' }),
     resolveStep('task-sanity-check', { engine: 'opencode', model: 'opencode/glm-4.6' }),
     resolveStep('git-commit', { engine: 'opencode', model: 'opencode/gpt-5.1-codex-max' }),

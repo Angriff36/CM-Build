@@ -115,7 +115,7 @@
     "acceptance_criteria": "Audit entries appear for all key actions; CLI prints table; docs cite compliance requirements; undo tokens reference audit IDs.",
     "dependencies": ["I4.T1", "I4.T2"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I4.T7",

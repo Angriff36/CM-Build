@@ -39,17 +39,20 @@ BEGIN
   SET status = 'claimed', assigned_user_id = user_id
   WHERE id = task_id;
 
-  -- Generate undo token
-  undo_token := encode(gen_random_bytes(32), 'hex');
 
-  INSERT INTO undo_tokens (company_id, task_id, token, expires_at)
-  VALUES (company_id, task_id, undo_token, now() + interval '1 hour');
 
-  -- Audit log
-  INSERT INTO audit_logs (company_id, user_id, entity_type, entity_id, action, diff)
-  VALUES (company_id, user_id, 'task', task_id, 'claim', jsonb_build_object('status', 'claimed', 'assigned_user_id', user_id, 'note', note));
+   -- Audit log
+   INSERT INTO audit_logs (company_id, user_id, entity_type, entity_id, action, diff)
+   VALUES (company_id, user_id, 'task', task_id, 'claim', jsonb_build_object('status', 'claimed', 'assigned_user_id', user_id, 'note', note))
+   RETURNING id INTO audit_log_id;
 
-  -- Realtime notify
+   -- Generate undo token
+   undo_token := encode(gen_random_bytes(32), 'hex');
+
+   INSERT INTO undo_tokens (company_id, task_id, token, expires_at, audit_log_id)
+   VALUES (company_id, task_id, undo_token, now() + interval '1 hour', audit_log_id);
+
+   -- Realtime notify
   PERFORM pg_notify('realtime', json_build_object(
     'type', 'task_update',
     'entity_id', task_id,

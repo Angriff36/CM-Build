@@ -16,8 +16,14 @@ BEGIN
     VALUES (NEW.company_id, user_id, 'task', NEW.id, 'insert', jsonb_build_object('new', row_to_json(NEW)));
     RETURN NEW;
   ELSIF TG_OP = 'UPDATE' THEN
-    INSERT INTO audit_logs (company_id, user_id, entity_type, entity_id, action, diff)
-    VALUES (NEW.company_id, user_id, 'task', NEW.id, 'update', jsonb_build_object('old', row_to_json(OLD), 'new', row_to_json(NEW)));
+    -- Check for reassign action
+    IF OLD.assigned_user_id IS DISTINCT FROM NEW.assigned_user_id AND NEW.assigned_user_id IS NOT NULL THEN
+      INSERT INTO audit_logs (company_id, user_id, entity_type, entity_id, action, diff)
+      VALUES (NEW.company_id, user_id, 'task', NEW.id, 'reassign', jsonb_build_object('old_assigned', OLD.assigned_user_id, 'new_assigned', NEW.assigned_user_id));
+    ELSE
+      INSERT INTO audit_logs (company_id, user_id, entity_type, entity_id, action, diff)
+      VALUES (NEW.company_id, user_id, 'task', NEW.id, 'update', jsonb_build_object('old', row_to_json(OLD), 'new', row_to_json(NEW)));
+    END IF;
     RETURN NEW;
   ELSIF TG_OP = 'DELETE' THEN
     INSERT INTO audit_logs (company_id, user_id, entity_type, entity_id, action, diff)

@@ -12,6 +12,8 @@ DECLARE
   role text;
   combined_group_id uuid;
   task_record record;
+  undo_token text;
+  audit_log_id uuid;
 BEGIN
   -- Get user context
   SELECT auth.uid(), get_my_company_id(), get_my_role() INTO user_id, company_id, role;
@@ -42,11 +44,18 @@ BEGIN
   SET combined_group_id = combined_group_id, status = 'claimed', assigned_user_id = user_id
   WHERE id = ANY(task_ids);
 
-  -- Audit log
-  INSERT INTO audit_logs (company_id, user_id, entity_type, entity_id, action, diff)
-  VALUES (company_id, user_id, 'task', combined_group_id, 'combine', jsonb_build_object('task_ids', task_ids));
+   -- Audit log
+   INSERT INTO audit_logs (company_id, user_id, entity_type, entity_id, action, diff)
+   VALUES (company_id, user_id, 'task', combined_group_id, 'combine', jsonb_build_object('task_ids', task_ids))
+   RETURNING id INTO audit_log_id;
 
-  -- Realtime notify for each task
+   -- Generate undo token
+   undo_token := encode(gen_random_bytes(32), 'hex');
+
+   INSERT INTO undo_tokens (company_id, task_id, token, expires_at, audit_log_id)
+   VALUES (company_id, combined_group_id, undo_token, now() + interval '1 hour', audit_log_id);
+
+   -- Realtime notify for each task
   FOR task_record IN SELECT id FROM tasks WHERE id = ANY(task_ids) LOOP
     PERFORM pg_notify('realtime', json_build_object(
       'type', 'task_update',
@@ -57,6 +66,6 @@ BEGIN
     )::text);
   END LOOP;
 
-  RETURN json_build_object('success', true, 'combined_group_id', combined_group_id, 'timestamp', now());
+   RETURN json_build_object('success', true, 'combined_group_id', combined_group_id, 'undo_token', undo_token, 'timestamp', now());
 END;
 $$;
