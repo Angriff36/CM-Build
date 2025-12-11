@@ -102,7 +102,7 @@
     "acceptance_criteria": "Storybook builds with placeholder stories; lint passes; Supabase client throws if missing Doppler vars; tokens match Section 6.1 palette.",
     "dependencies": ["I1.T1"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I1.T8",
@@ -110,7 +110,7 @@
     "iteration_goal": "Stand up the Turbo monorepo, base Supabase schema, architectural artifacts, and governance docs so future iterations can work in parallel against typed contracts.",
     "description": "Establish docs index + ADR template referencing blueprint anchors, ensuring all diagrams/specs are discoverable via `docs/README.md` with anchor metadata for manifest generation.",
     "agent_type_hint": "DocumentationAgent",
-    "inputs": "Existing documentation set (Sections 1�4), artifacts list.",
+    "inputs": "Existing documentation set (Sections 14), artifacts list.",
     "target_files": [],
     "input_files": [],
     "deliverables": "Docs index linking to diagrams/specs/ops guides, ADR template capturing context/decision/impact/anchors, contribution blurb guiding future authors.",

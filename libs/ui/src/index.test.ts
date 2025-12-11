@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { brandColors, tokensSummary } from './index';
+import { PALETTE, CSS_VARIABLES } from './index';
 
-describe('tokens summary', () => {
-  it('exposes the primary brand color token', () => {
-    const summary = tokensSummary();
-    expect(summary.brandColors.primary).toBe(brandColors.primary);
+describe('UI Tokens', () => {
+  it('exposes the palette', () => {
+    expect(PALETTE.ink[950]).toBeDefined();
+  });
+
+  it('exposes css variables', () => {
+    expect(CSS_VARIABLES['--ck-color-ink-950']).toBeDefined();
   });
 });

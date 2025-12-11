@@ -1,3 +1,23 @@
 # @caterkingapp/ui
 
-Baseline design tokens for CaterKing apps. Update this package with Tailwind + ShadCN exports as components emerge. Build outputs land in `dist/` when `pnpm build --filter @caterkingapp/ui` runs.
+Shared design tokens, Tailwind configuration, and UI primitives for CaterKing.
+
+## Usage
+
+Import tokens:
+
+```ts
+import { PALETTE, CSS_VARIABLES } from '@caterkingapp/ui';
+```
+
+Extend Tailwind config in apps:
+
+```ts
+// tailwind.config.ts
+import uiConfig from '@caterkingapp/ui/tailwind.config';
+
+export default {
+  presets: [uiConfig],
+  // ...
+};
+```
