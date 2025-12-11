@@ -91,7 +91,7 @@
     "acceptance_criteria": "Display handles realtime disconnect gracefully; data matches summary API; ticker accessible; config documented.",
     "dependencies": ["I4.T3"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I4.T6",

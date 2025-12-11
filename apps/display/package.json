@@ -1,0 +1,32 @@
+{
+  "name": "@caterkingapp/display",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Display app for kiosks with summary cards and urgent ticker",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@caterkingapp/ui": "workspace:*",
+    "@caterkingapp/supabase": "workspace:*",
+    "@tanstack/react-query": "^5.17.15",
+    "next": "15.0.0-canary.123",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/jest-dom": "^6.1.5",
+    "@types/node": "^20.14.2",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "eslint": "^9.3.0",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
+  }
+}
