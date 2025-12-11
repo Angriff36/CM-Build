@@ -60,7 +60,7 @@
     "acceptance_criteria": "Diagram renders; steps align with Task 3.2 output; fallback paths for failed processing included.",
     "dependencies": ["I3.T2"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I3.T4",

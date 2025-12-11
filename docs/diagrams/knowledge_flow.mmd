@@ -1,0 +1,18 @@
+flowchart TD
+    A[Admin CRM Author Upload] --> B{Validate File}
+    B -->|Invalid| C[Reject Upload]
+    B -->|Valid| D[Store in Supabase Storage]
+    D --> E[Trigger Supabase Function]
+    E --> F{Process Content}
+    F -->|Success| G[Update DB Status to Ready]
+    G --> H[Emit Realtime Event]
+    H --> I[PrepChef Drawer Loads Content]
+    I --> J[Stream Instructions & Media]
+    J --> K[User Playback/Interaction]
+    F -->|Failure| L[Set Status to Failed]
+    L --> M{Manual Retry?}
+    M -->|Yes| E
+    M -->|No| N[Fallback: Offline Mode]
+    N --> O[Display Cached Content]
+    C --> P[Error Message to Author]
+    L --> P
