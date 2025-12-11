@@ -9,13 +9,13 @@ interface SummaryCard {
   avg_duration_ms?: number;
 }
 
-interface SummaryGridProps {
+interface StatusSummaryProps {
   cards: SummaryCard[];
   capturedAt: string;
   stalenessMs: number;
 }
 
-export function SummaryGrid({ cards, capturedAt, stalenessMs }: SummaryGridProps) {
+export function StatusSummary({ cards, capturedAt, stalenessMs }: StatusSummaryProps) {
   const isStale = stalenessMs > 60000; // Consider stale if over 1 minute
 
   // Group cards by event and station
@@ -49,30 +49,32 @@ export function SummaryGrid({ cards, capturedAt, stalenessMs }: SummaryGridProps
   return (
     <div className="p-4">
       {Object.entries(groupedCards).map(([key, group]) => (
-        <div key={key} className="mb-6">
-          <h2 className="text-xl font-bold mb-3 text-gray-700">
+        <div key={key} className="mb-8">
+          <h2 className="text-3xl font-bold mb-4 text-gray-700 text-display">
             {group.event_id !== 'general' && `Event: ${group.event_id}`}
             {group.station_id !== 'unassigned' && ` • Station: ${group.station_id}`}
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {group.cards.map((card, index) => (
               <div
                 key={`${key}-${index}`}
-                className={`border rounded-lg p-4 shadow-sm transition-all ${
+                className={`border rounded-lg p-6 shadow-sm transition-all ${
                   card.urgent ? 'border-red-500 bg-red-50' : 'border-gray-200 bg-white'
                 }`}
               >
-                <div className="flex justify-between items-start mb-3">
-                  <h3 className="font-bold text-lg capitalize">{card.type.replace('_', ' ')}</h3>
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="font-bold text-2xl capitalize text-display">
+                    {card.type.replace('_', ' ')}
+                  </h3>
                   {card.urgent && (
-                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded font-bold">
+                    <span className="bg-red-500 text-white text-lg px-3 py-1 rounded font-bold">
                       URGENT
                     </span>
                   )}
                 </div>
-                <div className="text-3xl font-bold mb-2">{card.count}</div>
+                <div className="text-5xl font-bold mb-3 text-display">{card.count}</div>
                 {card.avg_duration_ms && (
-                  <div className="text-sm text-gray-600">
+                  <div className="text-lg text-gray-600 text-display">
                     Avg duration: {formatDuration(card.avg_duration_ms)}
                   </div>
                 )}
@@ -82,14 +84,16 @@ export function SummaryGrid({ cards, capturedAt, stalenessMs }: SummaryGridProps
         </div>
       ))}
 
-      <div className="mt-6 text-center">
-        <div className="text-sm text-gray-500">
+      <div className="mt-8 text-center">
+        <div className="text-lg text-gray-500 text-display">
           Last updated: {new Date(capturedAt).toLocaleString()}
           {isStale && (
-            <span className="text-yellow-600 ml-2 font-medium">⚠️ Data may be stale</span>
+            <span className="text-yellow-600 ml-2 font-medium text-display">
+              ⚠️ Data may be stale
+            </span>
           )}
         </div>
-        <div className="text-xs text-gray-400 mt-1">
+        <div className="text-base text-gray-400 mt-1 text-display">
           Staleness: {Math.floor(stalenessMs / 1000)}s
         </div>
       </div>

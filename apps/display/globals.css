@@ -15,9 +15,9 @@ body {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: #f9fafb;
@@ -27,4 +27,44 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+}
+
+/* Kiosk mode styles */
+.fullscreen-kiosk {
+  font-size: 32px; /* Minimum 32px for readability */
+}
+
+/* 4K display responsive styles */
+@media (min-width: 3840px) {
+  .fullscreen-kiosk {
+    font-size: 48px;
+  }
+}
+
+/* Large text for wall display */
+.text-display {
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+@media (min-width: 1920px) {
+  .text-display {
+    font-size: 2.5rem;
+  }
+}
+
+@media (min-width: 3840px) {
+  .text-display {
+    font-size: 3rem;
+  }
+}
+
+/* Hide scrollbars for kiosk mode */
+.fullscreen-kiosk::-webkit-scrollbar {
+  display: none;
+}
+
+.fullscreen-kiosk {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

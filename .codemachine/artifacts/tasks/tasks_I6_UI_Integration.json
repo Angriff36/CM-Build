@@ -94,7 +94,7 @@
         "apps/display/components/RealtimeUpdater.tsx",
         "__tests__/Display.integration.test.tsx"
       ],
-      "done": false
+      "done": true
     },
     {
       "id": "I6.T5",
