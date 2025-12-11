@@ -25,7 +25,7 @@
     "acceptance_criteria": "Flag toggles behavior; approvals call combine API; UI shows aggregated instructions + rollback actions; tests cover accept/reject states.",
     "dependencies": ["I4.T1", "I2.T3"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I4.T3",

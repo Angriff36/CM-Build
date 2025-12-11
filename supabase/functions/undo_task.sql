@@ -44,6 +44,11 @@ BEGIN
     UPDATE tasks SET status = 'available', assigned_user_id = NULL WHERE id = task_id;
   ELSIF last_action.action = 'complete' THEN
     UPDATE tasks SET status = 'claimed' WHERE id = task_id;
+  ELSIF last_action.action = 'combine' THEN
+    -- For combine, task_id is combined_group_id, get task_ids from diff
+    UPDATE tasks
+    SET combined_group_id = NULL, status = 'available', assigned_user_id = NULL
+    WHERE combined_group_id = task_id;
   ELSE
     RAISE EXCEPTION 'Action not undoable';
   END IF;
