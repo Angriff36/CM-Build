@@ -125,7 +125,7 @@
     "acceptance_criteria": "Workflow logs accessible; Slack message sample documented; automation status updated.",
     "dependencies": ["I1.T5", "I4.T6"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I5.T7",

@@ -1,0 +1,79 @@
+name: Nightly Impersonation Tests
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # Run daily at 2 AM UTC
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  impersonation-tests:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PowerShell
+        run: |
+          Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+      - name: Run impersonation tests for staff role
+        id: staff-test
+        run: |
+          $output = .\scripts\impersonate.ps1 -Role staff 2>&1
+          echo "STAFF_OUTPUT<<EOF" >> $env:GITHUB_OUTPUT
+          echo "$output" >> $env:GITHUB_OUTPUT
+          echo "EOF" >> $env:GITHUB_OUTPUT
+
+      - name: Run impersonation tests for manager role
+        id: manager-test
+        run: |
+          $output = .\scripts\impersonate.ps1 -Role manager 2>&1
+          echo "MANAGER_OUTPUT<<EOF" >> $env:GITHUB_OUTPUT
+          echo "$output" >> $env:GITHUB_OUTPUT
+          echo "EOF" >> $env:GITHUB_OUTPUT
+
+      - name: Run impersonation tests for event_lead role
+        id: event-lead-test
+        run: |
+          $output = .\scripts\impersonate.ps1 -Role event_lead 2>&1
+          echo "EVENT_LEAD_OUTPUT<<EOF" >> $env:GITHUB_OUTPUT
+          echo "$output" >> $env:GITHUB_OUTPUT
+          echo "EOF" >> $env:GITHUB_OUTPUT
+
+      - name: Run impersonation tests for owner role
+        id: owner-test
+        run: |
+          $output = .\scripts\impersonate.ps1 -Role owner 2>&1
+          echo "OWNER_OUTPUT<<EOF" >> $env:GITHUB_OUTPUT
+          echo "$output" >> $env:GITHUB_OUTPUT
+          echo "EOF" >> $env:GITHUB_OUTPUT
+
+      - name: Post summary to Slack
+        if: always()
+        run: |
+          $summary = @"
+          Nightly Impersonation Tests Summary - $(Get-Date -Format 'yyyy-MM-dd')
+
+          Staff Role Test:
+          ${{ steps.staff-test.outputs.STAFF_OUTPUT }}
+
+          Manager Role Test:
+          ${{ steps.manager-test.outputs.MANAGER_OUTPUT }}
+
+          Event Lead Role Test:
+          ${{ steps.event-lead-test.outputs.EVENT_LEAD_OUTPUT }}
+
+          Owner Role Test:
+          ${{ steps.owner-test.outputs.OWNER_OUTPUT }}
+
+          Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          "@
+
+          $payload = @{
+            text = $summary
+          } | ConvertTo-Json
+
+          Invoke-WebRequest -Uri $env:SLACK_WEBHOOK_URL -Method POST -Body $payload -ContentType 'application/json'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
