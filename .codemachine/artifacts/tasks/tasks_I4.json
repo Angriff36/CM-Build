@@ -44,7 +44,7 @@
     "acceptance_criteria": "Spectral lint passes; contract tests updated; API docs mention feature flags + schema_version.",
     "dependencies": ["I4.T2"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I4.T4",

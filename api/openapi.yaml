@@ -1,0 +1,408 @@
+openapi: 3.0.3
+info:
+  title: PrepChef API
+  version: 1.2.0
+  description: API for task management, events, and display summaries with combine endpoints and manager assignment board. All endpoints support feature flag evaluation and include schema_version for compatibility checks.
+servers:
+  - url: https://api.prepchef.com
+    description: Production server
+paths:
+  /api/tasks/suggestions:
+    get:
+      summary: Retrieve task suggestions
+      operationId: getTaskSuggestions
+      parameters:
+        - name: event_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: station
+          in: query
+          schema:
+            type: string
+        - name: ingredient
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      suggestions:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TaskSuggestion'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+    post:
+      summary: Create task combination suggestion
+      operationId: createTaskSuggestion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSuggestionRequest'
+      responses:
+        '200':
+          description: Suggestion created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TaskSuggestion'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+  /api/tasks/combine:
+    post:
+      summary: Approve and combine tasks
+      operationId: combineTasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CombineTasksRequest'
+      responses:
+        '200':
+          description: Tasks combined
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      combinedGroup:
+                        $ref: '#/components/schemas/CombinedTaskGroup'
+                      primaryTask:
+                        $ref: '#/components/schemas/Task'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+  /api/tasks/combine/rollback:
+    post:
+      summary: Rollback combined tasks
+      operationId: rollbackCombine
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RollbackCombineRequest'
+      responses:
+        '200':
+          description: Combination rolled back
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      tasks:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Task'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+  /api/tasks/bulk-assign:
+    post:
+      summary: Bulk assign tasks (manager assignment board)
+      operationId: bulkAssignTasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkAssignRequest'
+      responses:
+        '200':
+          description: Assignments applied
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/BulkAssignResponse'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+  /api/display/summary:
+    get:
+      summary: Get display summary for kiosks
+      operationId: getDisplaySummary
+      parameters:
+        - name: since
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: event_scope
+          in: query
+          schema:
+            type: string
+        - name: station_scope
+          in: query
+          schema:
+            type: string
+        - name: agg
+          in: query
+          schema:
+            type: string
+            enum: [hourly, live]
+      responses:
+        '200':
+          description: Summary data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DisplaySummaryResponse'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+components:
+  schemas:
+    Meta:
+      type: object
+      properties:
+        schema_version:
+          type: string
+          example: '1.2'
+          description: Schema version for client compatibility checks
+        realtime_channel:
+          type: string
+        audit_reference_id:
+          type: string
+        feature_exposures:
+          type: array
+          items:
+            type: string
+          description: List of feature flags that influenced the response payload
+    TaskSuggestion:
+      type: object
+      properties:
+        suggestion_id:
+          type: string
+          format: uuid
+        task_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        similarity_score:
+          type: number
+        normalized_ingredient:
+          type: string
+        recommended_unit:
+          type: string
+        rationale:
+          type: string
+    CreateSuggestionRequest:
+      type: object
+      properties:
+        filters:
+          type: object
+          properties:
+            event_id:
+              type: string
+              format: uuid
+            station:
+              type: string
+            ingredient:
+              type: string
+    CombineTasksRequest:
+      type: object
+      properties:
+        taskIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        approvedBy:
+          type: string
+          format: uuid
+        heuristicsMetadata:
+          type: object
+          properties:
+            similarity_score:
+              type: number
+            normalized_ingredient:
+              type: string
+            unit_conversion_trace:
+              type: string
+            feature_flag_state:
+              type: object
+        idempotencyKey:
+          type: string
+    RollbackCombineRequest:
+      type: object
+      properties:
+        group_id:
+          type: string
+          format: uuid
+    BulkAssignRequest:
+      type: object
+      properties:
+        assignments:
+          type: array
+          items:
+            type: object
+            properties:
+              taskId:
+                type: string
+                format: uuid
+              targetUserId:
+                type: string
+                format: uuid
+              priorityOverride:
+                type: integer
+              note:
+                type: string
+        reason:
+          type: string
+        idempotencyKey:
+          type: string
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        company_id:
+          type: string
+          format: uuid
+        event_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        quantity:
+          type: number
+        unit:
+          type: string
+        status:
+          type: string
+          enum: [available, claimed, in_progress, completed]
+        priority:
+          type: integer
+        assigned_user_id:
+          type: string
+          format: uuid
+        combined_group_id:
+          type: string
+          format: uuid
+        undo_available_until:
+          type: string
+          format: date-time
+        station_id:
+          type: string
+          format: uuid
+    CombinedTaskGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        company_id:
+          type: string
+          format: uuid
+        base_task_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        aggregated_quantity:
+          type: number
+        unit:
+          type: string
+        approved_by_user_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        heuristics_metadata:
+          type: object
+    Assignment:
+      type: object
+      properties:
+        taskId:
+          type: string
+          format: uuid
+        targetUserId:
+          type: string
+          format: uuid
+        assigned_at:
+          type: string
+          format: date-time
+    SummaryCard:
+      type: object
+      properties:
+        type:
+          type: string
+        count:
+          type: integer
+        urgent:
+          type: boolean
+AssignmentSummary:
+      type: object
+      properties:
+        task_id:
+          type: string
+          format: uuid
+        user_display_name:
+          type: string
+        status:
+          type: string
+    BulkAssignResponse:
+      type: object
+      properties:
+        assignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Assignment'
+        failed:
+          type: array
+          items:
+            type: object
+            properties:
+              taskId:
+                type: string
+                format: uuid
+              failureCode:
+                type: string
+              blockingUser:
+                type: string
+                format: uuid
+    DisplaySummaryResponse:
+      type: object
+      properties:
+        cards:
+          type: array
+          items:
+            $ref: '#/components/schemas/SummaryCard'
+        assignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssignmentSummary'
+        captured_at:
+          type: string
+          format: date-time
+        staleness_ms:
+          type: integer
+        realtime_channel:
+          type: string

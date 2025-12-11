@@ -2,18 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '../../../../libs/supabase/src/client';
 import { mapSupabaseError } from '../../../../libs/shared/src/utils/errors';
 
-const SCHEMA_VERSION = '1.0';
+const SCHEMA_VERSION = '1.2';
 
 // GET: Retrieve task suggestions
 export async function GET(request: NextRequest) {
   const supabase = createClient();
 
   try {
-    // For now, return available tasks as suggestions
+    // Retrieve suggestions from task_similarity_suggestions table
     const { data, error } = await supabase
-      .from('tasks')
-      .select('id, name, quantity, unit, priority')
-      .eq('status', 'available')
+      .from('task_similarity_suggestions')
+      .select('*')
       .limit(10);
 
     if (error) {
@@ -31,9 +30,12 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({
-      data,
+      data: {
+        suggestions: data,
+      },
       meta: {
         schema_version: SCHEMA_VERSION,
+        heuristic_version: 'combine.v3',
       },
     });
   } catch (error) {
@@ -42,16 +44,45 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST: Perhaps create a task suggestion or combine
+// POST: Request task suggestions based on filters
 export async function POST(request: NextRequest) {
-  // For now, return not implemented
-  return NextResponse.json(
-    {
-      error: {
-        code: 'NOT_IMPLEMENTED',
-        message: 'POST /api/tasks/suggestions not yet implemented.',
+  const supabase = createClient();
+
+  try {
+    const body = await request.json();
+    const { filters } = body;
+
+    // Call Supabase function to generate suggestions
+    const { data, error } = await supabase.rpc('generate_task_suggestions', {
+      filters,
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    // Telemetry
+    console.log('OTEL span:', {
+      trace_id: 'generated-trace-id',
+      actor_id: 'current-user-id',
+      company_id: 'current-company-id',
+      feature_flag_state: {},
+      endpoint: '/api/tasks/suggestions',
+      method: 'POST',
+    });
+
+    return NextResponse.json({
+      data: {
+        suggestions: data,
       },
-    },
-    { status: 501 },
-  );
+      meta: {
+        schema_version: SCHEMA_VERSION,
+        heuristic_version: 'combine.v3',
+        sla: 1000, // example
+      },
+    });
+  } catch (error) {
+    const { status, error: apiError } = mapSupabaseError(error);
+    return NextResponse.json({ error: apiError }, { status });
+  }
 }

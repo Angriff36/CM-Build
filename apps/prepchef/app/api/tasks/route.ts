@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '../../../../libs/supabase/src/client';
 import { mapSupabaseError } from '../../../../libs/shared/src/utils/errors';
 
-const SCHEMA_VERSION = '1.0';
+const SCHEMA_VERSION = '1.2';
 
 export async function GET(request: NextRequest) {
   const supabase = createClient();
