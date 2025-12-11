@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const { spawnSync } = require('child_process');
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
@@ -162,17 +163,82 @@ function runPackageManager(args, spawnOverrides = {}) {
   return result;
 }
 
-function ensureNodeEnvironment() {
-  const installResult = runPackageManager(['install']);
+function hashFile(filePath) {
+  if (!filePath || !fs.existsSync(filePath)) {
+    return null;
+  }
 
-  if (installResult.status !== 0) {
-    throw new Error(
-      `Dependency installation failed with exit code ${installResult.status ?? 'unknown'}.`
-    );
+  const hash = crypto.createHash('sha256');
+  const fileBuffer = fs.readFileSync(filePath);
+  hash.update(fileBuffer);
+  return hash.digest('hex');
+}
+
+function resolveLockfile(pm) {
+  const candidates = [];
+  if (pm.name === 'pnpm') {
+    candidates.push('pnpm-lock.yaml');
+  } else if (pm.name === 'yarn') {
+    candidates.push('yarn.lock');
+  } else {
+    candidates.push('package-lock.json');
+  }
+  candidates.push('pnpm-lock.yaml', 'package-lock.json', 'yarn.lock');
+
+  for (const candidate of candidates) {
+    const fullPath = path.join(rootDir, candidate);
+    if (fs.existsSync(fullPath)) {
+      return fullPath;
+    }
+  }
+
+  return null;
+}
+
+function shouldSyncNodeDependencies(lockFilePath, lockHash) {
+  const envInfo = loadEnvInfo();
+  const nodeModulesPath = path.join(rootDir, 'node_modules');
+  const lockRelative = lockFilePath ? path.relative(rootDir, lockFilePath) : null;
+
+  if (!fs.existsSync(nodeModulesPath)) {
+    return true;
+  }
+
+  if (!envInfo || envInfo.type !== 'node') {
+    return true;
+  }
+
+  if ((envInfo.lockFile || null) !== lockRelative) {
+    return true;
+  }
+
+  return (envInfo.lockHash || null) !== (lockHash || null);
+}
+
+function ensureNodeEnvironment() {
+  const pm = parsePackageManager();
+  const lockFilePath = resolveLockfile(pm);
+  const lockHash = hashFile(lockFilePath);
+  const needsSync = shouldSyncNodeDependencies(lockFilePath, lockHash);
+
+  if (needsSync) {
+    const installArgs = ['install'];
+    if (pm.name === 'pnpm') {
+      installArgs.push('--frozen-lockfile');
+    }
+    const installResult = runPackageManager(installArgs);
+
+    if (installResult.status !== 0) {
+      throw new Error(
+        `Dependency installation failed with exit code ${installResult.status ?? 'unknown'}.`
+      );
+    }
   }
 
   return {
     type: 'node',
+    lockFile: lockFilePath ? path.relative(rootDir, lockFilePath) : null,
+    lockHash,
     executables: {
       binDir: path.join(rootDir, 'node_modules', '.bin')
     }
@@ -192,9 +258,25 @@ function resolvePythonCommand() {
   throw new Error('No Python interpreter available on PATH.');
 }
 
+function detectRequirementsFile() {
+  const candidates = ['requirements.txt', 'requirements-dev.txt', 'requirements/prod.txt'];
+  for (const candidate of candidates) {
+    const fullPath = path.join(rootDir, candidate);
+    if (fs.existsSync(fullPath)) {
+      return fullPath;
+    }
+  }
+  return null;
+}
+
 function ensurePythonEnvironment() {
   const venvPath = path.join(rootDir, '.venv');
   const pythonCmd = resolvePythonCommand();
+  const requirementsPath = detectRequirementsFile();
+  const requirementsHash = hashFile(requirementsPath);
+  const existingInfo = loadEnvInfo();
+
+  let createdVenv = false;
 
   if (!fs.existsSync(venvPath)) {
     const create = spawnSync(pythonCmd, ['-m', 'venv', venvPath], {
@@ -204,6 +286,7 @@ function ensurePythonEnvironment() {
     if (create.status !== 0) {
       throw new Error('Failed to create Python virtual environment.');
     }
+    createdVenv = true;
   }
 
   const pythonBinary =
@@ -211,35 +294,43 @@ function ensurePythonEnvironment() {
       ? path.join(venvPath, 'Scripts', 'python.exe')
       : path.join(venvPath, 'bin', 'python3');
 
-  const upgrade = spawnSync(
-    pythonBinary,
-    ['-m', 'pip', 'install', '--upgrade', 'pip', 'setuptools'],
-    { cwd: rootDir, stdio: 'inherit' }
-  );
+  if (createdVenv) {
+    const upgrade = spawnSync(
+      pythonBinary,
+      ['-m', 'pip', 'install', '--upgrade', 'pip', 'setuptools'],
+      { cwd: rootDir, stdio: 'inherit' }
+    );
 
-  if (upgrade.status !== 0) {
-    throw new Error('Failed to upgrade pip inside the virtual environment.');
+    if (upgrade.status !== 0) {
+      throw new Error('Failed to upgrade pip inside the virtual environment.');
+    }
   }
 
-  const requirementsFile = ['requirements.txt', 'requirements-dev.txt'].find((file) =>
-    fs.existsSync(path.join(rootDir, file))
-  );
+  const depsChanged =
+    createdVenv ||
+    !existingInfo ||
+    existingInfo.type !== 'python' ||
+    (existingInfo.requirementsHash || null) !== (requirementsHash || null);
 
-  if (requirementsFile) {
+  if (requirementsPath && depsChanged) {
     const install = spawnSync(
       pythonBinary,
-      ['-m', 'pip', 'install', '-r', requirementsFile],
+      ['-m', 'pip', 'install', '-r', requirementsPath],
       { cwd: rootDir, stdio: 'inherit' }
     );
 
     if (install.status !== 0) {
-      throw new Error(`Failed to install Python dependencies from ${requirementsFile}.`);
+      throw new Error(
+        `Failed to install Python dependencies from ${path.relative(rootDir, requirementsPath)}.`
+      );
     }
   }
 
   return {
     type: 'python',
     venvPath,
+    requirementsFile: requirementsPath ? path.relative(rootDir, requirementsPath) : null,
+    requirementsHash,
     executables: {
       python: pythonBinary
     }

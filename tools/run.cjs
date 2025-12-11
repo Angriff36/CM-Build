@@ -33,7 +33,38 @@ function ensureInstall() {
   execSync('node tools/install.cjs', { stdio: 'inherit' });
 }
 
-function runApplication() {
+function resolvePythonExecutable() {
+  const envInfo = installer.loadEnvInfo();
+  if (envInfo?.executables?.python) {
+    return envInfo.executables.python;
+  }
+
+  const venvPath = path.join(rootDir, '.venv');
+  return process.platform === 'win32'
+    ? path.join(venvPath, 'Scripts', 'python.exe')
+    : path.join(venvPath, 'bin', 'python3');
+}
+
+function detectPythonEntryPoint() {
+  const candidates = [
+    'main.py',
+    'app.py',
+    path.join('src', 'main.py'),
+    path.join('backend', 'main.py'),
+    path.join('api', 'main.py')
+  ];
+
+  for (const candidate of candidates) {
+    const fullPath = path.join(rootDir, candidate);
+    if (fs.existsSync(fullPath)) {
+      return fullPath;
+    }
+  }
+
+  throw new Error('Unable to locate a Python entry point (expected main.py or app.py).');
+}
+
+function runNodeApplication() {
   const pkg = readPackageJson();
   const scriptName = pickRunScript(pkg);
 
@@ -54,6 +85,26 @@ function runApplication() {
   }
 
   throw new Error('No runnable script or entry point found in package.json.');
+}
+
+function runPythonApplication() {
+  const pythonExecutable = resolvePythonExecutable();
+  const entryPoint = detectPythonEntryPoint();
+
+  execFileSync(pythonExecutable, [entryPoint], { cwd: rootDir, stdio: 'inherit' });
+}
+
+function runApplication() {
+  const projectType = installer.detectProjectType();
+  if (projectType === 'python') {
+    runPythonApplication();
+    return;
+  }
+  if (projectType === 'node') {
+    runNodeApplication();
+    return;
+  }
+  throw new Error('Unsupported project type for run script.');
 }
 
 function main() {

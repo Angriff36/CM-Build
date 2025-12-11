@@ -33,13 +33,16 @@ function ensureNodeLintTool() {
 }
 
 function formatLintMessage(filePath, msg) {
+  const relativePath = filePath ? path.relative(rootDir, filePath) : '';
+  const normalizedType = msg.fatal ? 'fatal' : 'error';
+  const obj = msg.ruleId ? String(msg.ruleId) : '';
   return {
-    type: msg.ruleId || (msg.fatal ? 'fatal' : 'error'),
-    path: path.relative(rootDir, filePath || ''),
-    obj: msg.ruleId || '',
+    type: normalizedType,
+    path: relativePath,
+    obj,
     message: msg.message || 'Lint error',
-    line: msg.line || 0,
-    column: msg.column || 0
+    line: String(msg.line ?? 0),
+    column: String(msg.column ?? 0)
   };
 }
 
@@ -90,6 +93,15 @@ function detectPythonLintTargets() {
 }
 
 function ensurePythonLintTool(pythonExecutable) {
+  const versionCheck = spawnSync(pythonExecutable, ['-m', 'pylint', '--version'], {
+    cwd: rootDir,
+    stdio: 'ignore'
+  });
+
+  if (versionCheck.status === 0) {
+    return;
+  }
+
   const result = spawnSync(
     pythonExecutable,
     ['-m', 'pip', 'install', '--upgrade', 'pylint'],
@@ -124,14 +136,22 @@ function runPythonLint() {
     throw new Error(`Failed to parse pylint output: ${error.message}`);
   }
 
-  const messages = parsed.map((entry) => ({
-    type: entry.type || 'error',
-    path: path.relative(rootDir, entry.path || ''),
-    obj: entry.symbol || '',
-    message: entry.message || 'Lint error',
-    line: entry.line || 0,
-    column: entry.column || 0
-  }));
+  const allowedTypes = new Set(['fatal', 'error', 'warning']);
+  const messages = [];
+  parsed.forEach((entry) => {
+    const normalizedType = (entry.type || 'error').toLowerCase();
+    if (!allowedTypes.has(normalizedType)) {
+      return;
+    }
+    messages.push({
+      type: normalizedType,
+      path: path.relative(rootDir, entry.path || ''),
+      obj: entry.symbol ? String(entry.symbol) : '',
+      message: entry.message || 'Lint error',
+      line: String(entry.line ?? 0),
+      column: String(entry.column ?? 0)
+    });
+  });
 
   return { messages, status: lintResult.status ?? 0 };
 }

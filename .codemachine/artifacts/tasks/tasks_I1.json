@@ -20,7 +20,7 @@
     "acceptance_criteria": "pnpm install succeeds; `turbo run lint --dry` executes across placeholder packages; README documents instructions for running turborepo caching; repo root matches directory tree from Section 3 without stray files.",
     "dependencies": [],
     "parallelizable": false,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I1.T2",
