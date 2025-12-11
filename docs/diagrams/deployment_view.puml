@@ -1,0 +1,63 @@
+@startuml deployment_view
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+
+title CaterKing Platform - Deployment View
+
+' =============================================================================
+' Narrative:
+' Target operations leverage Vercel for frontend/API hosting and Supabase for
+' database, auth, storage, realtime, and functions. Doppler injects secrets,
+' GitHub Actions orchestrate builds, and Flagsmith controls feature rollout.
+' =============================================================================
+
+LAYOUT_WITH_LEGEND()
+
+' =============================================================================
+' Styling (mirrored from component_overview.puml)
+AddElementTag("app", $fontColor="White", $bgColor="DarkSlateBlue", $borderColor="Lavender")
+AddElementTag("lib", $fontColor="Black", $bgColor="Moccasin", $borderColor="Goldenrod")
+AddElementTag("service", $fontColor="White", $bgColor="DarkGreen", $borderColor="PaleGreen")
+AddElementTag("ops", $fontColor="Black", $bgColor="Gainsboro", $borderColor="DimGray")
+' =============================================================================
+
+DeploymentNode(dev, "Developer Workstation", "Docker + pnpm") {
+  Container(web, "Turbo Monorepo", "Next.js + pnpm", "Runs tests, lint, build")
+}
+
+DeploymentNode(ci, "GitHub Actions", "CI/CD") {
+  Container(gh_build, "Turbo Pipeline", "Node 20", "Builds apps and shared libs")
+  Container(gh_supabase, "Supabase CLI Jobs", "Node + Supabase CLI", "Applies migrations and deploys functions")
+}
+
+DeploymentNode(vercel, "Vercel", "Edge + Serverless", "Hosts Next.js Apps") {
+  Container(prepchef, "apps/prepchef", "Next.js 15", "Staff PWA") <<app>>
+  Container(caterking, "apps/caterking", "Next.js 15", "Light Ops App") <<app>>
+  Container(admincrm, "apps/admin-crm", "Next.js 15", "Manager/Admin dashboard") <<app>>
+  Container(display, "apps/display", "Next.js 15", "Wall/Kiosk display") <<app>>
+  Container(middleware, "Edge Middleware", "Edge Runtime", "Auth + flag enforcement") <<app>>
+}
+
+DeploymentNode(supabase, "Supabase Project", "Postgres/Auth/Storage/Realtime/Functions") {
+  ContainerDb(db, "Postgres", "RLS Protected", "Multi-tenant data store") <<service>>
+  Container(auth, "Supabase Auth", "JWT", "Identity + session management") <<service>>
+  Container(storage, "Supabase Storage", "Buckets", "Media uploads and transcoding triggers") <<service>>
+  Container(rt, "Supabase Realtime", "Websocket", "Realtime channels per company") <<service>>
+  Container(fn, "Supabase Functions", "Edge Functions", "Heuristics, cron, transcoding orchestrations") <<service>>
+}
+
+DeploymentNode(doppler, "Doppler", "Secrets Manager", "Injects secrets into Vercel and Supabase") <<ops>>
+DeploymentNode(flagsmith, "Flagsmith", "Feature Flags", "Controls staged rollouts") <<ops>>
+DeploymentNode(observability, "Observability Stack", "Logflare/Datadog", "Logs, metrics, tracing") <<ops>>
+
+Rel(web, gh_build, "Push code", "Git")
+Rel(gh_build, gh_supabase, "Trigger migrations + functions", "Workflow")
+Rel(gh_build, vercel, "Deploy artifacts", "Vercel CLI")
+Rel(gh_supabase, supabase, "Apply migrations and functions", "Supabase CLI")
+Rel(vercel, supabase, "Supabase client calls, Auth, Storage, Realtime", "HTTPS/WSS")
+Rel(vercel, flagsmith, "Fetch feature flags via server middleware", "SDK/HTTPS")
+Rel(vercel, doppler, "Secrets injection at build/deploy", "CLI/API")
+Rel(vercel, observability, "Ship logs and traces", "OTLP/HTTPS")
+Rel(supabase, observability, "Database/functions metrics & logs", "Log drain")
+
+SHOW_LEGEND()
+@enduml
