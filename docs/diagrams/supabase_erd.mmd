@@ -10,6 +10,8 @@ erDiagram
     companies ||--|{ audit_logs : "logs"
     companies ||--|{ notification_preferences : "configures"
     companies ||--|{ realtime_subscriptions : "subscribes"
+    companies ||--|{ task_similarity_suggestions : "suggests"
+    companies ||--|{ undo_tokens : "stores"
     companies ||--|{ stations : "defines"
     companies ||--|{ staff_schedules : "schedules"
     companies ||--|{ display_snapshots : "captures"
@@ -24,6 +26,8 @@ erDiagram
     users ||--|{ task_comments : "comments"
     tasks ||--|{ task_comments : "has comments"
     tasks ||--|{ combined_task_groups : "grouped in"
+    tasks ||--|{ task_similarity_suggestions : "has suggestions"
+    tasks ||--|{ undo_tokens : "has undo tokens"
     recipes ||--|{ tasks : "instantiated as"
     recipes ||--|{ method_documents : "documented by"
     method_documents ||--|{ tasks : "referenced by instructions_ref"
@@ -69,7 +73,7 @@ erDiagram
         numeric quantity
         string unit
         enum status "available, claimed, in_progress, completed"
-        string priority
+        enum priority "low, normal, high, urgent"
         uuid assigned_user_id FK
         uuid combined_group_id FK
         string instructions_ref
@@ -164,6 +168,7 @@ erDiagram
         string channel_name
         uuid last_seen_event_id
         string device_id
+        timestamp last_heartbeat_at
     }
 
     task_comments {
@@ -199,3 +204,33 @@ erDiagram
         jsonb payload
         timestamp captured_at
     }
+
+    task_similarity_suggestions {
+        uuid id PK
+        uuid company_id FK
+        uuid task_id FK
+        uuid suggested_task_id FK
+        numeric similarity_score
+        timestamp created_at
+    }
+
+    undo_tokens {
+        uuid id PK
+        uuid company_id FK
+        uuid task_id FK
+        string token
+        timestamp expires_at
+        timestamp created_at
+    }
+
+---
+
+## Changelog
+
+- **I2.T1 (2025-12-11)**: Extended schema for task lifecycle support.
+  - Added `task_priority` enum and updated `tasks.priority` to use it.
+  - Added `last_heartbeat_at` to `realtime_subscriptions` for presence heartbeats.
+  - Added `task_similarity_suggestions` table for task combination heuristics.
+  - Added `undo_tokens` table for undo metadata and expiration.
+  - Added indexes for new tables and heartbeat queries.
+  - Created materialized view `task_display_summary` for realtime dashboard aggregations.
