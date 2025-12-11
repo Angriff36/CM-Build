@@ -1,0 +1,60 @@
+@startuml prepchef_components
+' =============================================================================
+' Diagram: PrepChef Component Interactions
+' Version: 1.0
+' Author: CodeImplementer_v1.1
+' Description: Shows server/client components, React Query caches, realtime adapter, mutation service, and undo controller interactions for PrepChef app.
+' References: Section 2 of 06_UI_UX_Architecture.md, Blueprint Section 4.0
+' Related Tasks: I1.T1, I1.T2 (dependencies); I2.T6, I2.T7 (upcoming UI skeleton builds)
+' =============================================================================
+
+skinparam backgroundColor #FFFFFF
+skinparam packageStyle rectangle
+
+package "Client Components (apps/prepchef)" {
+  [Task List Panel]
+  [Task Detail Drawer]
+  [Recipe Drawer]
+  [Bottom Navigation Bar]
+  [Combine Review Drawer]
+  [Filter Sheet]
+  note right : Organisms from Section 2.2.3, including Task List Panel, Task Detail Drawer, Recipe Drawer, Filter Sheet, Bottom Navigation Bar, Combine Review Drawer.
+}
+
+package "Server Components (Next.js Server Actions)" {
+  [Server Actions]
+  note right : Handles user interactions, calls Supabase RPC.
+}
+
+package "Services & Adapters" {
+  [React Query Cache]
+  [Realtime Adapter (useRealtimeChannel)]
+  [Mutation Service (Supabase RPC)]
+  [Undo Controller (Toast Queue)]
+  note right : React Query for optimistic updates; Realtime Adapter subscribes to channels; Mutation Service executes RPC; Undo Controller manages undo tokens.
+}
+
+' Interactions based on Blueprint data flow: User interaction → Next.js server action → Supabase RPC → Realtime broadcast → React Query cache update
+[Task List Panel] --> [Server Actions] : User interaction (claim/complete)
+[Task Detail Drawer] --> [Server Actions] : Task actions
+[Recipe Drawer] --> [Server Actions] : Recipe scaling
+[Combine Review Drawer] --> [Server Actions] : Approve combine
+[Filter Sheet] --> [Server Actions] : Filter queries
+
+[Server Actions] --> [Mutation Service (Supabase RPC)] : Execute mutations
+[Mutation Service (Supabase RPC)] --> [Realtime Adapter (useRealtimeChannel)] : Broadcast changes
+[Realtime Adapter (useRealtimeChannel)] --> [React Query Cache] : Update cache
+[React Query Cache] --> [Task List Panel] : Reflect updates
+[React Query Cache] --> [Task Detail Drawer]
+[React Query Cache] --> [Recipe Drawer]
+[React Query Cache] --> [Combine Review Drawer]
+
+' Undo flow
+[Mutation Service (Supabase RPC)] --> [Undo Controller (Toast Queue)] : Return undo_token
+[Undo Controller (Toast Queue)] --> [Client Components (apps/prepchef)] : Display undo toast
+
+' Presence updates
+[Realtime Adapter (useRealtimeChannel)] --> [Task List Panel] : Presence payloads to Avatar Chips
+
+@enduml</content>
+<filePath>docs/diagrams/prepchef_components.puml

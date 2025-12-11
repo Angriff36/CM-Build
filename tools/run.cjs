@@ -20,7 +20,7 @@ function readPackageJson() {
 
 function pickRunScript(pkg) {
   const scripts = pkg.scripts || {};
-  const priorities = ['start', 'dev', 'serve'];
+  const priorities = ['dev', 'start', 'serve'];
   for (const script of priorities) {
     if (scripts[script]) {
       return script;
@@ -51,7 +51,7 @@ function detectPythonEntryPoint() {
     'app.py',
     path.join('src', 'main.py'),
     path.join('backend', 'main.py'),
-    path.join('api', 'main.py')
+    path.join('api', 'main.py'),
   ];
 
   for (const candidate of candidates) {
@@ -72,7 +72,7 @@ function runNodeApplication() {
     const result = installer.runPackageManager(['run', scriptName]);
     if (result.status !== 0) {
       throw new Error(
-        `Project script "${scriptName}" failed with exit code ${result.status ?? 'unknown'}.`
+        `Project script "${scriptName}" failed with exit code ${result.status ?? 'unknown'}.`,
       );
     }
     return;
@@ -124,5 +124,5 @@ if (require.main === module) {
 
 module.exports = {
   runApplication,
-  ensureInstall
+  ensureInstall,
 };

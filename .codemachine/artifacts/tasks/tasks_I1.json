@@ -55,7 +55,7 @@
     "acceptance_criteria": "Diagram renders without syntax errors, includes every component mentioned in Section 2, uses ASCII-friendly labels, and cross-links to upcoming iteration tasks that rely on it; index table references iteration IDs.",
     "dependencies": ["I1.T1", "I1.T2"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I1.T4",
