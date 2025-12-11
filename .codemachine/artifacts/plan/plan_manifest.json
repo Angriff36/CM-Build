@@ -241,6 +241,18 @@
       "description": "I5.T5 Create final documentation and user guides"
     },
     {
+      "key": "task-i5-t6",
+      "file": "02_Iteration_I5.md",
+      "start_anchor": "<!-- anchor: task-i5-t6 -->",
+      "description": "I5.T6 Finalize kiosk/display experience and automation/observability pipelines"
+    },
+    {
+      "key": "task-i5-t7",
+      "file": "02_Iteration_I5.md",
+      "start_anchor": "<!-- anchor: task-i5-t7 -->",
+      "description": "I5.T7 Finalize documentation set and deliver training for stakeholders"
+    },
+    {
       "key": "verification-and-integration-strategy",
       "file": "03_Verification_and_Glossary.md",
       "start_anchor": "<!-- anchor: 5-verification-and-integration-strategy -->",

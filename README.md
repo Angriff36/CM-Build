@@ -2,6 +2,19 @@
 
 Turbo + pnpm workspace for the CaterKing multi-tenant kitchen operations suite. The repo hosts every Next.js surface, shared libraries, Supabase schema, and operational docs referenced in the blueprint set.
 
+## Project Summary
+
+CaterKing is a comprehensive multi-tenant kitchen operations platform designed to streamline task management, recipe handling, and real-time coordination across PrepChef mobile apps, Admin CRM dashboards, and wall-mounted display kiosks. Built with Next.js, Supabase, and modern web technologies, it enables efficient kitchen workflows through intelligent task matching, media-rich recipes, and automated observability.
+
+Key features include:
+
+- Real-time task assignment and completion tracking
+- Recipe management with media uploads and scaling
+- Multi-tenant architecture with row-level security
+- Progressive Web App capabilities for offline operation
+- Automated CI/CD with feature flag rollouts
+- Comprehensive monitoring and rollback procedures
+
 ## Prerequisites
 
 - Node.js 20.10+
@@ -13,19 +26,47 @@ Turbo + pnpm workspace for the CaterKing multi-tenant kitchen operations suite. 
 
 Ensure you have Supabase, Doppler, and Flagsmith project access before attempting local auth or realtime features.
 
-## Getting Started
+## Quickstart Guide
 
-```bash
-pnpm install           # install and link all workspace packages
-pnpm dev:prepchef      # Turbo-filtered dev server for the PrepChef app
-pnpm lint              # runs turbo run lint across the graph
-pnpm typecheck         # tsc in every package via Turbo
-pnpm test              # vitest suites (placeholder today)
-pnpm build             # next build + library builds via Turbo pipeline
-```
+### Local Development Setup
 
-- Use `turbo run lint --dry` to validate script wiring without executing linters end-to-end.
-- Filter any command to a single package via `--filter <package>`.
+1. **Clone and Install Dependencies**
+
+   ```bash
+   git clone <repository-url>
+   cd caterking-platform
+   pnpm install
+   ```
+
+2. **Configure Environment Secrets**
+
+   ```bash
+   # Set up Doppler for secrets management
+   doppler run -- pnpm dev:prepchef
+   ```
+
+3. **Start Development Server**
+
+   ```bash
+   pnpm dev:prepchef      # PrepChef app
+   pnpm dev:admin-crm     # Admin CRM (when available)
+   pnpm dev:display       # Display kiosk (when available)
+   ```
+
+4. **Run Quality Checks**
+   ```bash
+   pnpm lint              # ESLint across workspace
+   pnpm typecheck         # TypeScript validation
+   pnpm test              # Unit tests with Vitest
+   pnpm build             # Production build verification
+   ```
+
+### Development Workflow
+
+- Use `turbo run lint --dry` to validate script wiring without executing linters.
+- Filter commands to specific packages: `pnpm build --filter=@caterkingapp/prepchef`
+- Access Storybook for component development: `pnpm storybook`
+- Run E2E tests: `pnpm test:e2e`
 
 ## Toolchain Pins & Secrets
 
@@ -58,7 +99,7 @@ tooling/       # CLI scripts, GitHub workflows
 
 ## Architecture
 
-*   [Component Overview](./docs/diagrams/component_overview.puml): Visual breakdown of apps, shared libraries, Supabase services, and external infrastructure (PlantUML).
+- [Component Overview](./docs/diagrams/component_overview.puml): Visual breakdown of apps, shared libraries, Supabase services, and external infrastructure (PlantUML).
 
 ## Environment & Tooling Notes
 
@@ -67,8 +108,47 @@ tooling/       # CLI scripts, GitHub workflows
 3. Flagsmith SDK keys live alongside Supabase keys and should be scoped per environment.
 4. The guardrails in the "Standard Kit" doc (docs/architecture/01_Blueprint_Foundation.md) dictate lint/type/test behaviors; keep Turbo tasks in sync with those expectations.
 
+## Release Timeline
+
+### Iteration 1 (Foundation) - Completed
+
+- Monorepo setup with Turbo and pnpm workspaces
+- Supabase database schema with multi-tenant tables and RLS policies
+- Shared UI library with design system components
+- Core architecture diagrams (Component, ERD, Context)
+
+### Iteration 2 (Task Management) - Completed
+
+- Task management APIs and real-time updates
+- PrepChef app task list UI components
+- Basic authentication and role-based access
+- Sequence diagrams for critical flows
+
+### Iteration 3 (Recipe & Media) - Completed
+
+- Recipe data models and admin CMS interfaces
+- Media upload functionality with Supabase Storage
+- Wall-mounted display application
+- Deployment diagram and infrastructure docs
+
+### Iteration 4 (Intelligence & UX) - Completed
+
+- Task similarity heuristic matching
+- Advanced filtering and search
+- Undo functionality for operations
+- Presence tracking and device monitoring
+
+### Iteration 5 (Production Readiness) - In Progress
+
+- Comprehensive testing suite implementation
+- Performance optimization and caching
+- Final UI polish and accessibility improvements
+- Production deployment pipeline and monitoring
+- Documentation finalization and stakeholder training
+
 ## Next Steps
 
-- Flesh out Supabase schema + migrations under `supabase/migrations`.
-- Add remaining apps (`caterking`, `admin-crm`, `display`) and shared libs.
-- Document Doppler template + Github Actions workflows in `/docs` and `/tooling`.
+- Complete Iteration 5 production readiness tasks
+- Establish production monitoring and alerting
+- Conduct stakeholder training sessions
+- Execute production deployment and validation

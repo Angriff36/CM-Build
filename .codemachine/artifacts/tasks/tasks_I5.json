@@ -149,7 +149,7 @@
     "acceptance_criteria": "Docs reference anchors; training agenda distributed; plan manifest validated (JSON schema) and lists all major sections/tasks.",
     "dependencies": [],
     "parallelizable": false,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I5.T8",
