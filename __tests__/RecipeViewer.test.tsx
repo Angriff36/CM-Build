@@ -147,7 +147,10 @@ describe('RecipeViewer', () => {
     const mediaTab = screen.getByText('Media');
     fireEvent.click(mediaTab);
 
-    expect(screen.getByText('No media available for this recipe.')).toBeInTheDocument();
+    // Should render media thumbnails, not the no media message
+    expect(screen.queryByText('No media available for this recipe.')).not.toBeInTheDocument();
+    // Check that media gallery is rendered (grid container)
+    expect(screen.getByRole('img', { name: 'Recipe image 1' })).toBeInTheDocument();
   });
 
   it('renders markdown in steps', () => {

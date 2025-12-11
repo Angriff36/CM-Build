@@ -14,10 +14,16 @@ interface RecipeViewerProps {
 export function RecipeViewer({ recipeId, onClose, taskQuantity }: RecipeViewerProps) {
   const [activeTab, setActiveTab] = useState('steps');
   const [scale, setScale] = useState(taskQuantity || 1);
+  const [isVisible, setIsVisible] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
   const firstFocusableRef = useRef<HTMLButtonElement>(null);
 
   const { data: recipe, isLoading, error } = useRecipe(recipeId);
+
+  useEffect(() => {
+    // Trigger slide-in animation
+    setIsVisible(true);
+  }, []);
 
   useEffect(() => {
     // Focus trap
@@ -69,7 +75,9 @@ export function RecipeViewer({ recipeId, onClose, taskQuantity }: RecipeViewerPr
       <div className="flex-1 bg-black bg-opacity-50" onClick={onClose} />
       <div
         ref={drawerRef}
-        className="w-full max-w-md bg-white shadow-lg transform transition-transform duration-300 ease-out translate-x-0"
+        className={`w-full max-w-md bg-white shadow-lg transform transition-transform duration-300 ease-out ${
+          isVisible ? 'translate-x-0' : 'translate-x-full'
+        }`}
         role="dialog"
         aria-labelledby="recipe-title"
         aria-modal="true"
