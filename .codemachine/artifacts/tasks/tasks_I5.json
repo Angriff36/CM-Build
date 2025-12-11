@@ -19,11 +19,9 @@
     ],
     "deliverables": "- Full-screen layout with kiosk lock, admin gesture instructions, offline banner.\n        - Heartbeat hook monitoring `/api/presence` + raising toast/alert when device stale.\n        - Device status component referencing presence table.\n        - Runbook citing heartbeat thresholds, manual refresh instructions, signage guidelines.",
     "acceptance_criteria": "Display responds to orientation change; offline fallback shows timestamp; heartbeat alerts delivered; runbook cross-links to automation.",
-    "dependencies": [
-      "I4.T5"
-    ],
+    "dependencies": ["I4.T5"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I5.T2",
@@ -32,20 +30,11 @@
     "description": "Author CI/CD pipeline diagram (Mermaid) and documentation describing GitHub Actions, Doppler, Supabase migrations, Flagsmith approvals, and rollback flows.",
     "agent_type_hint": "DocumentationAgent",
     "inputs": "CI workflows, release process, blueprint directives.",
-    "target_files": [
-      "docs/diagrams/cicd_pipeline.mmd",
-      "docs/operations/release_runbook.md"
-    ],
-    "input_files": [
-      ".github/workflows/ci.yml",
-      "docs/operations/ci_cd_overview.md"
-    ],
+    "target_files": ["docs/diagrams/cicd_pipeline.mmd", "docs/operations/release_runbook.md"],
+    "input_files": [".github/workflows/ci.yml", "docs/operations/ci_cd_overview.md"],
     "deliverables": "- Mermaid diagram mapping code push -> CI -> migrations -> preview -> staging -> prod with approvals.\n        - Release runbook enumerating steps, automation scripts, rollback levers, flag toggles, communications.",
     "acceptance_criteria": "Diagram renders; runbook references Doppler/Flagsmith flows; release checklist appended to repository docs.",
-    "dependencies": [
-      "I1.T7",
-      "I4.T6"
-    ],
+    "dependencies": ["I1.T7", "I4.T6"],
     "parallelizable": true,
     "done": false
   },
@@ -62,16 +51,10 @@
       "docs/operations/environment_matrix.md",
       "docs/operations/feature_flag_matrix.md"
     ],
-    "input_files": [
-      "configs/doppler.template.yaml",
-      "docs/operations/feature_flag_runbook.md"
-    ],
+    "input_files": ["configs/doppler.template.yaml", "docs/operations/feature_flag_runbook.md"],
     "deliverables": "- Cross-platform secret sync scripts verifying required keys exist for each environment.\n        - Environment matrix doc listing Supabase project IDs, Vercel projects, Flagsmith envs, release cadence.\n        - Feature flag matrix capturing default states, rollout owners, telemetry metrics, kill-switch details.",
     "acceptance_criteria": "Scripts exit nonzero when secrets missing; docs highlight owners; CI job runs sync script dry-run; autop-run adds unstoppable.",
-    "dependencies": [
-      "I1.T6",
-      "I1.T7"
-    ],
+    "dependencies": ["I1.T6", "I1.T7"],
     "parallelizable": true,
     "done": false
   },
@@ -94,10 +77,7 @@
     ],
     "deliverables": "- Dashboard definitions (JSON or Terraform) for key metrics; screenshot or embed for docs.\n        - Alert matrix mapping metrics -> severity -> runbook links.\n        - Bootstrap script calling observability API to create resources.",
     "acceptance_criteria": "Dashboards accessible; alerts configured with Teams/Slack webhooks; docs show sample graphs + thresholds; script idempotent.",
-    "dependencies": [
-      "I1.T7",
-      "I4.T6"
-    ],
+    "dependencies": ["I1.T7", "I4.T6"],
     "parallelizable": false,
     "done": false
   },
@@ -120,10 +100,7 @@
     ],
     "deliverables": "- Formal report per drill summarizing scenario, impact, remediation, follow-ups.\n        - UI updates for offline banners referencing telemetry/perf data.\n        - Checklist verifying user messaging, logging, and auto-recovery sequences.",
     "acceptance_criteria": "Drills executed; issues logged + tracked; UI banners accessible; docs link to follow-up tickets.",
-    "dependencies": [
-      "I5.T1",
-      "I5.T4"
-    ],
+    "dependencies": ["I5.T1", "I5.T4"],
     "parallelizable": false,
     "done": false
   },
@@ -146,10 +123,7 @@
     ],
     "deliverables": "- Nightly workflow running Supabase impersonation tests + posting summary to Slack.\n        - Incident notifier script hooking into observability alerts for communications.\n        - Automation status doc tracking completed vs pending backlog items.",
     "acceptance_criteria": "Workflow logs accessible; Slack message sample documented; automation status updated.",
-    "dependencies": [
-      "I1.T5",
-      "I4.T6"
-    ],
+    "dependencies": ["I1.T5", "I4.T6"],
     "parallelizable": true,
     "done": false
   },
@@ -184,10 +158,7 @@
     "description": "Run final Playwright regression plus manual QA verifying display, PrepChef, Admin CRM, notifications, feature flags, and undo flows under production-like data, documenting sign-off.",
     "agent_type_hint": "QATestingAgent",
     "inputs": "Completed UIs, automation scripts.",
-    "target_files": [
-      "tests/playwright/regression.suite.json",
-      "docs/operations/qa_signoff.md"
-    ],
+    "target_files": ["tests/playwright/regression.suite.json", "docs/operations/qa_signoff.md"],
     "input_files": [
       "tests/playwright/prepchef.tasks.spec.ts",
       "tests/playwright/admin.board.spec.ts",
@@ -195,10 +166,7 @@
     ],
     "deliverables": "- Consolidated Playwright suite invoking all spec files with tags for surfaces.\n        - QA sign-off doc listing scenarios, failures, mitigations, pending risks.",
     "acceptance_criteria": "Suite passes; sign-off doc signed by QA + ops leads; gating tasks tracked in issue tracker.",
-    "dependencies": [
-      "I5.T1",
-      "I5.T7"
-    ],
+    "dependencies": ["I5.T1", "I5.T7"],
     "parallelizable": false,
     "done": false
   }
