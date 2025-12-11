@@ -190,6 +190,46 @@ Before closing tasks, verify:
 - [ ] Lint, typecheck, and tests pass
 - [ ] Rollback plan documented
 
+## Troubleshooting
+
+### Port Conflicts
+
+If Supabase fails to start due to port conflicts:
+
+1. Check what's using the ports: `lsof -i :54321` (macOS/Linux) or `netstat -ano | findstr :54321` (Windows)
+2. Stop conflicting services or change Supabase ports in `supabase/config.toml`
+3. Alternative: Use Docker fallback if local Postgres conflicts
+
+### Docker Fallback
+
+For environments without local Postgres:
+
+1. Ensure Docker Desktop is running
+2. Supabase will automatically use Docker containers
+3. If issues persist, run `docker system prune` to clean up
+
+### Windows WSL Quirks
+
+When using WSL on Windows:
+
+1. Install Supabase CLI in WSL, not Windows
+2. Ensure Docker Desktop WSL integration is enabled
+3. Use `wsl.exe` paths for file access if needed
+4. Port forwarding: Access apps via `localhost` from Windows browser
+5. File permissions: Run scripts with proper WSL user context
+
+### Doppler Issues
+
+- **Access Denied**: Verify Doppler login and project membership
+- **Missing Secrets**: Run `./scripts/env/sync_secrets.sh --validate` to check required secrets
+- **Template Validation**: Use `doppler run --config-template configs/doppler.template.yaml -- echo "Valid"`
+
+### Common Dev Script Errors
+
+- **pnpm not found**: Install pnpm globally or use `npm run dev` temporarily
+- **Supabase seed fails**: Check database connection and migration status
+- **App won't start**: Verify Node.js version and dependency installation
+
 ## Future Automation
 
 - Automated ADR validation against blueprint anchors
