@@ -25,7 +25,8 @@
         "apps/prepchef/app/tasks/page.tsx",
         "__tests__/TaskDashboard.test.tsx",
         "apps/prepchef/README.md (updated)"
-      ]
+      ],
+      "done": true
     },
     {
       "id": "I6.T2",

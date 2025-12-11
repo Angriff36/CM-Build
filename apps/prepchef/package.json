@@ -12,15 +12,21 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@caterkingapp/shared": "workspace:*",
+    "@caterkingapp/supabase": "workspace:*",
     "@caterkingapp/ui": "workspace:*",
+    "@tanstack/react-query": "^5.17.15",
     "next": "15.0.0-canary.123",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
     "@types/node": "^20.14.2",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.7.0",
     "eslint": "^9.3.0",
     "typescript": "^5.4.5",
     "vitest": "^1.6.0"
