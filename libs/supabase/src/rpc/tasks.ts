@@ -6,6 +6,8 @@ import type {
   CompleteTaskResponse,
   UndoTaskRequest,
   UndoTaskResponse,
+  AssignTaskRequest,
+  AssignTaskResponse,
   CombineTasksRequest,
   CombineTasksResponse,
 } from '../../../shared/src/dto/tasks';
@@ -48,6 +50,20 @@ export async function undoTask(request: UndoTaskRequest): Promise<UndoTaskRespon
   }
 
   return data as UndoTaskResponse;
+}
+
+export async function assignTask(request: AssignTaskRequest): Promise<AssignTaskResponse> {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc('assign_task', {
+    task_id: request.task_id,
+    user_id: request.user_id,
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return data as AssignTaskResponse;
 }
 
 export async function combineTasks(request: CombineTasksRequest): Promise<CombineTasksResponse> {

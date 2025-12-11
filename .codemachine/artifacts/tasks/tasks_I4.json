@@ -67,7 +67,7 @@
     "acceptance_criteria": "Drag/drop updates PrepChef in <1s; board handles >100 tasks via virtualization; Playwright spec ensures assignments + undo function.",
     "dependencies": ["I2.T6", "I2.T7"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I4.T5",

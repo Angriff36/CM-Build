@@ -45,6 +45,22 @@ export const UndoTaskResponseSchema = z.object({
 
 export type UndoTaskResponse = z.infer<typeof UndoTaskResponseSchema>;
 
+// Assign Task
+export const AssignTaskRequestSchema = z.object({
+  task_id: z.string().uuid(),
+  user_id: z.string().uuid(),
+});
+
+export type AssignTaskRequest = z.infer<typeof AssignTaskRequestSchema>;
+
+export const AssignTaskResponseSchema = z.object({
+  success: z.boolean(),
+  undo_token: z.string().optional(),
+  timestamp: z.string(),
+});
+
+export type AssignTaskResponse = z.infer<typeof AssignTaskResponseSchema>;
+
 // Combine Tasks
 export const CombineTasksRequestSchema = z.object({
   task_ids: z.array(z.string().uuid()),
