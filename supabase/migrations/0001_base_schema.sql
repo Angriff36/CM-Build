@@ -118,73 +118,7 @@ CREATE TABLE public.combined_task_groups (
     CONSTRAINT combined_task_groups_approved_by_user_id_fkey FOREIGN KEY (approved_by_user_id) REFERENCES public.users(id) ON DELETE SET NULL
 );
 
--- 6. Recipes
--- Reference: 5-0-the-contract
-CREATE TABLE public.recipes (
-    id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    company_id uuid NOT NULL,
-    name text NOT NULL,
-    ingredients jsonb NOT NULL DEFAULT '[]'::jsonb,
-    steps jsonb NOT NULL DEFAULT '[]'::jsonb,
-    media_urls jsonb NOT NULL DEFAULT '[]'::jsonb,
-    version text DEFAULT '1.0',
-    tags text[],
-    allergen_flags text[],
-    created_at timestamp with time zone NOT NULL DEFAULT now(),
-    updated_at timestamp with time zone NOT NULL DEFAULT now(),
-    CONSTRAINT recipes_pkey PRIMARY KEY (id),
-    CONSTRAINT recipes_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id) ON DELETE CASCADE
-);
 
--- 7. MethodDocuments
--- Reference: 5-0-the-contract
-CREATE TABLE public.method_documents (
-    id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    company_id uuid NOT NULL,
-    title text NOT NULL,
-    steps jsonb NOT NULL DEFAULT '[]'::jsonb,
-    video_refs jsonb NOT NULL DEFAULT '[]'::jsonb,
-    skill_level text,
-    last_reviewed_by uuid,
-    created_at timestamp with time zone NOT NULL DEFAULT now(),
-    CONSTRAINT method_documents_pkey PRIMARY KEY (id),
-    CONSTRAINT method_documents_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id) ON DELETE CASCADE,
-    CONSTRAINT method_documents_last_reviewed_by_fkey FOREIGN KEY (last_reviewed_by) REFERENCES public.users(id) ON DELETE SET NULL
-);
-
--- 8. MediaAssets
--- Reference: 5-0-the-contract
-CREATE TABLE public.media_assets (
-    id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    company_id uuid NOT NULL,
-    url text NOT NULL,
-    type text NOT NULL,
-    thumbnail_url text,
-    duration numeric,
-    status text NOT NULL DEFAULT 'pending',
-    storage_path text NOT NULL,
-    checksum text,
-    created_at timestamp with time zone NOT NULL DEFAULT now(),
-    updated_at timestamp with time zone NOT NULL DEFAULT now(),
-    CONSTRAINT media_assets_pkey PRIMARY KEY (id),
-    CONSTRAINT media_assets_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id) ON DELETE CASCADE
-);
-
--- 9. RoleAssignments
--- Reference: 5-0-the-contract
-CREATE TABLE public.role_assignments (
-    id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    company_id uuid NOT NULL,
-    user_id uuid NOT NULL,
-    role public.user_role NOT NULL,
-    granted_by uuid NOT NULL,
-    granted_at timestamp with time zone NOT NULL DEFAULT now(),
-    revoked_at timestamp with time zone,
-    CONSTRAINT role_assignments_pkey PRIMARY KEY (id),
-    CONSTRAINT role_assignments_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id) ON DELETE CASCADE,
-    CONSTRAINT role_assignments_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE,
-    CONSTRAINT role_assignments_granted_by_fkey FOREIGN KEY (granted_by) REFERENCES public.users(id) ON DELETE CASCADE
-);
 
 -- 10. AuditLogs
 -- Reference: 5-0-the-contract
@@ -292,11 +226,6 @@ CREATE INDEX idx_tasks_company_event_status ON public.tasks(company_id, event_id
 CREATE INDEX idx_tasks_assigned_user ON public.tasks(assigned_user_id);
 
 CREATE INDEX idx_combined_task_groups_company ON public.combined_task_groups(company_id);
-CREATE INDEX idx_recipes_company ON public.recipes(company_id);
-CREATE INDEX idx_method_documents_company ON public.method_documents(company_id);
-CREATE INDEX idx_media_assets_company_status ON public.media_assets(company_id, status);
-CREATE INDEX idx_media_assets_checksum ON public.media_assets(checksum);
-CREATE INDEX idx_role_assignments_company_user ON public.role_assignments(company_id, user_id);
 CREATE INDEX idx_audit_logs_company_created ON public.audit_logs(company_id, created_at DESC);
 CREATE INDEX idx_notification_preferences_company_user ON public.notification_preferences(company_id, user_id);
 CREATE INDEX idx_realtime_subscriptions_company ON public.realtime_subscriptions(company_id);
@@ -337,5 +266,3 @@ CREATE TRIGGER on_company_updated BEFORE UPDATE ON public.companies FOR EACH ROW
 CREATE TRIGGER on_user_updated BEFORE UPDATE ON public.users FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 CREATE TRIGGER on_event_updated BEFORE UPDATE ON public.events FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 CREATE TRIGGER on_task_updated BEFORE UPDATE ON public.tasks FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
-CREATE TRIGGER on_recipe_updated BEFORE UPDATE ON public.recipes FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
-CREATE TRIGGER on_media_updated BEFORE UPDATE ON public.media_assets FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();

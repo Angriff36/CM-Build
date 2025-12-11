@@ -234,3 +234,11 @@ erDiagram
   - Added `undo_tokens` table for undo metadata and expiration.
   - Added indexes for new tables and heartbeat queries.
   - Created materialized view `task_display_summary` for realtime dashboard aggregations.
+
+- **I3.T1 (2025-12-11)**: Introduced knowledge-base stack migrations.
+  - Added `recipes` table with versioning, JSONB ingredients/steps/media_urls, tags, and allergen_flags.
+  - Added `method_documents` table with JSONB steps/video_refs, skill_level, and last_reviewed_by.
+  - Added `media_assets` table with upload tracking, status, and checksum.
+  - Added `role_assignments` table for auditable RBAC history.
+  - Added indexes on company_id, version, tags for efficient queries.
+  - Included seed data for sample recipes and method documents.

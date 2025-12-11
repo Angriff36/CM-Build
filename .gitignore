@@ -19,4 +19,5 @@ pnpm-debug.log
 __pycache__/
 *.tmp
 *.swp
-"
+supabase/.temp/
+

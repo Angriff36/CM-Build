@@ -17,11 +17,9 @@
     ],
     "deliverables": "- SQL migrations adding recipe/method/media tables with versioning, JSONB steps, tags, allergen flags, and media references.\n        - ERD update highlighting new tables and relationships to tasks/combined groups.\n        - Seed data for sample recipes + method documents per tenant.",
     "acceptance_criteria": "Migrations apply/rollback cleanly; ERD diff logged; seeds load in dev environment; indexes cover `company_id` + `version` + `tags` queries.",
-    "dependencies": [
-      "I2.T1"
-    ],
+    "dependencies": ["I2.T1"],
     "parallelizable": false,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I3.T2",
@@ -42,9 +40,7 @@
     ],
     "deliverables": "- Edge Function triggered on storage upload to transcode video, create thumbnails, update `media_assets` status, and emit realtime events.\n        - API route issuing signed URLs, validating MIME/size, and writing pending metadata rows.\n        - Queue watcher script for ops plus documentation on retention + cleanup.",
     "acceptance_criteria": "Upload -> process -> ready statuses flow; logs show telemetry; watchers alert on backlog; admin docs advise when to escalate.",
-    "dependencies": [
-      "I3.T1"
-    ],
+    "dependencies": ["I3.T1"],
     "parallelizable": false,
     "done": false
   },
@@ -55,19 +51,14 @@
     "description": "Produce the Knowledge Base content flow diagram mapping Admin CRM authoring -> storage -> Supabase functions -> PrepChef drawers.",
     "agent_type_hint": "DiagrammingAgent",
     "inputs": "Media pipeline, recipe drawer requirements.",
-    "target_files": [
-      "docs/diagrams/knowledge_flow.mmd",
-      "docs/diagrams/diagram_index.md"
-    ],
+    "target_files": ["docs/diagrams/knowledge_flow.mmd", "docs/diagrams/diagram_index.md"],
     "input_files": [
       "docs/operations/media_pipeline.md",
       "docs/architecture/06_UI_UX_Architecture.md"
     ],
     "deliverables": "- Mermaid flowchart describing author upload, validation, processing, realtime updates, playback, and failure recovery.\n        - Diagram index entry noting dependencies and iteration owner.",
     "acceptance_criteria": "Diagram renders; steps align with Task 3.2 output; fallback paths for failed processing included.",
-    "dependencies": [
-      "I3.T2"
-    ],
+    "dependencies": ["I3.T2"],
     "parallelizable": true,
     "done": false
   },
@@ -88,9 +79,7 @@
     ],
     "deliverables": "- Markdown blueprint with per-surface interaction patterns, focus order, motion tokens, offline handling, and notifications.\n        - Storybook MDX doc referencing blueprint, demonstrating states, and linking to designs.",
     "acceptance_criteria": "Document cross-references diagrams + blueprint anchors; Storybook entry passes lint + Chromatic baseline; instructions cover accessible controls.",
-    "dependencies": [
-      "I3.T3"
-    ],
+    "dependencies": ["I3.T3"],
     "parallelizable": true,
     "done": false
   },
@@ -115,10 +104,7 @@
     ],
     "deliverables": "- PrepChef drawer with tabs (Steps/Ingredients/Media/Notes) pulling data via streaming server component + React Query hydration.\n        - Media player component with progress, fallback thumbnail, and offline banner hooking into realtime statuses.\n        - Admin recipe editor with diff view, version bump confirmation, and media attachment/preview support.\n        - Unit/Storybook tests for drawer states, method steps, and editor validations.",
     "acceptance_criteria": "Drawer opens/closes smoothly, persists filter state, and handles version mismatch prompts; admin editor prevents concurrent edits; tests + Chromatic snapshots updated.",
-    "dependencies": [
-      "I3.T2",
-      "I3.T4"
-    ],
+    "dependencies": ["I3.T2", "I3.T4"],
     "parallelizable": true,
     "done": false
   },
@@ -140,9 +126,7 @@
     ],
     "deliverables": "- RLS rules for recipes/methods/media, ensuring only managers/owners edit, staff read, and tasks reference consistent company data.\n        - pgTAP additions covering role-specific behavior + impersonation tests.\n        - Catalog updates summarizing coverage, TODOs, and impersonation commands for new tables.",
     "acceptance_criteria": "Tests pass; docs updated with new sections; storage policies mention bucket path conventions.",
-    "dependencies": [
-      "I3.T1"
-    ],
+    "dependencies": ["I3.T1"],
     "parallelizable": true,
     "done": false
   },
@@ -167,10 +151,7 @@
     ],
     "deliverables": "- Admin playlist editor (CRUD, drag-and-drop ordering, video attachments, skill levels, review status).\n        - PrepChef drawer showing recommended methods tied to current tasks when flag ON, with fallback messaging when OFF.\n        - Hooks fetching method data + caching exposures for telemetry.",
     "acceptance_criteria": "Feature flag toggles behavior; method drawer accessible; playlists persisted with audit logs; tests cover both flag states.",
-    "dependencies": [
-      "I3.T5",
-      "I3.T6"
-    ],
+    "dependencies": ["I3.T5", "I3.T6"],
     "parallelizable": true,
     "done": false
   },
@@ -193,10 +174,7 @@
     ],
     "deliverables": "- PrepChef Playwright spec covering drawer open, step navigation, video fallback, offline banner.\n        - Admin Playwright spec covering upload success/failure, version diff, publish workflow.\n        - Vitest suite mocking Supabase functions to test media status transitions.",
     "acceptance_criteria": "Tests pass locally + CI; screens captured on failure; docs updated with new commands.",
-    "dependencies": [
-      "I3.T2",
-      "I3.T5"
-    ],
+    "dependencies": ["I3.T2", "I3.T5"],
     "parallelizable": true,
     "done": false
   }
