@@ -100,7 +100,7 @@
     "acceptance_criteria": "pgTAP tests run via `supabase test` and pass; documentation references tests and blueprint anchors; impersonation script outputs sample tokens and handles Windows/macOS shells.",
     "dependencies": ["I1.T4"],
     "parallelizable": false,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I1.T6",
@@ -121,7 +121,7 @@
     "acceptance_criteria": "Running `scripts/dev` spins up Supabase + Next.js with seeded data and prints friendly instructions; Doppler template validated via `doppler run --config-template`; docs updated with steps and troubleshooting tips; CI ensures script has executable bit for bash.",
     "dependencies": ["I1.T1", "I1.T4", "I1.T5"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I1.T7",
@@ -145,6 +145,6 @@
     "acceptance_criteria": "Workflow executes successfully on branch push; docs show sample logs; OTEL config loads without JSON schema errors; Chromatic stub ready for later integration with secrets stored in Doppler; CI badge added to README.",
     "dependencies": ["I1.T1", "I1.T6"],
     "parallelizable": true,
-    "done": false
+    "done": true
   }
 ]
