@@ -1,0 +1,90 @@
+import { Meta, Canvas, Story } from '@storybook/blocks';
+import { Button } from '../components/ui/button'; // Assuming path
+
+<Meta title="Interaction Blueprint" />
+
+# Interaction Blueprint
+
+This Storybook entry demonstrates key interaction states and patterns as described in the [UI Interaction Blueprint](../../docs/ux/ui_interaction_blueprint.md).
+
+It covers PrepChef recipe drawer, undo toasts, filters, admin CMS forms, kiosk display transitions, and offline banners.
+
+## PrepChef Recipe Drawer States
+
+<Canvas>
+  <Story name="Drawer Open">
+    <div style={{ border: '1px solid #ccc', padding: '20px' }}>
+      <h3>Recipe Drawer</h3>
+      <p>Simulated open state with tabs and content.</p>
+      <Button>Close</Button>
+    </div>
+  </Story>
+</Canvas>
+
+## Undo Toast States
+
+<Canvas>
+  <Story name="Toast Visible">
+    <div
+      style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        background: '#fff',
+        border: '1px solid #000',
+        padding: '10px',
+      }}
+    >
+      <p>Task completed. Undo in 5s</p>
+      <Button variant="outline">Undo</Button>
+    </div>
+  </Story>
+</Canvas>
+
+## Filter Sheet States
+
+<Canvas>
+  <Story name="Sheet Open">
+    <div style={{ border: '1px solid #ccc', padding: '20px', height: '300px', overflow: 'auto' }}>
+      <h3>Filters</h3>
+      <p>Checkbox filters here.</p>
+      <Button>Apply</Button>
+    </div>
+  </Story>
+</Canvas>
+
+## Admin Form States
+
+<Canvas>
+  <Story name="Form Editing">
+    <form>
+      <label>
+        Recipe Name: <input type="text" />
+      </label>
+      <Button>Save</Button>
+    </form>
+  </Story>
+</Canvas>
+
+## Kiosk Transition States
+
+<Canvas>
+  <Story name="Rotation">
+    <div style={{ background: '#f0f0f0', padding: '20px' }}>
+      <p>Simulated kiosk view transition.</p>
+    </div>
+  </Story>
+</Canvas>
+
+## Offline Banner States
+
+<Canvas>
+  <Story name="Banner Visible">
+    <div style={{ background: '#ffa500', color: '#fff', padding: '10px' }}>
+      <p>Offline - Retrying connection...</p>
+      <Button variant="secondary">Retry</Button>
+    </div>
+  </Story>
+</Canvas>
+
+For design links, refer to [Figma Designs](https://figma.com/placeholder).

@@ -81,7 +81,7 @@
     "acceptance_criteria": "Document cross-references diagrams + blueprint anchors; Storybook entry passes lint + Chromatic baseline; instructions cover accessible controls.",
     "dependencies": ["I3.T3"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I3.T5",
@@ -106,7 +106,7 @@
     "acceptance_criteria": "Drawer opens/closes smoothly, persists filter state, and handles version mismatch prompts; admin editor prevents concurrent edits; tests + Chromatic snapshots updated.",
     "dependencies": ["I3.T2", "I3.T4"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I3.T6",
@@ -128,7 +128,7 @@
     "acceptance_criteria": "Tests pass; docs updated with new sections; storage policies mention bucket path conventions.",
     "dependencies": ["I3.T1"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I3.T7",
@@ -153,7 +153,7 @@
     "acceptance_criteria": "Feature flag toggles behavior; method drawer accessible; playlists persisted with audit logs; tests cover both flag states.",
     "dependencies": ["I3.T5", "I3.T6"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I3.T8",
@@ -176,6 +176,6 @@
     "acceptance_criteria": "Tests pass locally + CI; screens captured on failure; docs updated with new commands.",
     "dependencies": ["I3.T2", "I3.T5"],
     "parallelizable": true,
-    "done": false
+    "done": true
   }
 ]
