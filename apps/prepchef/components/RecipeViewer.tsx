@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useRecipe } from '@caterkingapp/shared/hooks/useRecipe';
 import { MediaGallery } from './MediaGallery';
+import { OfflineBanner } from './offline-banner';
 
 interface RecipeViewerProps {
   recipeId: string;
@@ -15,6 +16,7 @@ export function RecipeViewer({ recipeId, onClose, taskQuantity }: RecipeViewerPr
   const [activeTab, setActiveTab] = useState('steps');
   const [scale, setScale] = useState(taskQuantity || 1);
   const [isVisible, setIsVisible] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
   const drawerRef = useRef<HTMLDivElement>(null);
   const firstFocusableRef = useRef<HTMLButtonElement>(null);
 
@@ -23,6 +25,19 @@ export function RecipeViewer({ recipeId, onClose, taskQuantity }: RecipeViewerPr
   useEffect(() => {
     // Trigger slide-in animation
     setIsVisible(true);
+  }, []);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, []);
 
   useEffect(() => {
@@ -73,6 +88,7 @@ export function RecipeViewer({ recipeId, onClose, taskQuantity }: RecipeViewerPr
   return (
     <div className="fixed inset-0 z-50 flex">
       <div className="flex-1 bg-black bg-opacity-50" onClick={onClose} />
+      {!isOnline && <OfflineBanner mode="offline" />}
       <div
         ref={drawerRef}
         className={`w-full max-w-md bg-white shadow-lg transform transition-transform duration-300 ease-out ${
@@ -132,15 +148,19 @@ export function RecipeViewer({ recipeId, onClose, taskQuantity }: RecipeViewerPr
             <div role="tabpanel" id="ingredients-panel" aria-labelledby="ingredients-tab">
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">Scale: {scale.toFixed(1)}x</label>
-                <input
-                  type="range"
-                  min="0.5"
-                  max="3"
-                  step="0.1"
-                  value={scale}
-                  onChange={(e) => setScale(parseFloat(e.target.value))}
-                  className="w-full"
-                />
+                {isOnline ? (
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="3"
+                    step="0.1"
+                    value={scale}
+                    onChange={(e) => setScale(parseFloat(e.target.value))}
+                    className="w-full"
+                  />
+                ) : (
+                  <p className="text-sm text-gray-500">Reconnect to scale</p>
+                )}
               </div>
               <ul>
                 {scaledIngredients?.map((ing, index) => (
@@ -154,7 +174,7 @@ export function RecipeViewer({ recipeId, onClose, taskQuantity }: RecipeViewerPr
 
           {activeTab === 'media' && (
             <div role="tabpanel" id="media-panel" aria-labelledby="media-tab">
-              <MediaGallery mediaUrls={recipe.media_urls} />
+              <MediaGallery mediaUrls={recipe.media_urls} isOnline={isOnline} />
             </div>
           )}
 

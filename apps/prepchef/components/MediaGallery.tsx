@@ -5,9 +5,10 @@ import React, { useState } from 'react';
 interface MediaGalleryProps {
   mediaUrls: string[];
   className?: string;
+  isOnline?: boolean;
 }
 
-export function MediaGallery({ mediaUrls, className }: MediaGalleryProps) {
+export function MediaGallery({ mediaUrls, className, isOnline = true }: MediaGalleryProps) {
   const [selectedMedia, setSelectedMedia] = useState<number | null>(null);
 
   if (!mediaUrls || mediaUrls.length === 0) {
@@ -54,12 +55,29 @@ export function MediaGallery({ mediaUrls, className }: MediaGalleryProps) {
       >
         <div className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
           {type === 'image' ? (
-            <img
-              src={url}
-              alt={`Recipe image ${index + 1}`}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-              loading="lazy"
-            />
+            isOnline ? (
+              <img
+                src={url}
+                alt={`Recipe image ${index + 1}`}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                loading="lazy"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gray-300">
+                <div className="text-center">
+                  <div className="w-12 h-12 mx-auto mb-2 bg-gray-400 rounded-full flex items-center justify-center">
+                    <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <p className="text-xs text-gray-600">Image</p>
+                </div>
+              </div>
+            )
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gray-300">
               <div className="text-center">
@@ -117,30 +135,44 @@ export function MediaGallery({ mediaUrls, className }: MediaGalleryProps) {
 
           <div className="p-4">
             {type === 'image' ? (
-              <img
-                src={url}
-                alt={`Recipe image ${selectedMedia + 1}`}
-                className="w-full h-auto rounded-lg"
-              />
+              isOnline ? (
+                <img
+                  src={url}
+                  alt={`Recipe image ${selectedMedia + 1}`}
+                  className="w-full h-auto rounded-lg"
+                />
+              ) : (
+                <div className="w-full h-64 flex items-center justify-center bg-gray-300 rounded-lg">
+                  <p className="text-gray-600">Image unavailable offline</p>
+                </div>
+              )
             ) : (
               <div>
-                <video controls className="w-full max-h-96 rounded-lg" preload="metadata">
-                  <source src={url} />
-                  Your browser does not support the video tag.
-                </video>
-                <div className="p-4 text-center">
-                  <p className="mb-2 text-sm text-gray-600">
-                    If video doesn't play, you can{' '}
-                    <a
-                      href={url}
-                      className="text-blue-500 underline hover:text-blue-600"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      download it instead
-                    </a>
-                  </p>
-                </div>
+                {isOnline ? (
+                  <video controls className="w-full max-h-96 rounded-lg" preload="metadata">
+                    <source src={url} />
+                    Your browser does not support the video tag.
+                  </video>
+                ) : (
+                  <div className="w-full h-64 flex items-center justify-center bg-gray-300 rounded-lg">
+                    <p className="text-gray-600">Video unavailable offline</p>
+                  </div>
+                )}
+                {isOnline && (
+                  <div className="p-4 text-center">
+                    <p className="mb-2 text-sm text-gray-600">
+                      If video doesn't play, you can{' '}
+                      <a
+                        href={url}
+                        className="text-blue-500 underline hover:text-blue-600"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        download it instead
+                      </a>
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>

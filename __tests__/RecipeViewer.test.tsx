@@ -211,4 +211,57 @@ describe('RecipeViewer', () => {
     const closeButton = screen.getByLabelText('Close recipe viewer');
     expect(closeButton).toHaveFocus();
   });
+
+  it('shows offline banner when offline', () => {
+    mockUseRecipe.mockReturnValue(createUseRecipeResult({ data: mockRecipe }));
+
+    // Mock navigator.onLine
+    Object.defineProperty(navigator, 'onLine', { value: false, writable: true });
+
+    render(
+      <TestWrapper>
+        <RecipeViewer {...defaultProps} />
+      </TestWrapper>,
+    );
+
+    expect(screen.getByText('Offline mode active. Please check connection.')).toBeInTheDocument();
+  });
+
+  it('disables scaling when offline', () => {
+    mockUseRecipe.mockReturnValue(createUseRecipeResult({ data: mockRecipe }));
+
+    Object.defineProperty(navigator, 'onLine', { value: false, writable: true });
+
+    render(
+      <TestWrapper>
+        <RecipeViewer {...defaultProps} />
+      </TestWrapper>,
+    );
+
+    // Switch to ingredients tab
+    const ingredientsTab = screen.getByText('Ingredients');
+    fireEvent.click(ingredientsTab);
+
+    expect(screen.getByText('Reconnect to scale')).toBeInTheDocument();
+    expect(screen.queryByRole('slider')).not.toBeInTheDocument();
+  });
+
+  it('shows media placeholders when offline', () => {
+    mockUseRecipe.mockReturnValue(createUseRecipeResult({ data: mockRecipe }));
+
+    Object.defineProperty(navigator, 'onLine', { value: false, writable: true });
+
+    render(
+      <TestWrapper>
+        <RecipeViewer {...defaultProps} />
+      </TestWrapper>,
+    );
+
+    // Switch to media tab
+    const mediaTab = screen.getByText('Media');
+    fireEvent.click(mediaTab);
+
+    expect(screen.getByText('Image')).toBeInTheDocument();
+    expect(screen.getByText('Video')).toBeInTheDocument();
+  });
 });
