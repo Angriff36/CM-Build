@@ -42,7 +42,7 @@
     "acceptance_criteria": "Upload -> process -> ready statuses flow; logs show telemetry; watchers alert on backlog; admin docs advise when to escalate.",
     "dependencies": ["I3.T1"],
     "parallelizable": false,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I3.T3",

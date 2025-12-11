@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "description": "Media ingest function for transcoding videos, generating thumbnails, and updating media assets",
+  "supported_formats": {
+    "video": ["video/mp4", "video/avi", "video/mov"],
+    "image": ["image/jpeg", "image/png", "image/gif"]
+  },
+  "max_file_size_mb": 500,
+  "transcoding_settings": {
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "thumbnail_format": "jpeg",
+    "thumbnail_size": "320x240"
+  },
+  "last_updated": "2025-12-11",
+  "author": "CodeImplementer_v1.1"
+}
