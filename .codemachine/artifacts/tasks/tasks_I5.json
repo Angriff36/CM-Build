@@ -79,7 +79,7 @@
     "acceptance_criteria": "Dashboards accessible; alerts configured with Teams/Slack webhooks; docs show sample graphs + thresholds; script idempotent.",
     "dependencies": ["I1.T7", "I4.T6"],
     "parallelizable": false,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I5.T5",

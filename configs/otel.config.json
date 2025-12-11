@@ -1,0 +1,89 @@
+{
+  "service": {
+    "name": "caterking-platform",
+    "version": "1.0.0",
+    "namespace": "com.caterking"
+  },
+  "resource": {
+    "attributes": {
+      "service.name": "caterking-platform",
+      "service.version": "1.0.0",
+      "service.namespace": "com.caterking",
+      "deployment.environment": "${OTEL_ENV:-development}",
+      "host.name": "${HOSTNAME}",
+      "telemetry.sdk.name": "opentelemetry",
+      "telemetry.sdk.language": "nodejs",
+      "telemetry.sdk.version": "1.0.0"
+    }
+  },
+  "exporters": {
+    "console": {
+      "type": "console",
+      "verbosity": "detailed"
+    },
+    "otlp": {
+      "type": "otlp",
+      "endpoint": "${OTEL_EXPORTER_OTLP_ENDPOINT:-http://localhost:4318}",
+      "headers": {
+        "authorization": "Bearer ${OTEL_EXPORTER_OTLP_HEADERS_AUTHORIZATION}"
+      }
+    }
+  },
+  "processors": {
+    "batch": {
+      "type": "batch",
+      "schedule_delay": 1000,
+      "max_export_batch_size": 512,
+      "export_timeout": 30000,
+      "max_export_batch_size_in_bytes": 524288
+    },
+    "resource": {
+      "type": "resource",
+      "attributes": [
+        {
+          "key": "service.instance.id",
+          "value": "${OTEL_SERVICE_INSTANCE_ID:-${HOSTNAME}}"
+        }
+      ]
+    }
+  },
+  "service_pipelines": {
+    "traces": {
+      "receivers": ["otlp"],
+      "processors": ["batch", "resource"],
+      "exporters": ["${OTEL_TRACES_EXPORTER:-console}"]
+    },
+    "metrics": {
+      "receivers": ["otlp"],
+      "processors": ["batch", "resource"],
+      "exporters": ["${OTEL_METRICS_EXPORTER:-console}"]
+    },
+    "logs": {
+      "receivers": ["otlp"],
+      "processors": ["batch", "resource"],
+      "exporters": ["${OTEL_LOGS_EXPORTER:-console}"]
+    }
+  },
+  "apps": {
+    "prepchef": {
+      "service": {
+        "name": "prepchef-app"
+      }
+    },
+    "admin-crm": {
+      "service": {
+        "name": "admin-crm-app"
+      }
+    },
+    "display": {
+      "service": {
+        "name": "display-app"
+      }
+    },
+    "supabase-functions": {
+      "service": {
+        "name": "supabase-functions"
+      }
+    }
+  }
+}
