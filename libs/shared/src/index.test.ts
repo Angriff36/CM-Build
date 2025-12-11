@@ -14,7 +14,10 @@ describe('Shared Enums', () => {
   });
 
   it('exports TaskStatus', () => {
-    expect(TaskStatus.PENDING).toBe('pending');
+    expect(TaskStatus.AVAILABLE).toBe('available');
+    expect(TaskStatus.CLAIMED).toBe('claimed');
+    expect(TaskStatus.IN_PROGRESS).toBe('in_progress');
+    expect(TaskStatus.COMPLETED).toBe('completed');
   });
 
   it('exports EventStatus', () => {

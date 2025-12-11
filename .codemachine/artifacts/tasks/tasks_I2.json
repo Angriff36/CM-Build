@@ -36,7 +36,7 @@
     "acceptance_criteria": "Supabase tests cover success/failure paths; DTOs exported via `@caterkingapp/shared/tasks`; audit logs show sample entries; idempotency proved via repeated invocation tests.",
     "dependencies": ["I2.T1"],
     "parallelizable": false,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I2.T3",

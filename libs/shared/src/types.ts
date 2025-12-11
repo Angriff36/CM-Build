@@ -11,10 +11,17 @@ export interface UserDTO extends BaseEntity {
   status: string;
 }
 
+import { TaskStatus, TaskPriority } from './enums';
+
 export interface TaskDTO extends BaseEntity {
   event_id: string;
   name: string;
-  status: string;
-  priority: string;
+  quantity: number;
+  unit: string;
+  status: TaskStatus;
+  priority: TaskPriority;
   assigned_user_id?: string;
+  combined_group_id?: string;
+  instructions_ref?: string;
+  undo_token?: string;
 }

@@ -12,10 +12,17 @@ export enum UserStatus {
 }
 
 export enum TaskStatus {
-  PENDING = 'pending',
+  AVAILABLE = 'available',
   CLAIMED = 'claimed',
+  IN_PROGRESS = 'in_progress',
   COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
+}
+
+export enum TaskPriority {
+  LOW = 'low',
+  NORMAL = 'normal',
+  HIGH = 'high',
+  URGENT = 'urgent',
 }
 
 export enum EventStatus {
