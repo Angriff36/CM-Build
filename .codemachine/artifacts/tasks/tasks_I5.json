@@ -36,7 +36,7 @@
     "acceptance_criteria": "Diagram renders; runbook references Doppler/Flagsmith flows; release checklist appended to repository docs.",
     "dependencies": ["I1.T7", "I4.T6"],
     "parallelizable": true,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I5.T3",

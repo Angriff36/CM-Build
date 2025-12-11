@@ -1,0 +1,54 @@
+graph TD
+    A[Developer Push to Feature Branch] --> B[Create Pull Request]
+    B --> C[GitHub Actions CI Workflow]
+    C --> D[Lint Check: ESLint & Prettier]
+    D --> E[Type Check: TypeScript Strict Mode]
+    E --> F[Unit Tests: Vitest]
+    F --> G[Integration Tests: Supabase Test Environment]
+    G --> H[E2E Tests: Playwright]
+    H --> I[Visual Regression Tests: Storybook/Chromatic]
+    I --> J{All Checks Pass?}
+    J -->|No| K[PR Blocked - Fix Issues]
+    J -->|Yes| L[Merge to Main Branch]
+    
+    L --> M[GitHub Actions Deploy Workflow]
+    M --> N[Doppler Secret Sync: ck-stg Environment]
+    N --> O[Supabase Migration: Staging Database]
+    O --> P[Vercel Preview Deployment]
+    P --> Q[Staging Environment Ready]
+    
+    Q --> R[Manual QA Validation]
+    R --> S[Flagsmith Flag Validation: ck-stg]
+    S --> T{Staging Approved?}
+    T -->|No| U[Fix Issues - Push Hotfix]
+    T -->|Yes| V[Request Production Approval]
+    
+    V --> W[Stakeholder Manual Approval]
+    W --> X[Doppler Secret Sync: ck-prod Environment]
+    X --> Y[Supabase Migration: Production Database]
+    Y --> Z[Flagsmith Flag Validation: ck-prod]
+    Z --> AA[Vercel Production Deployment]
+    AA --> BB[Production Live]
+    
+    BB --> CC[Post-Deployment Monitoring]
+    CC --> DD{Issues Detected?}
+    DD -->|No| EE[Release Complete]
+    DD -->|Yes| FF[Emergency Rollback Procedures]
+    
+    FF --> GG[Toggle Flagsmith Flags to OFF]
+    FF --> HH[Supabase Point-in-Time Recovery]
+    FF --> II[Vercel Redeploy Previous Commit]
+    
+    GG --> JJ[Monitor Error Rates]
+    HH --> KK[Restore Database State]
+    II --> LL[Rollback Application Code]
+    
+    JJ --> MM[Document Incident]
+    KK --> MM
+    LL --> MM
+    MM --> NN[Communicate Resolution]
+    
+    style A fill:#e1f5fe
+    style BB fill:#c8e6c9
+    style FF fill:#ffcdd2
+    style EE fill:#e8f5e8
