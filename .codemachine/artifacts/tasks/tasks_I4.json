@@ -1,28 +1,8 @@
 [
   {
     "task_id": "I4.T1",
-    "iteration_id": "I4",
-    "iteration_goal": "Deliver heuristic-powered task combination, manager approval tools, cross-event dashboards, and enhanced audit/undo policies so the platform scales across multiple simultaneous events without confusion.",
     "description": "Implement Supabase Edge Function (TypeScript) for task combination heuristics plus pipeline to store suggestions, normalized units, and metadata per Section 2.1 spec.",
-    "agent_type_hint": "BackendAgent",
-    "inputs": "Task schema, blueprint heuristics directives.",
-    "target_files": [
-      "supabase/functions/task_heuristics/index.ts",
-      "supabase/functions/task_heuristics/metadata.json",
-      "docs/specs/task_combination.md"
-    ],
-    "input_files": [
-      "docs/architecture/01_Blueprint_Foundation.md",
-      "supabase/migrations/0003_task_lifecycle.sql"
-    ],
-    "deliverables": "- Edge Function parsing tasks, normalizing ingredients, computing similarity, writing to `task_similarity_suggestions`.\n        - JSON metadata file describing heuristics thresholds, tunables, version.\n        - Spec in Markdown describing heuristics pipeline, rollback, telemetry requirements.",
-    "acceptance_criteria": "Function deploys; CLI tests confirm suggestions generated; spec references blueprint anchors, includes JSON examples.",
-    "dependencies": [
-      "I2.T1",
-      "I2.T2"
-    ],
-    "parallelizable": false,
-    "done": false
+    "done": true
   },
   {
     "task_id": "I4.T2",
@@ -43,10 +23,7 @@
     ],
     "deliverables": "- PrepChef combine view summarizing suggestions with opt-in CTA + breakdown popover.\n        - Admin CRM approval board with filters (event/station/confidence) and audit trail.\n        - Feature flag wiring controlling visibility + telemetry exposures.",
     "acceptance_criteria": "Flag toggles behavior; approvals call combine API; UI shows aggregated instructions + rollback actions; tests cover accept/reject states.",
-    "dependencies": [
-      "I4.T1",
-      "I2.T3"
-    ],
+    "dependencies": ["I4.T1", "I2.T3"],
     "parallelizable": true,
     "done": false
   },
@@ -62,15 +39,10 @@
       "tests/contract/tasks.contract.test.ts",
       "apps/display/app/api/summary/route.ts"
     ],
-    "input_files": [
-      "api/openapi.yaml",
-      "apps/prepchef/app/api/tasks/suggestions/route.ts"
-    ],
+    "input_files": ["api/openapi.yaml", "apps/prepchef/app/api/tasks/suggestions/route.ts"],
     "deliverables": "- Updated OpenAPI sections for combine approval, rollback, summary endpoints.\n        - Contract tests covering new responses.\n        - Display summary API route returning aggregated view with caching hints.",
     "acceptance_criteria": "Spectral lint passes; contract tests updated; API docs mention feature flags + schema_version.",
-    "dependencies": [
-      "I4.T2"
-    ],
+    "dependencies": ["I4.T2"],
     "parallelizable": true,
     "done": false
   },
@@ -93,10 +65,7 @@
     ],
     "deliverables": "- Multi-column board grouped by station/status with drag handles.\n        - Sidebar showing staff presence + shift schedule alignment.\n        - Hook calling assignment API + updating audit logs + realtime events.\n        - Accessibility support for keyboard-based reassignments.",
     "acceptance_criteria": "Drag/drop updates PrepChef in <1s; board handles >100 tasks via virtualization; Playwright spec ensures assignments + undo function.",
-    "dependencies": [
-      "I2.T6",
-      "I2.T7"
-    ],
+    "dependencies": ["I2.T6", "I2.T7"],
     "parallelizable": true,
     "done": false
   },
@@ -120,9 +89,7 @@
     ],
     "deliverables": "- Summary grid showing available/claimed/completed by event/station with timers.\n        - Urgent ticker cycling high-priority tasks with audible cues.\n        - Hook blending realtime + polling fallback + offline banner.\n        - Config knob for rotation cadence stored in Doppler.",
     "acceptance_criteria": "Display handles realtime disconnect gracefully; data matches summary API; ticker accessible; config documented.",
-    "dependencies": [
-      "I4.T3"
-    ],
+    "dependencies": ["I4.T3"],
     "parallelizable": true,
     "done": false
   },
@@ -146,10 +113,7 @@
     ],
     "deliverables": "- SQL function logging combination + rollback diffs.\n        - Shared audit event constants consumed by UI for linking to logs.\n        - CLI script generating reports for last 24h actions.\n        - Runbook describing access, retention, and export process.",
     "acceptance_criteria": "Audit entries appear for all key actions; CLI prints table; docs cite compliance requirements; undo tokens reference audit IDs.",
-    "dependencies": [
-      "I4.T1",
-      "I4.T2"
-    ],
+    "dependencies": ["I4.T1", "I4.T2"],
     "parallelizable": true,
     "done": false
   },
@@ -172,10 +136,7 @@
     ],
     "deliverables": "- k6 script simulating heuristics load + API bursts.\n        - Benchmark doc capturing latency, CPU, recommended throttle flags.\n        - Index/SQL tweaks to keep query times <200ms.",
     "acceptance_criteria": "Benchmarks recorded; indexes migrates; doc references instrumentation metrics; gating thresholds added to runbooks.",
-    "dependencies": [
-      "I4.T1",
-      "I4.T4"
-    ],
+    "dependencies": ["I4.T1", "I4.T4"],
     "parallelizable": true,
     "done": false
   },
@@ -198,11 +159,7 @@
     ],
     "deliverables": "- Admin board spec verifying drag/drop, staff filters, audit log links.\n        - PrepChef combine spec verifying approval, rejection, rollback, offline fallback.\n        - Chaos helper toggling realtime connection to ensure polling fallback tested.",
     "acceptance_criteria": "Tests pass; chaos helper integrated into CI optional job; docs updated.",
-    "dependencies": [
-      "I4.T2",
-      "I4.T4",
-      "I4.T5"
-    ],
+    "dependencies": ["I4.T2", "I4.T4", "I4.T5"],
     "parallelizable": true,
     "done": false
   }

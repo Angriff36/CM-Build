@@ -1,0 +1,49 @@
+{
+  "version": "1.0.0",
+  "description": "Task combination heuristics metadata for PrepChef platform",
+  "thresholds": {
+    "min_similarity_score": 0.5,
+    "max_suggestions_per_task": 5
+  },
+  "tunables": {
+    "name_weight": 0.6,
+    "unit_weight": 0.3,
+    "quantity_weight": 0.1,
+    "unit_normalizations": {
+      "g": "g",
+      "gram": "g",
+      "grams": "g",
+      "kg": "kg",
+      "kilogram": "kg",
+      "kilograms": "kg",
+      "cup": "cup",
+      "cups": "cup",
+      "tbsp": "tbsp",
+      "tablespoon": "tbsp",
+      "tablespoons": "tbsp",
+      "tsp": "tsp",
+      "teaspoon": "tsp",
+      "teaspoons": "tsp",
+      "oz": "oz",
+      "ounce": "oz",
+      "ounces": "oz",
+      "lb": "lb",
+      "pound": "lb",
+      "pounds": "lb",
+      "ml": "ml",
+      "milliliter": "ml",
+      "milliliters": "ml",
+      "l": "l",
+      "liter": "l",
+      "liters": "l",
+      "pint": "pint",
+      "pints": "pint",
+      "quart": "quart",
+      "quarts": "quart",
+      "gallon": "gallon",
+      "gallons": "gallon"
+    }
+  },
+  "last_updated": "2025-12-11",
+  "author": "CodeImplementer_v1.1"
+}
