@@ -107,7 +107,7 @@ function createManifest(outputDir, taskFiles) {
 
     const manifestPath = path.join(outputDir, "tasks_manifest.json");
     fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
-    console.log(`✓ Created manifest: $`);
+    console.log(`? Created manifest: $`);
 }
 
 function main() {
@@ -125,7 +125,7 @@ function main() {
         .map(f => path.join(planDir, f));
 
     if (iterationFiles.length === 0) {
-        console.log("⚠ No iteration files found in .codemachine/artifacts/plan");
+        console.log("? No iteration files found in .codemachine/artifacts/plan");
         return;
     }
 
@@ -141,7 +141,7 @@ function main() {
     }
 
     createManifest(outputDir, taskFiles);
-    console.log(`✓ Conversion complete! Output is in $`);
+    console.log(`? Conversion complete! Output is in $`);
 }
 
 if (require.main === module) main();

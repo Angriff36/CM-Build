@@ -2,16 +2,24 @@
   {
     "task_id": "I2.T1",
     "iteration_id": "I2",
-    "iteration_goal": "Deliver typed API contracts, Supabase RPC implementations, realtime + undo specs, and shared hooks powering PrepChef/Admin skeletons with optimistic flows.",
-    "description": "Create OpenAPI v3 spec (`caterking.yaml`) describing tasks/events/recipes/media/users endpoints, schemas, pagination, and error envelopes; integrate linting in CI.",
-    "agent_type_hint": "DocumentationAgent",
-    "inputs": "Section 2 API style, Access Matrix, ERD.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Validated OpenAPI doc with examples, Spectral ruleset, npm script for linting.",
-    "acceptance_criteria": "`pnpm api:lint` passes; spec covers claim/complete/combine/undo, includes tags + schema_version metadata; referenced from README and plan manifest.",
+    "iteration_goal": "Implement the core task/event data flows (migrations, RPCs, API routes, realtime channels, PrepChef hooks) plus the canonical OpenAPI/sequence artifacts so both staff and manager experiences can build confidently.",
+    "description": "Extend Supabase schema with additional task lifecycle columns (priority, undo tokens, timestamps, presence heartbeats), materialized summary views, and helper tables (TaskSimilaritySuggestions, RealtimeSubscriptions) to support realtime dashboards.",
+    "agent_type_hint": "DatabaseAgent",
+    "inputs": "I1 schema, blueprint data model, ERD references.",
+    "target_files": [
+      "supabase/migrations/0003_task_lifecycle.sql",
+      "supabase/migrations/0004_summary_views.sql",
+      "docs/diagrams/supabase_erd.mmd"
+    ],
+    "input_files": [
+      "supabase/migrations/0001_base_schema.sql",
+      "docs/diagrams/supabase_erd.mmd"
+    ],
+    "deliverables": "- Migration adding priority enums, undo metadata, `task_similarity_suggestions`, `realtime_subscriptions`, `undo_tokens` tables, and indexes.\n        - Materialized views for `/display` summary plus refresh cron SQL.\n        - ERD update capturing new tables/relationships + textual changelog appended to diagram index.",
+    "acceptance_criteria": "`supabase db lint` passes; views refresh successfully; ERD diff logged; migrations reversible via down scripts.",
     "dependencies": [
-      "I1.T4"
+      "I1.T4",
+      "I1.T5"
     ],
     "parallelizable": false,
     "done": false
@@ -19,33 +27,46 @@
   {
     "task_id": "I2.T2",
     "iteration_id": "I2",
-    "iteration_goal": "Deliver typed API contracts, Supabase RPC implementations, realtime + undo specs, and shared hooks powering PrepChef/Admin skeletons with optimistic flows.",
-    "description": "Author Task Lifecycle sequence diagram (Mermaid) depicting PrepChef UI, API routes, Supabase RPC, Realtime, Undo service interactions.",
-    "agent_type_hint": "DiagrammingAgent",
-    "inputs": "Task lifecycle stories, Section 2 communication patterns.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Mermaid sequence diagram plus explanatory notes.",
-    "acceptance_criteria": "Diagram renders; covers claim conflict + undo; referenced from docs index.",
+    "iteration_goal": "Implement the core task/event data flows (migrations, RPCs, API routes, realtime channels, PrepChef hooks) plus the canonical OpenAPI/sequence artifacts so both staff and manager experiences can build confidently.",
+    "description": "Implement stored procedures (`claim_task`, `complete_task`, `undo_task`, `combine_tasks`) plus row-level audit triggers and Zod-described DTOs inside `libs/shared`.",
+    "agent_type_hint": "DatabaseAgent",
+    "inputs": "Fresh schema, blueprint contract requirements, undo requirements.",
+    "target_files": [
+      "supabase/functions/claim_task.sql",
+      "supabase/functions/complete_task.sql",
+      "supabase/functions/undo_task.sql",
+      "libs/shared/src/dto/tasks.ts"
+    ],
+    "input_files": [
+      "supabase/migrations/0003_task_lifecycle.sql",
+      "docs/security/rls_policies.md"
+    ],
+    "deliverables": "- SQL functions enforcing role permissions, idempotency keys, undo token issuance, audit logging, and realtime NOTIFY payloads.\n        - Shared DTO definitions + Zod schemas for requests/responses, reused by API + UI.\n        - README snippet detailing RPC usage and idempotency expectations.",
+    "acceptance_criteria": "Supabase tests cover success/failure paths; DTOs exported via `@caterkingapp/shared/tasks`; audit logs show sample entries; idempotency proved via repeated invocation tests.",
     "dependencies": [
       "I2.T1"
     ],
-    "parallelizable": true,
+    "parallelizable": false,
     "done": false
   },
   {
     "task_id": "I2.T3",
     "iteration_id": "I2",
-    "iteration_goal": "Deliver typed API contracts, Supabase RPC implementations, realtime + undo specs, and shared hooks powering PrepChef/Admin skeletons with optimistic flows.",
-    "description": "Build Feature Flag Register in `docs/adr/feature_flags.md` capturing key flags (task combine, undo window, kiosk polling, push preview), default states, telemetry, rollback plan.",
-    "agent_type_hint": "DocumentationAgent",
-    "inputs": "Section 2 feature flag strategy, requirements.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Markdown register with table (flag key, scope, environments, owner, metrics, removal plan) plus instructions for updates.",
-    "acceptance_criteria": "Flags align with roadmap; doc referenced by ADR template; watchers assigned.",
+    "iteration_goal": "Implement the core task/event data flows (migrations, RPCs, API routes, realtime channels, PrepChef hooks) plus the canonical OpenAPI/sequence artifacts so both staff and manager experiences can build confidently.",
+    "description": "Implement Next.js API routes and server actions for `/api/tasks`, `/api/tasks/:id/claim`, `/api/tasks/:id/complete`, `/api/tasks/:id/undo`, `/api/events`, `/api/tasks/suggestions`, including error handling and telemetry emission.",
+    "agent_type_hint": "BackendAgent",
+    "inputs": "DTOs, RPC wrappers, blueprint API contract section.",
+    "target_files": [
+      "apps/prepchef/app/api/tasks/route.ts"
+    ],
+    "input_files": [
+      "libs/shared/src/dto/tasks.ts",
+      "docs/architecture/03_Behavior_and_Communication.md"
+    ],
+    "deliverables": "- Type-safe API handlers calling RPC wrappers, validating payloads via Zod, emitting OTEL spans, and returning `schema_version` metadata.\n        - Shared error utility mapping Supabase errors to UI-friendly codes.\n        - Integration tests hitting handlers with mocked Supabase client verifying HTTP responses & telemetry.",
+    "acceptance_criteria": "`pnpm test api` passes; handlers reject invalid payloads with 422; idempotent replays return previous success payloads; OTEL spans recorded in logs.",
     "dependencies": [
-      "I1.T8"
+      "I2.T2"
     ],
     "parallelizable": true,
     "done": false
@@ -53,35 +74,46 @@
   {
     "task_id": "I2.T4",
     "iteration_id": "I2",
-    "iteration_goal": "Deliver typed API contracts, Supabase RPC implementations, realtime + undo specs, and shared hooks powering PrepChef/Admin skeletons with optimistic flows.",
-    "description": "Implement Supabase functions/RPCs for `claim_task`, `complete_task`, `combine_tasks`, `undo_task`, `log_audit_event`, plus Next.js API route handlers calling them with idempotency + telemetry.",
-    "agent_type_hint": "BackendAgent",
-    "inputs": "OpenAPI spec, migrations, Access Matrix.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "RPC SQL with RLS checks, Next.js handlers verifying schema + idempotency, DTO definitions, telemetry instrumentation hooks.",
-    "acceptance_criteria": "`pnpm test supabase` passes; API routes align with OpenAPI; optimistic responses include undo_token + realtime metadata; pgTAP tests cover role enforcement.",
-    "dependencies": [
-      "I1.T4",
-      "I2.T1"
+    "iteration_goal": "Implement the core task/event data flows (migrations, RPCs, API routes, realtime channels, PrepChef hooks) plus the canonical OpenAPI/sequence artifacts so both staff and manager experiences can build confidently.",
+    "description": "Draft the Task Lifecycle sequence diagram capturing staff claim -> RPC -> Realtime -> Display update -> Undo, referencing UI + behavior requirements.",
+    "agent_type_hint": "DiagrammingAgent",
+    "inputs": "Behavior spec, API route design.",
+    "target_files": [
+      "docs/diagrams/task_lifecycle_seq.puml",
+      "docs/diagrams/diagram_index.md"
     ],
-    "parallelizable": false,
+    "input_files": [
+      "docs/architecture/03_Behavior_and_Communication.md",
+      "docs/architecture/06_UI_UX_Architecture.md"
+    ],
+    "deliverables": "- PlantUML sequence file detailing PrepChef UI, libs/shared, API route, Supabase RPC, Realtime, Display, and Undo service interactions.\n        - Diagram index update describing scenario scope, dependencies, and iteration handshake.",
+    "acceptance_criteria": "Diagram renders, includes undo failure branch, uses ASCII names, and is referenced by Task 2.7 instructions.",
+    "dependencies": [
+      "I2.T3"
+    ],
+    "parallelizable": true,
     "done": false
   },
   {
     "task_id": "I2.T5",
     "iteration_id": "I2",
-    "iteration_goal": "Deliver typed API contracts, Supabase RPC implementations, realtime + undo specs, and shared hooks powering PrepChef/Admin skeletons with optimistic flows.",
-    "description": "Draft undo + notification spec `docs/specs/undo_notification.md` outlining payload structure, TTL, toast messaging, telemetry, failure fallback.",
+    "iteration_goal": "Implement the core task/event data flows (migrations, RPCs, API routes, realtime channels, PrepChef hooks) plus the canonical OpenAPI/sequence artifacts so both staff and manager experiences can build confidently.",
+    "description": "Create the OpenAPI v3 draft covering all task/event endpoints with component schemas derived from libs/shared DTOs.",
     "agent_type_hint": "DocumentationAgent",
-    "inputs": "Requirements section (Undo), feature flag register.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Spec with sequence steps, JSON payload example, state diagram, instrumentation checklist.",
-    "acceptance_criteria": "Spec ties to RPC outputs; includes acceptance tests; cross-links to Task Lifecycle diagram.",
+    "inputs": "API handlers, DTOs, blueprint API style.",
+    "target_files": [
+      "api/openapi.yaml",
+      "api/README.md",
+      "tests/contract/tasks.contract.test.ts"
+    ],
+    "input_files": [
+      "apps/prepchef/app/api/tasks/route.ts",
+      "libs/shared/src/dto/tasks.ts"
+    ],
+    "deliverables": "- OpenAPI spec with paths, parameters, request/response bodies, error schemas, and security (Supabase Auth) sections.\n        - README describing how to regenerate docs, run spectral lint, and share with partners.\n        - Contract test verifying API responses conform to schema via `pnpm test:contract`.",
+    "acceptance_criteria": "`pnpm spectral lint api/openapi.yaml` passes; contract test fails if schema drifts; spec references iteration tasks for provenance.",
     "dependencies": [
-      "I2.T2",
-      "I2.T4"
+      "I2.T3"
     ],
     "parallelizable": true,
     "done": false
@@ -89,34 +121,52 @@
   {
     "task_id": "I2.T6",
     "iteration_id": "I2",
-    "iteration_goal": "Deliver typed API contracts, Supabase RPC implementations, realtime + undo specs, and shared hooks powering PrepChef/Admin skeletons with optimistic flows.",
-    "description": "Build PrepChef data hooks (`useTaskDashboard`, `useRealtimeChannel`) leveraging React Query + Supabase client; implement optimistic claim/complete flows referencing OpenAPI types.",
+    "iteration_goal": "Implement the core task/event data flows (migrations, RPCs, API routes, realtime channels, PrepChef hooks) plus the canonical OpenAPI/sequence artifacts so both staff and manager experiences can build confidently.",
+    "description": "Build React Query hooks, server components, and UI skeleton for PrepChef task list (filters, grouping, summary header, bottom nav), wiring realtime adapter + optimistic mutations.",
     "agent_type_hint": "FrontendAgent",
-    "inputs": "libs/shared DTOs, API routes, undo spec.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Hooks fetching tasks, applying filters, subscribing to realtime, handling optimistic updates + undo TTL.",
-    "acceptance_criteria": "Hooks typed with DTOs; React Query caches keyed by filters; tests cover optimistic rollback; hooks documented for other apps.",
-    "dependencies": [
-      "I2.T4",
-      "I2.T5"
+    "inputs": "Component diagram, DTOs, API routes, UI blueprint.",
+    "target_files": [
+      "apps/prepchef/app/(shell)/layout.tsx",
+      "apps/prepchef/app/tasks/page.tsx",
+      "apps/prepchef/components/task-list.tsx",
+      "libs/shared/src/hooks/useTasks.ts"
     ],
-    "parallelizable": false,
+    "input_files": [
+      "docs/diagrams/prepchef_components.puml",
+      "libs/shared/src/dto/tasks.ts",
+      "docs/ux/ui_interaction_blueprint.md"
+    ],
+    "deliverables": "- Server component streaming initial tasks + summary counts.\n        - React Query hook for filters + pagination, wired to realtime channel adapter.\n        - UI components for status chips, claim buttons, header summary, bottom nav, using libs/ui primitives.\n        - Storybook stories for task row states (available/claimed/complete/undo) with accessibility annotations.",
+    "acceptance_criteria": "`pnpm test:ui` + Storybook build succeed; real-time updates reflected; optimistic claim/rescind works; layout respects gloves-friendly requirements.",
+    "dependencies": [
+      "I2.T3",
+      "I2.T4"
+    ],
+    "parallelizable": true,
     "done": false
   },
   {
     "task_id": "I2.T7",
     "iteration_id": "I2",
-    "iteration_goal": "Deliver typed API contracts, Supabase RPC implementations, realtime + undo specs, and shared hooks powering PrepChef/Admin skeletons with optimistic flows.",
-    "description": "Scaffold Admin CRM App Router shell with layout, navigation, RBAC guard, and server component fetching event list using new API client.",
+    "iteration_goal": "Implement the core task/event data flows (migrations, RPCs, API routes, realtime channels, PrepChef hooks) plus the canonical OpenAPI/sequence artifacts so both staff and manager experiences can build confidently.",
+    "description": "Implement realtime/presence adapter utilities (`useRealtimeChannel`, `usePresenceHeartbeats`) plus notification dispatcher plumbing to show claim/undo toasts with TTL timers.",
     "agent_type_hint": "FrontendAgent",
-    "inputs": "Directory structure, Access Matrix, API spec.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Layout with side nav, summary cards placeholder, RBAC guard hooking into Supabase session, server component fetching events.",
-    "acceptance_criteria": "Route renders with sample data; unauthorized roles redirected; layout uses libs/ui tokens; documented in Storybook where relevant.",
+    "inputs": "Sequence diagram, blueprint realtime strategy.",
+    "target_files": [
+      "libs/supabase/src/realtime/useRealtimeChannel.ts",
+      "libs/supabase/src/presence/usePresence.ts",
+      "libs/shared/src/notifications/dispatcher.ts",
+      "apps/prepchef/components/undo-toast.tsx"
+    ],
+    "input_files": [
+      "docs/diagrams/task_lifecycle_seq.puml",
+      "docs/architecture/03_Behavior_and_Communication.md"
+    ],
+    "deliverables": "- Hooks handling subscribe/unsubscribe, reconnection, and filter scoping by company and entity.\n        - Presence heartbeat utility posting to `/api/presence` and updating avatar halos.\n        - Notification dispatcher state machine with TTL timers, stacking cap, and telemetry hooks.\n        - PrepChef component showing toast UI with accessible controls.",
+    "acceptance_criteria": "Hooks tested via Vitest; toasts show copy + countdown; presence updates color avatars; reconnection fallback triggers polling.",
     "dependencies": [
-      "I2.T4"
+      "I2.T4",
+      "I2.T6"
     ],
     "parallelizable": true,
     "done": false
@@ -124,72 +174,25 @@
   {
     "task_id": "I2.T8",
     "iteration_id": "I2",
-    "iteration_goal": "Deliver typed API contracts, Supabase RPC implementations, realtime + undo specs, and shared hooks powering PrepChef/Admin skeletons with optimistic flows.",
-    "description": "Implement Supabase Realtime presence + display summary scaffolding: presence heartbeat table, channel helpers, summary materialized view stub, and display API route returning JSON snapshot.",
-    "agent_type_hint": "BackendAgent",
-    "inputs": "Section 2 realtime strategy, ERD.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Tables + policies for presence/display snapshots, server route returning stub summary, realtime helper for presence heartbeats.",
-    "acceptance_criteria": "SQL migration reuses company_id scoping; API returns deterministic schema; hooks tested; display client stub consumes summary.",
-    "dependencies": [
-      "I1.T4"
+    "iteration_goal": "Implement the core task/event data flows (migrations, RPCs, API routes, realtime channels, PrepChef hooks) plus the canonical OpenAPI/sequence artifacts so both staff and manager experiences can build confidently.",
+    "description": "Create Playwright smoke tests for `/tasks` covering initial load, claim, undo, realtime update, filter toggle, and API failure surfaces; integrate into CI pipeline.",
+    "agent_type_hint": "QATestingAgent",
+    "inputs": "PrepChef UI, notification flows, API endpoints.",
+    "target_files": [
+      "tests/playwright/prepchef.tasks.spec.ts",
+      "tests/playwright/fixtures/tasks.json",
+      ".github/workflows/ci.yml"
     ],
-    "parallelizable": false,
-    "done": false
-  },
-  {
-    "task_id": "I2.T9",
-    "iteration_id": "I2",
-    "iteration_goal": "Deliver typed API contracts, Supabase RPC implementations, realtime + undo specs, and shared hooks powering PrepChef/Admin skeletons with optimistic flows.",
-    "description": "Extend Vitest + Playwright suites to cover RPC validations and PrepChef claim/undo flows, leveraging seeds from I1; integrate coverage reports into CI.",
-    "agent_type_hint": "QualityAgent",
-    "inputs": "Hooks, API routes, undo spec.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Playwright scenario (login, view tasks, claim, undo), Vitest suites mocking Supabase RPC wrappers, CI job uploading reports.",
-    "acceptance_criteria": "Tests pass locally and in CI; coverage thresholds documented; failures link to troubleshooting doc.",
-    "dependencies": [
-      "I2.T4",
-      "I2.T6"
+    "input_files": [
+      "apps/prepchef/app/tasks/page.tsx",
+      "apps/prepchef/components/undo-toast.tsx",
+      "tests/playwright/README.md"
     ],
-    "parallelizable": true,
-    "done": false
-  },
-  {
-    "task_id": "I2.T10",
-    "iteration_id": "I2",
-    "iteration_goal": "Deliver typed API contracts, Supabase RPC implementations, realtime + undo specs, and shared hooks powering PrepChef/Admin skeletons with optimistic flows.",
-    "description": "Harden RLS + policy automation by scripting impersonation tests via Supabase CLI, verifying Access Matrix actions, and documenting results per role.",
-    "agent_type_hint": "SecurityAgent",
-    "inputs": "Access Matrix, migrations, Supabase CLI.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Script impersonating staff/manager/event lead/owner, running key queries, logging pass/fail; doc append notes.",
-    "acceptance_criteria": "Script runs in CI/staging; results appended to Access Matrix; security doc updated with cadence.",
+    "deliverables": "- Playwright spec covering load, claim, conflict resolution, undo expiration, offline banner, and filter chips.\n        - Fixtures/seeds hooking into Supabase CLI to ensure deterministic data.\n        - CI job updates running Playwright in headless mode with artifact uploads on failure.",
+    "acceptance_criteria": "Test passes locally and in CI; failure screenshots saved; docs updated with troubleshooting steps.",
     "dependencies": [
-      "I1.T2",
-      "I1.T4",
-      "I2.T4"
-    ],
-    "parallelizable": false,
-    "done": false
-  },
-  {
-    "task_id": "I2.T11",
-    "iteration_id": "I2",
-    "iteration_goal": "Deliver typed API contracts, Supabase RPC implementations, realtime + undo specs, and shared hooks powering PrepChef/Admin skeletons with optimistic flows.",
-    "description": "Document API onboarding guide summarizing how to regenerate clients, use OpenAPI for tests, and reference sequence diagrams; store under `docs/specs/api_usage.md`.",
-    "agent_type_hint": "DocumentationAgent",
-    "inputs": "OpenAPI spec, sequence diagram, hooks.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Guide covering authentication, idempotency keys, realtime fallbacks, testing tips, and links to relevant artifacts.",
-    "acceptance_criteria": "Guide references spec sections; includes curl examples; instructs how to run Spectral lint; cross-linked in docs index.",
-    "dependencies": [
-      "I2.T1",
-      "I2.T2",
-      "I2.T6"
+      "I2.T6",
+      "I2.T7"
     ],
     "parallelizable": true,
     "done": false

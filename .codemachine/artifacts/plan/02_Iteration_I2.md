@@ -1,149 +1,151 @@
 <!-- anchor: iteration-2-plan -->
-### Iteration 2: API & Realtime Foundations
+### Iteration 2: Task APIs, Realtime Backbone, and Contract Validation
 
 *   **Iteration ID:** `I2`
-*   **Goal:** Deliver typed API contracts, Supabase RPC implementations, realtime + undo specs, and shared hooks powering PrepChef/Admin skeletons with optimistic flows.
-*   **Prerequisites:** `I1`
+*   **Goal:** Implement the core task/event data flows (migrations, RPCs, API routes, realtime channels, PrepChef hooks) plus the canonical OpenAPI/sequence artifacts so both staff and manager experiences can build confidently.
+*   **Prerequisites:** Completion of `I1` (workspace, schema baseline, RLS, CI, diagrams).
+*   **Iteration Narrative:** With guardrails in place, this iteration focuses on getting data flowing end-to-end: Supabase migrations flesh out task lifecycle metadata, RPCs enforce idempotency/audit logging, API routes expose REST contracts, and PrepChef receives a realtime-aware task board skeleton. Artifacts (OpenAPI, sequence diagram) ensure every surface speaks the same language and highlight where feature flags or undo tokens intervene.
+*   **Success Metrics:**
+    - RPC latency under 150ms in local benchmarks with seeded data.
+    - OpenAPI spec validated via linting and referenced by contract tests.
+    - PrepChef task list renders multi-event data with realtime updates and passes accessibility checks.
+*   **Risks & Mitigations:**
+    - Risk: Supabase realtime channel budget exceeded; Mitigation: implement channel helper enforcing naming, throttle nonessential subscriptions.
+    - Risk: RPC idempotency not honored; Mitigation: add pgTAP/unit tests plus optimistic UI rollback cases.
+    - Risk: API schema drift; Mitigation: enforce schema_version headers + contract tests.
+*   **Exit Criteria:** All task lifecycle routes (list, claim, complete, undo, combine suggestion fetch) callable via REST + RPC, realtime updates reflected in PrepChef skeleton, OpenAPI spec committed, and Playwright smoke verifying claim/complete/undo successes.
 *   **Tasks:**
 
 <!-- anchor: task-i2-t1 -->
 *   **Task 2.1:**
     *   **Task ID:** `I2.T1`
-    *   **Description:** Create OpenAPI v3 spec (`caterking.yaml`) describing tasks/events/recipes/media/users endpoints, schemas, pagination, and error envelopes; integrate linting in CI.
-    *   **Agent Type Hint:** `DocumentationAgent`
-    *   **Inputs:** Section 2 API style, Access Matrix, ERD.
-    *   **Input Files:** [`api/openapi/caterking.yaml`, `api/openapi/.spectral.yaml`]
-    *   **Target Files:** [`api/openapi/caterking.yaml`, `api/openapi/.spectral.yaml`, `package.json` scripts]
-    *   **Deliverables:** Validated OpenAPI doc with examples, Spectral ruleset, npm script for linting.
-    *   **Acceptance Criteria:** `pnpm api:lint` passes; spec covers claim/complete/combine/undo, includes tags + schema_version metadata; referenced from README and plan manifest.
-    *   **Dependencies:** `I1.T4`
-    *   **Parallelizable:** No
+    *   **Description:** Extend Supabase schema with additional task lifecycle columns (priority, undo tokens, timestamps, presence heartbeats), materialized summary views, and helper tables (TaskSimilaritySuggestions, RealtimeSubscriptions) to support realtime dashboards.
+    *   **Agent Type Hint:** `DatabaseAgent`
+    *   **Inputs:** I1 schema, blueprint data model, ERD references.
+    *   **Input Files:** ["supabase/migrations/0001_base_schema.sql", "docs/diagrams/supabase_erd.mmd"]
+    *   **Target Files:** ["supabase/migrations/0003_task_lifecycle.sql", "supabase/migrations/0004_summary_views.sql", "docs/diagrams/supabase_erd.mmd"]
+    *   **Deliverables:**
+        - Migration adding priority enums, undo metadata, `task_similarity_suggestions`, `realtime_subscriptions`, `undo_tokens` tables, and indexes.
+        - Materialized views for `/display` summary plus refresh cron SQL.
+        - ERD update capturing new tables/relationships + textual changelog appended to diagram index.
+    *   **Acceptance Criteria:** `supabase db lint` passes; views refresh successfully; ERD diff logged; migrations reversible via down scripts.
+    *   **Dependencies:** [`I1.T4`, `I1.T5`]
+    *   **Parallelizable:** No (foundation for rest of iteration).
 
 <!-- anchor: task-i2-t2 -->
 *   **Task 2.2:**
     *   **Task ID:** `I2.T2`
-    *   **Description:** Author Task Lifecycle sequence diagram (Mermaid) depicting PrepChef UI, API routes, Supabase RPC, Realtime, Undo service interactions.
-    *   **Agent Type Hint:** `DiagrammingAgent`
-    *   **Inputs:** Task lifecycle stories, Section 2 communication patterns.
-    *   **Input Files:** [`docs/diagrams/task_sequence.mmd`]
-    *   **Target Files:** [`docs/diagrams/task_sequence.mmd`]
-    *   **Deliverables:** Mermaid sequence diagram plus explanatory notes.
-    *   **Acceptance Criteria:** Diagram renders; covers claim conflict + undo; referenced from docs index.
-    *   **Dependencies:** `I2.T1`
-    *   **Parallelizable:** Yes
+    *   **Description:** Implement stored procedures (`claim_task`, `complete_task`, `undo_task`, `combine_tasks`) plus row-level audit triggers and Zod-described DTOs inside `libs/shared`.
+    *   **Agent Type Hint:** `DatabaseAgent`
+    *   **Inputs:** Fresh schema, blueprint contract requirements, undo requirements.
+    *   **Input Files:** ["supabase/migrations/0003_task_lifecycle.sql", "docs/security/rls_policies.md"]
+    *   **Target Files:** ["supabase/functions/claim_task.sql", "supabase/functions/complete_task.sql", "supabase/functions/undo_task.sql", "libs/shared/src/dto/tasks.ts"]
+    *   **Deliverables:**
+        - SQL functions enforcing role permissions, idempotency keys, undo token issuance, audit logging, and realtime NOTIFY payloads.
+        - Shared DTO definitions + Zod schemas for requests/responses, reused by API + UI.
+        - README snippet detailing RPC usage and idempotency expectations.
+    *   **Acceptance Criteria:** Supabase tests cover success/failure paths; DTOs exported via `@caterkingapp/shared/tasks`; audit logs show sample entries; idempotency proved via repeated invocation tests.
+    *   **Dependencies:** [`I2.T1`]
+    *   **Parallelizable:** No.
 
 <!-- anchor: task-i2-t3 -->
 *   **Task 2.3:**
     *   **Task ID:** `I2.T3`
-    *   **Description:** Build Feature Flag Register in `docs/adr/feature_flags.md` capturing key flags (task combine, undo window, kiosk polling, push preview), default states, telemetry, rollback plan.
-    *   **Agent Type Hint:** `DocumentationAgent`
-    *   **Inputs:** Section 2 feature flag strategy, requirements.
-    *   **Input Files:** [`docs/adr/feature_flags.md`]
-    *   **Target Files:** [`docs/adr/feature_flags.md`]
-    *   **Deliverables:** Markdown register with table (flag key, scope, environments, owner, metrics, removal plan) plus instructions for updates.
-    *   **Acceptance Criteria:** Flags align with roadmap; doc referenced by ADR template; watchers assigned.
-    *   **Dependencies:** `I1.T8`
-    *   **Parallelizable:** Yes
+    *   **Description:** Implement Next.js API routes and server actions for `/api/tasks`, `/api/tasks/:id/claim`, `/api/tasks/:id/complete`, `/api/tasks/:id/undo`, `/api/events`, `/api/tasks/suggestions`, including error handling and telemetry emission.
+    *   **Agent Type Hint:** `BackendAgent`
+    *   **Inputs:** DTOs, RPC wrappers, blueprint API contract section.
+    *   **Input Files:** ["libs/shared/src/dto/tasks.ts", "docs/architecture/03_Behavior_and_Communication.md"]
+    *   **Target Files:** ["apps/prepchef/app/api/tasks/route.ts", "apps/prepchef/app/api/tasks/[id]/claim/route.ts", "apps/prepchef/app/api/tasks/[id]/complete/route.ts", "apps/prepchef/app/api/tasks/[id]/undo/route.ts", "apps/prepchef/app/api/tasks/suggestions/route.ts", "apps/prepchef/app/api/events/route.ts"]
+    *   **Deliverables:**
+        - Type-safe API handlers calling RPC wrappers, validating payloads via Zod, emitting OTEL spans, and returning `schema_version` metadata.
+        - Shared error utility mapping Supabase errors to UI-friendly codes.
+        - Integration tests hitting handlers with mocked Supabase client verifying HTTP responses & telemetry.
+    *   **Acceptance Criteria:** `pnpm test api` passes; handlers reject invalid payloads with 422; idempotent replays return previous success payloads; OTEL spans recorded in logs.
+    *   **Dependencies:** [`I2.T2`]
+    *   **Parallelizable:** Yes (after RPCs ready).
 
 <!-- anchor: task-i2-t4 -->
 *   **Task 2.4:**
     *   **Task ID:** `I2.T4`
-    *   **Description:** Implement Supabase functions/RPCs for `claim_task`, `complete_task`, `combine_tasks`, `undo_task`, `log_audit_event`, plus Next.js API route handlers calling them with idempotency + telemetry.
-    *   **Agent Type Hint:** `BackendAgent`
-    *   **Inputs:** OpenAPI spec, migrations, Access Matrix.
-    *   **Input Files:** [`supabase/functions/*.sql`, `apps/prepchef/app/api/tasks/[id]/claim/route.ts`, `apps/prepchef/app/api/tasks/[id]/complete/route.ts`, `libs/supabase/src/rpc.ts`]
-    *   **Target Files:** [`supabase/functions/claim_task.sql`, `supabase/functions/complete_task.sql`, `supabase/functions/combine_tasks.sql`, `supabase/functions/undo_task.sql`, `apps/prepchef/app/api/tasks/[id]/claim/route.ts`, `apps/prepchef/app/api/tasks/[id]/complete/route.ts`, `libs/supabase/src/rpc.ts`, `libs/shared/src/dto/task.ts`]
-    *   **Deliverables:** RPC SQL with RLS checks, Next.js handlers verifying schema + idempotency, DTO definitions, telemetry instrumentation hooks.
-    *   **Acceptance Criteria:** `pnpm test supabase` passes; API routes align with OpenAPI; optimistic responses include undo_token + realtime metadata; pgTAP tests cover role enforcement.
-    *   **Dependencies:** `I1.T4`, `I2.T1`
-    *   **Parallelizable:** No
+    *   **Description:** Draft the Task Lifecycle sequence diagram capturing staff claim -> RPC -> Realtime -> Display update -> Undo, referencing UI + behavior requirements.
+    *   **Agent Type Hint:** `DiagrammingAgent`
+    *   **Inputs:** Behavior spec, API route design.
+    *   **Input Files:** ["docs/architecture/03_Behavior_and_Communication.md", "docs/architecture/06_UI_UX_Architecture.md"]
+    *   **Target Files:** ["docs/diagrams/task_lifecycle_seq.puml", "docs/diagrams/diagram_index.md"]
+    *   **Deliverables:**
+        - PlantUML sequence file detailing PrepChef UI, libs/shared, API route, Supabase RPC, Realtime, Display, and Undo service interactions.
+        - Diagram index update describing scenario scope, dependencies, and iteration handshake.
+    *   **Acceptance Criteria:** Diagram renders, includes undo failure branch, uses ASCII names, and is referenced by Task 2.7 instructions.
+    *   **Dependencies:** [`I2.T3`]
+    *   **Parallelizable:** Yes.
 
 <!-- anchor: task-i2-t5 -->
 *   **Task 2.5:**
     *   **Task ID:** `I2.T5`
-    *   **Description:** Draft undo + notification spec `docs/specs/undo_notification.md` outlining payload structure, TTL, toast messaging, telemetry, failure fallback.
+    *   **Description:** Create the OpenAPI v3 draft covering all task/event endpoints with component schemas derived from libs/shared DTOs.
     *   **Agent Type Hint:** `DocumentationAgent`
-    *   **Inputs:** Requirements section (Undo), feature flag register.
-    *   **Input Files:** [`docs/specs/undo_notification.md`]
-    *   **Target Files:** [`docs/specs/undo_notification.md`]
-    *   **Deliverables:** Spec with sequence steps, JSON payload example, state diagram, instrumentation checklist.
-    *   **Acceptance Criteria:** Spec ties to RPC outputs; includes acceptance tests; cross-links to Task Lifecycle diagram.
-    *   **Dependencies:** `I2.T2`, `I2.T4`
-    *   **Parallelizable:** Yes
+    *   **Inputs:** API handlers, DTOs, blueprint API style.
+    *   **Input Files:** ["apps/prepchef/app/api/tasks/route.ts", "libs/shared/src/dto/tasks.ts"]
+    *   **Target Files:** ["api/openapi.yaml", "api/README.md", "tests/contract/tasks.contract.test.ts"]
+    *   **Deliverables:**
+        - OpenAPI spec with paths, parameters, request/response bodies, error schemas, and security (Supabase Auth) sections.
+        - README describing how to regenerate docs, run spectral lint, and share with partners.
+        - Contract test verifying API responses conform to schema via `pnpm test:contract`.
+    *   **Acceptance Criteria:** `pnpm spectral lint api/openapi.yaml` passes; contract test fails if schema drifts; spec references iteration tasks for provenance.
+    *   **Dependencies:** [`I2.T3`]
+    *   **Parallelizable:** Yes.
 
 <!-- anchor: task-i2-t6 -->
 *   **Task 2.6:**
     *   **Task ID:** `I2.T6`
-    *   **Description:** Build PrepChef data hooks (`useTaskDashboard`, `useRealtimeChannel`) leveraging React Query + Supabase client; implement optimistic claim/complete flows referencing OpenAPI types.
+    *   **Description:** Build React Query hooks, server components, and UI skeleton for PrepChef task list (filters, grouping, summary header, bottom nav), wiring realtime adapter + optimistic mutations.
     *   **Agent Type Hint:** `FrontendAgent`
-    *   **Inputs:** libs/shared DTOs, API routes, undo spec.
-    *   **Input Files:** [`apps/prepchef/src/hooks/useTaskDashboard.ts`, `libs/shared/src/hooks/realtime.ts`, `libs/supabase/src/client.ts`]
-    *   **Target Files:** [`apps/prepchef/src/hooks/useTaskDashboard.ts`, `apps/prepchef/src/providers/RealtimeProvider.tsx`, `libs/shared/src/hooks/realtime.ts`, `libs/shared/src/constants/status.ts`]
-    *   **Deliverables:** Hooks fetching tasks, applying filters, subscribing to realtime, handling optimistic updates + undo TTL.
-    *   **Acceptance Criteria:** Hooks typed with DTOs; React Query caches keyed by filters; tests cover optimistic rollback; hooks documented for other apps.
-    *   **Dependencies:** `I2.T4`, `I2.T5`
-    *   **Parallelizable:** No
+    *   **Inputs:** Component diagram, DTOs, API routes, UI blueprint.
+    *   **Input Files:** ["docs/diagrams/prepchef_components.puml", "libs/shared/src/dto/tasks.ts", "docs/ux/ui_interaction_blueprint.md"]
+    *   **Target Files:** ["apps/prepchef/app/(shell)/layout.tsx", "apps/prepchef/app/tasks/page.tsx", "apps/prepchef/components/task-list.tsx", "libs/shared/src/hooks/useTasks.ts"]
+    *   **Deliverables:**
+        - Server component streaming initial tasks + summary counts.
+        - React Query hook for filters + pagination, wired to realtime channel adapter.
+        - UI components for status chips, claim buttons, header summary, bottom nav, using libs/ui primitives.
+        - Storybook stories for task row states (available/claimed/complete/undo) with accessibility annotations.
+    *   **Acceptance Criteria:** `pnpm test:ui` + Storybook build succeed; real-time updates reflected; optimistic claim/rescind works; layout respects gloves-friendly requirements.
+    *   **Dependencies:** [`I2.T3`, `I2.T4`]
+    *   **Parallelizable:** Yes.
 
 <!-- anchor: task-i2-t7 -->
 *   **Task 2.7:**
     *   **Task ID:** `I2.T7`
-    *   **Description:** Scaffold Admin CRM App Router shell with layout, navigation, RBAC guard, and server component fetching event list using new API client.
+    *   **Description:** Implement realtime/presence adapter utilities (`useRealtimeChannel`, `usePresenceHeartbeats`) plus notification dispatcher plumbing to show claim/undo toasts with TTL timers.
     *   **Agent Type Hint:** `FrontendAgent`
-    *   **Inputs:** Directory structure, Access Matrix, API spec.
-    *   **Input Files:** [`apps/admin-crm/app/layout.tsx`, `apps/admin-crm/app/admin/page.tsx`, `apps/admin-crm/app/components/Nav.tsx`]
-    *   **Target Files:** [`apps/admin-crm/app/layout.tsx`, `apps/admin-crm/app/(dashboard)/admin/page.tsx`, `apps/admin-crm/components/Nav.tsx`, `apps/admin-crm/components/RBACGuard.tsx`]
-    *   **Deliverables:** Layout with side nav, summary cards placeholder, RBAC guard hooking into Supabase session, server component fetching events.
-    *   **Acceptance Criteria:** Route renders with sample data; unauthorized roles redirected; layout uses libs/ui tokens; documented in Storybook where relevant.
-    *   **Dependencies:** `I2.T4`
-    *   **Parallelizable:** Yes
+    *   **Inputs:** Sequence diagram, blueprint realtime strategy.
+    *   **Input Files:** ["docs/diagrams/task_lifecycle_seq.puml", "docs/architecture/03_Behavior_and_Communication.md"]
+    *   **Target Files:** ["libs/supabase/src/realtime/useRealtimeChannel.ts", "libs/supabase/src/presence/usePresence.ts", "libs/shared/src/notifications/dispatcher.ts", "apps/prepchef/components/undo-toast.tsx"]
+    *   **Deliverables:**
+        - Hooks handling subscribe/unsubscribe, reconnection, and filter scoping by company and entity.
+        - Presence heartbeat utility posting to `/api/presence` and updating avatar halos.
+        - Notification dispatcher state machine with TTL timers, stacking cap, and telemetry hooks.
+        - PrepChef component showing toast UI with accessible controls.
+    *   **Acceptance Criteria:** Hooks tested via Vitest; toasts show copy + countdown; presence updates color avatars; reconnection fallback triggers polling.
+    *   **Dependencies:** [`I2.T4`, `I2.T6`]
+    *   **Parallelizable:** Yes.
 
 <!-- anchor: task-i2-t8 -->
 *   **Task 2.8:**
     *   **Task ID:** `I2.T8`
-    *   **Description:** Implement Supabase Realtime presence + display summary scaffolding: presence heartbeat table, channel helpers, summary materialized view stub, and display API route returning JSON snapshot.
-    *   **Agent Type Hint:** `BackendAgent`
-    *   **Inputs:** Section 2 realtime strategy, ERD.
-    *   **Input Files:** [`supabase/migrations/20250509_presence.sql`, `apps/display/app/api/summary/route.ts`, `libs/supabase/src/realtime.ts`]
-    *   **Target Files:** [`supabase/migrations/20250509_presence.sql`, `supabase/migrations/20250509_display_summary.sql`, `apps/display/app/api/summary/route.ts`, `libs/supabase/src/realtime.ts`]
-    *   **Deliverables:** Tables + policies for presence/display snapshots, server route returning stub summary, realtime helper for presence heartbeats.
-    *   **Acceptance Criteria:** SQL migration reuses company_id scoping; API returns deterministic schema; hooks tested; display client stub consumes summary.
-    *   **Dependencies:** `I1.T4`
-    *   **Parallelizable:** No
+    *   **Description:** Create Playwright smoke tests for `/tasks` covering initial load, claim, undo, realtime update, filter toggle, and API failure surfaces; integrate into CI pipeline.
+    *   **Agent Type Hint:** `QATestingAgent`
+    *   **Inputs:** PrepChef UI, notification flows, API endpoints.
+    *   **Input Files:** ["apps/prepchef/app/tasks/page.tsx", "apps/prepchef/components/undo-toast.tsx", "tests/playwright/README.md"]
+    *   **Target Files:** ["tests/playwright/prepchef.tasks.spec.ts", "tests/playwright/fixtures/tasks.json", ".github/workflows/ci.yml"]
+    *   **Deliverables:**
+        - Playwright spec covering load, claim, conflict resolution, undo expiration, offline banner, and filter chips.
+        - Fixtures/seeds hooking into Supabase CLI to ensure deterministic data.
+        - CI job updates running Playwright in headless mode with artifact uploads on failure.
+    *   **Acceptance Criteria:** Test passes locally and in CI; failure screenshots saved; docs updated with troubleshooting steps.
+    *   **Dependencies:** [`I2.T6`, `I2.T7`]
+    *   **Parallelizable:** Yes (after UI skeleton ready).
 
-<!-- anchor: task-i2-t9 -->
-*   **Task 2.9:**
-    *   **Task ID:** `I2.T9`
-    *   **Description:** Extend Vitest + Playwright suites to cover RPC validations and PrepChef claim/undo flows, leveraging seeds from I1; integrate coverage reports into CI.
-    *   **Agent Type Hint:** `QualityAgent`
-    *   **Inputs:** Hooks, API routes, undo spec.
-    *   **Input Files:** [`tests/e2e/prepchef.spec.ts`, `tests/unit/rpc_claim.test.ts`, `.github/workflows/ci.yml`]
-    *   **Target Files:** [`tests/e2e/prepchef.spec.ts`, `tests/unit/rpc_claim.test.ts`, `tests/unit/rpc_combine.test.ts`, `.github/workflows/ci.yml`]
-    *   **Deliverables:** Playwright scenario (login, view tasks, claim, undo), Vitest suites mocking Supabase RPC wrappers, CI job uploading reports.
-    *   **Acceptance Criteria:** Tests pass locally and in CI; coverage thresholds documented; failures link to troubleshooting doc.
-    *   **Dependencies:** `I2.T4`, `I2.T6`
-    *   **Parallelizable:** Yes
-
-<!-- anchor: task-i2-t10 -->
-*   **Task 2.10:**
-    *   **Task ID:** `I2.T10`
-    *   **Description:** Harden RLS + policy automation by scripting impersonation tests via Supabase CLI, verifying Access Matrix actions, and documenting results per role.
-    *   **Agent Type Hint:** `SecurityAgent`
-    *   **Inputs:** Access Matrix, migrations, Supabase CLI.
-    *   **Input Files:** [`tooling/scripts/test_rls.ps1`, `docs/ops/security_baseline.md`]
-    *   **Target Files:** [`tooling/scripts/test_rls.ps1`, `docs/ops/security_baseline.md`, `docs/specs/access_matrix.md`]
-    *   **Deliverables:** Script impersonating staff/manager/event lead/owner, running key queries, logging pass/fail; doc append notes.
-    *   **Acceptance Criteria:** Script runs in CI/staging; results appended to Access Matrix; security doc updated with cadence.
-    *   **Dependencies:** `I1.T2`, `I1.T4`, `I2.T4`
-    *   **Parallelizable:** No
-<!-- anchor: task-i2-t11 -->
-*   **Task 2.11:**
-    *   **Task ID:** `I2.T11`
-    *   **Description:** Document API onboarding guide summarizing how to regenerate clients, use OpenAPI for tests, and reference sequence diagrams; store under `docs/specs/api_usage.md`.
-    *   **Agent Type Hint:** `DocumentationAgent`
-    *   **Inputs:** OpenAPI spec, sequence diagram, hooks.
-    *   **Input Files:** [`docs/specs/api_usage.md`]
-    *   **Target Files:** [`docs/specs/api_usage.md`]
-    *   **Deliverables:** Guide covering authentication, idempotency keys, realtime fallbacks, testing tips, and links to relevant artifacts.
-    *   **Acceptance Criteria:** Guide references spec sections; includes curl examples; instructs how to run Spectral lint; cross-linked in docs index.
-    *   **Dependencies:** `I2.T1`, `I2.T2`, `I2.T6`
-    *   **Parallelizable:** Yes
+*   **Iteration Review Checklist:**
+    - Run `pnpm test:contract` and ensure spec matches handlers.
+    - Toggle realtime via simulated disconnect to confirm polling fallback works.
+    - Capture GIF demo of PrepChef skeleton reacting to realtime events for stakeholders.

@@ -1,150 +1,150 @@
 <!-- anchor: iteration-5-plan -->
-### Iteration 5: Hardening, Compliance & Launch Readiness
+### Iteration 5: Display Surface, Observability, and Release Readiness
 
 *   **Iteration ID:** `I5`
-*   **Goal:** Finalize performance testing, compliance docs, rollout scripts, support playbooks, and cross-team sign-offs to ship MVP confidently.
-*   **Prerequisites:** `I4`
+*   **Goal:** Finalize kiosk/display experience, automation/observability pipelines, CI/CD diagramming, and release governance so the platform can ship with confidence.
+*   **Prerequisites:** `I1`-`I4` complete (features + governance).
+*   **Iteration Narrative:** With functionality in place, this iteration polishes the display wall, ensures telemetry and alerting operate, codifies CI/CD diagrams/runbooks, conducts resilience drills, and completes documentation plus automation backlog tasks needed before GA. Work also finalizes Doppler/Flagsmith configuration per environment and release communications.
+*   **Success Metrics:**
+    - Display refresh <15 seconds staleness in chaos drills.
+    - Observability dashboards cover latency, realtime drops, media queue, feature flag exposures.
+    - Release checklist + automation reduces manual steps to <5 actions.
+*   **Risks & Mitigations:**
+    - Risk: Observability noise; Mitigation: threshold tuning + severity tags.
+    - Risk: Release scripts outdated; Mitigation: integrate CI verifications + doc updates.
+    - Risk: Display offline detection fails; Mitigation: heartbeat monitoring + alerts.
+*   **Exit Criteria:** Kiosk UI complete, telemetry dashboards live, CI/CD diagram committed, automation scripts + release runbook published, resilience drills executed, plan manifest ready for downstream agents.
 *   **Tasks:**
 
 <!-- anchor: task-i5-t1 -->
 *   **Task 5.1:**
     *   **Task ID:** `I5.T1`
-    *   **Description:** Conduct load + chaos tests (task surge, realtime drop, media backlog) using k6 or artillery scripts; document results and remediation backlog.
-    *   **Agent Type Hint:** `PerformanceEngineer`
-    *   **Inputs:** Performance doc, hooks, display snapshot.
-    *   **Input Files:** [`tests/load/task_surge.js`, `tests/load/realtime_drop.js`, `docs/ops/performance.md`]
-    *   **Target Files:** [`tests/load/task_surge.js`, `tests/load/realtime_drop.js`, `tests/load/media_backlog.js`, `docs/ops/performance.md`, `docs/ops/runbooks/realtime_outage.md`]
-    *   **Deliverables:** Load scripts, chaos scenarios, summarized metrics + mitigation plan appended to performance doc.
-    *   **Acceptance Criteria:** Tests simulate peak load; outputs stored for regression comparison; action items logged.
-    *   **Dependencies:** `I4.T6`, `I4.T3`
-    *   **Parallelizable:** No
+    *   **Description:** Finalize display app polish (kiosk mode detection, admin gesture for settings, offline snapshot caching, rotation scheduling) and integrate device heartbeat watcher + alerts.
+    *   **Agent Type Hint:** `FrontendAgent`
+    *   **Inputs:** Display components, heartbeat data, blueprint wall requirements.
+    *   **Input Files:** ["apps/display/app/page.tsx", "docs/architecture/06_UI_UX_Architecture.md", "docs/operations/media_pipeline.md"]
+    *   **Target Files:** ["apps/display/app/layout.tsx", "apps/display/components/device-status.tsx", "apps/display/hooks/useHeartbeat.ts", "docs/operations/display_runbook.md"]
+    *   **Deliverables:**
+        - Full-screen layout with kiosk lock, admin gesture instructions, offline banner.
+        - Heartbeat hook monitoring `/api/presence` + raising toast/alert when device stale.
+        - Device status component referencing presence table.
+        - Runbook citing heartbeat thresholds, manual refresh instructions, signage guidelines.
+    *   **Acceptance Criteria:** Display responds to orientation change; offline fallback shows timestamp; heartbeat alerts delivered; runbook cross-links to automation.
+    *   **Dependencies:** [`I4.T5`]
+    *   **Parallelizable:** Yes.
 
 <!-- anchor: task-i5-t2 -->
 *   **Task 5.2:**
     *   **Task ID:** `I5.T2`
-    *   **Description:** Complete compliance pack (audit log retention, GDPR/CCPA workflows, media retention overrides) referencing Access Matrix + security baseline.
-    *   **Agent Type Hint:** `SecurityAgent`
-    *   **Inputs:** Security baseline, runbooks.
-    *   **Input Files:** [`docs/ops/compliance.md`, `docs/specs/access_matrix.md`, `docs/ops/security_baseline.md`]
-    *   **Target Files:** [`docs/ops/compliance.md`, `docs/specs/access_matrix.md`, `docs/ops/security_baseline.md`]
-    *   **Deliverables:** Compliance doc covering data retention, export/deletion scripts, audit log review cadence, owner assignments.
-    *   **Acceptance Criteria:** Document signed by security lead; cross-links to runbooks + release checklist; action plan for upcoming audits.
-    *   **Dependencies:** `I4.T7`
-    *   **Parallelizable:** Yes
+    *   **Description:** Author CI/CD pipeline diagram (Mermaid) and documentation describing GitHub Actions, Doppler, Supabase migrations, Flagsmith approvals, and rollback flows.
+    *   **Agent Type Hint:** `DocumentationAgent`
+    *   **Inputs:** CI workflows, release process, blueprint directives.
+    *   **Input Files:** [".github/workflows/ci.yml", "docs/operations/ci_cd_overview.md"]
+    *   **Target Files:** ["docs/diagrams/cicd_pipeline.mmd", "docs/operations/release_runbook.md"]
+    *   **Deliverables:**
+        - Mermaid diagram mapping code push -> CI -> migrations -> preview -> staging -> prod with approvals.
+        - Release runbook enumerating steps, automation scripts, rollback levers, flag toggles, communications.
+    *   **Acceptance Criteria:** Diagram renders; runbook references Doppler/Flagsmith flows; release checklist appended to repository docs.
+    *   **Dependencies:** [`I1.T7`, `I4.T6`]
+    *   **Parallelizable:** Yes.
 
 <!-- anchor: task-i5-t3 -->
 *   **Task 5.3:**
     *   **Task ID:** `I5.T3`
-    *   **Description:** Finalize kiosk + mobile accessibility audit (WCAG heuristics) and backlog items; update libs/ui tokens or components as needed.
-    *   **Agent Type Hint:** `UXEngineer`
-    *   **Inputs:** UI components, accessibility checklist.
-    *   **Input Files:** [`docs/quality/accessibility_audit.md`, `libs/ui/src/components/*.tsx`, `apps/display/app/page.tsx`]
-    *   **Target Files:** [`docs/quality/accessibility_audit.md`, `libs/ui/src/components/TaskRow.tsx`, `libs/ui/src/components/Toast.tsx`, `apps/display/components/SummaryGrid.tsx`]
-    *   **Deliverables:** Audit doc summarizing tests (Axe, manual, keyboard), updated components reflecting fixes, backlog for non-critical items.
-    *   **Acceptance Criteria:** Checklist items covered; high-contrast + focus ring verified; doc stored under docs/quality.
-    *   **Dependencies:** `I3.T6`, `I3.T4`
-    *   **Parallelizable:** Yes
+    *   **Description:** Configure environment-specific Doppler + Flagsmith settings (dev/staging/prod), automation scripts for secret sync, feature flag defaults, and verification commands.
+    *   **Agent Type Hint:** `OpsAgent`
+    *   **Inputs:** Doppler templates, flag runbook.
+    *   **Input Files:** ["configs/doppler.template.yaml", "docs/operations/feature_flag_runbook.md"]
+    *   **Target Files:** ["scripts/env/sync_secrets.ps1", "scripts/env/sync_secrets.sh", "docs/operations/environment_matrix.md", "docs/operations/feature_flag_matrix.md"]
+    *   **Deliverables:**
+        - Cross-platform secret sync scripts verifying required keys exist for each environment.
+        - Environment matrix doc listing Supabase project IDs, Vercel projects, Flagsmith envs, release cadence.
+        - Feature flag matrix capturing default states, rollout owners, telemetry metrics, kill-switch details.
+    *   **Acceptance Criteria:** Scripts exit nonzero when secrets missing; docs highlight owners; CI job runs sync script dry-run; autop-run adds unstoppable.
+    *   **Dependencies:** [`I1.T6`, `I1.T7`]
+    *   **Parallelizable:** Yes.
 
 <!-- anchor: task-i5-t4 -->
 *   **Task 5.4:**
     *   **Task ID:** `I5.T4`
-    *   **Description:** Execute release dry-run: apply migrations on staging, run CI, deploy to staging Vercel, verify doppler secrets + feature flags; capture timeline + sign-offs.
-    *   **Agent Type Hint:** `DevOpsAgent`
-    *   **Inputs:** Release guard workflow, runbooks.
-    *   **Input Files:** [`docs/ops/release_checklist.md`, `.github/workflows/release.yml`, `tooling/scripts/release_guard.ps1`]
-    *   **Target Files:** [`docs/ops/release_checklist.md`, `.github/workflows/release.yml`, `tooling/scripts/release_guard.ps1`, `docs/ops/post_release_report.md`]
-    *   **Deliverables:** Completed checklist with timestamps, automation output logs, post-release report template.
-    *   **Acceptance Criteria:** Dry-run replicable; gating script verifies migrations; report stored; issues logged as tickets.
-    *   **Dependencies:** `I4.T11`
-    *   **Parallelizable:** No
+    *   **Description:** Build observability dashboards (Logflare/Datadog/Grafana) with panels for API latency, realtime drop rate, media queue depth, undo success, combine exposures; codify alert thresholds + notification channels.
+    *   **Agent Type Hint:** `OpsAgent`
+    *   **Inputs:** OTEL config, metrics instrumentation, blueprint observability section.
+    *   **Input Files:** ["configs/otel.config.json", "docs/operations/media_pipeline.md", "docs/architecture/04_Operational_Architecture.md"]
+    *   **Target Files:** ["docs/operations/observability_dashboard.md", "docs/operations/alert_matrix.md", "scripts/observability/bootstrap.ts"]
+    *   **Deliverables:**
+        - Dashboard definitions (JSON or Terraform) for key metrics; screenshot or embed for docs.
+        - Alert matrix mapping metrics -> severity -> runbook links.
+        - Bootstrap script calling observability API to create resources.
+    *   **Acceptance Criteria:** Dashboards accessible; alerts configured with Teams/Slack webhooks; docs show sample graphs + thresholds; script idempotent.
+    *   **Dependencies:** [`I1.T7`, `I4.T6`]
+    *   **Parallelizable:** No (ops-critical).
 
 <!-- anchor: task-i5-t5 -->
 *   **Task 5.5:**
     *   **Task ID:** `I5.T5`
-    *   **Description:** Build customer support toolkit: FAQ, troubleshooting flows (task not syncing, kiosk offline, media stuck), template responses referencing docs.
-    *   **Agent Type Hint:** `DocumentationAgent`
-    *   **Inputs:** Runbooks, telemetry plan, UI flows.
-    *   **Input Files:** [`docs/support/faq.md`, `docs/support/troubleshooting.md`]
-    *   **Target Files:** [`docs/support/faq.md`, `docs/support/troubleshooting.md`, `docs/support/templates.md`]
-    *   **Deliverables:** Support docs with step-by-step instructions, sample reply macros, linking to runbooks + diagnostics scripts.
-    *   **Acceptance Criteria:** Coverage for staff/manager/common scenarios; versioned references; accessible from docs index + README.
-    *   **Dependencies:** `I4.T7`, `I4.T5`
-    *   **Parallelizable:** Yes
+    *   **Description:** Conduct resilience drills (realtime outage, Supabase restart, media backlog) and document results, patching scripts/UX fallback as needed.
+    *   **Agent Type Hint:** `ReliabilityAgent`
+    *   **Inputs:** Runbooks, automation, display + PrepChef UIs.
+    *   **Input Files:** ["docs/operations/display_runbook.md", "docs/operations/audit_runbook.md", "tests/playwright/helpers/realtimeChaos.ts"]
+    *   **Target Files:** ["docs/operations/resilience_report.md", "apps/prepchef/components/offline-banner.tsx", "apps/display/components/offline-banner.tsx"]
+    *   **Deliverables:**
+        - Formal report per drill summarizing scenario, impact, remediation, follow-ups.
+        - UI updates for offline banners referencing telemetry/perf data.
+        - Checklist verifying user messaging, logging, and auto-recovery sequences.
+    *   **Acceptance Criteria:** Drills executed; issues logged + tracked; UI banners accessible; docs link to follow-up tickets.
+    *   **Dependencies:** [`I5.T1`, `I5.T4`]
+    *   **Parallelizable:** No (requires coordination).
 
 <!-- anchor: task-i5-t6 -->
 *   **Task 5.6:**
     *   **Task ID:** `I5.T6`
-    *   **Description:** Implement analytics hooks (task efficiency, combine adoption, recipe view counts) writing to Supabase views + dashboards for leadership.
-    *   **Agent Type Hint:** `DataEngineer`
-    *   **Inputs:** Telemetry events, Supabase views.
-    *   **Input Files:** [`supabase/migrations/20250509_metrics.sql`, `apps/admin-crm/components/InsightsTab.tsx`, `docs/ops/metrics_catalog.md`]
-    *   **Target Files:** [`supabase/migrations/20250509_metrics.sql`, `apps/admin-crm/components/InsightsTab.tsx`, `docs/ops/metrics_catalog.md`]
-    *   **Deliverables:** Metrics views (task throughput, combine acceptance, recipe drawer dwell), Admin insights tab, catalog updates.
-    *   **Acceptance Criteria:** Views efficient; insights tab renders charts; doc describes metric definitions + owners.
-    *   **Dependencies:** `I3.T9`, `I4.T6`
-    *   **Parallelizable:** No
+    *   **Description:** Automate operations backlog items (Supabase impersonation tests nightly, automation backlog tracker, Slack bot for incidents) per Section 3.13.
+    *   **Agent Type Hint:** `AutomationAgent`
+    *   **Inputs:** Backlog list, scripts, CI workflows.
+    *   **Input Files:** ["docs/operations/automation_backlog.md", "scripts/impersonate.ps1", "docs/operations/incident_templates.md"]
+    *   **Target Files:** [".github/workflows/nightly-impersonation.yml", "scripts/bots/incident_notifier.ts", "docs/operations/automation_status.md"]
+    *   **Deliverables:**
+        - Nightly workflow running Supabase impersonation tests + posting summary to Slack.
+        - Incident notifier script hooking into observability alerts for communications.
+        - Automation status doc tracking completed vs pending backlog items.
+    *   **Acceptance Criteria:** Workflow logs accessible; Slack message sample documented; automation status updated.
+    *   **Dependencies:** [`I1.T5`, `I4.T6`]
+    *   **Parallelizable:** Yes.
 
 <!-- anchor: task-i5-t7 -->
 *   **Task 5.7:**
     *   **Task ID:** `I5.T7`
-    *   **Description:** Perform security penetration checks (role escalation attempts, API abuse, storage access) and patch findings; update security baseline.
-    *   **Agent Type Hint:** `SecurityAgent`
-    *   **Inputs:** RLS tests, security doc.
-    *   **Input Files:** [`tooling/scripts/security_scan.ps1`, `docs/ops/security_baseline.md`, `docs/ops/compliance.md`]
-    *   **Target Files:** [`tooling/scripts/security_scan.ps1`, `docs/ops/security_baseline.md`, `docs/ops/compliance.md`]
-    *   **Deliverables:** Automated scan script or steps, remediation summary, baseline updates.
-    *   **Acceptance Criteria:** Findings resolved or tracked; doc lists next review date.
-    *   **Dependencies:** `I2.T10`, `I5.T2`
-    *   **Parallelizable:** No
+    *   **Description:** Finalize documentation set (README polish, architecture glossary sync, plan manifest) and deliver training for stakeholders (ops, managers, engineers) referencing artifacts.
+    *   **Agent Type Hint:** `DocumentationAgent`
+    *   **Inputs:** All prior docs.
+    *   **Input Files:** ["README.md", "docs/ux/ui_interaction_blueprint.md", "docs/operations/release_runbook.md"]
+    *   **Target Files:** ["README.md", "docs/operations/training_agenda.md", "docs/architecture/glossary.md", ".codemachine/artifacts/plan/plan_manifest.json"]
+    *   **Deliverables:**
+        - Updated README with summary, quickstart, architecture diagram links, release timeline.
+        - Training agenda for different personas linking to runbooks + diagrams.
+        - Glossary sync referencing blueprint + plan anchors.
+        - Plan manifest JSON indexing anchors (fulfilling instructions for downstream agents).
+    *   **Acceptance Criteria:** Docs reference anchors; training agenda distributed; plan manifest validated (JSON schema) and lists all major sections/tasks.
+    *   **Dependencies:** [All prior tasks]
+    *   **Parallelizable:** No (final consolidation).
 
 <!-- anchor: task-i5-t8 -->
 *   **Task 5.8:**
     *   **Task ID:** `I5.T8`
-    *   **Description:** Finalize manifest + documentation cross-check (anchors, plan manifest JSON) ensuring all artifacts addressable; run doc lint.
-    *   **Agent Type Hint:** `DocumentationAgent`
-    *   **Inputs:** Entire doc set, plan requirement.
-    *   **Input Files:** [`plan_manifest.json`, `docs/README.md`, `docs/specs/*`]
-    *   **Target Files:** [`plan_manifest.json`, `docs/README.md`, `docs/specs/walkthrough.md`]
-    *   **Deliverables:** Valid manifest referencing anchors, doc lint job results, README updates.
-    *   **Acceptance Criteria:** Manifest passes JSON schema; doc lint clean; README includes quick links.
-    *   **Dependencies:** All prior tasks referencing artifacts
-    *   **Parallelizable:** No
+    *   **Description:** Run final Playwright regression plus manual QA verifying display, PrepChef, Admin CRM, notifications, feature flags, and undo flows under production-like data, documenting sign-off.
+    *   **Agent Type Hint:** `QATestingAgent`
+    *   **Inputs:** Completed UIs, automation scripts.
+    *   **Input Files:** ["tests/playwright/prepchef.tasks.spec.ts", "tests/playwright/admin.board.spec.ts", "docs/operations/resilience_report.md"]
+    *   **Target Files:** ["tests/playwright/regression.suite.json", "docs/operations/qa_signoff.md"]
+    *   **Deliverables:**
+        - Consolidated Playwright suite invoking all spec files with tags for surfaces.
+        - QA sign-off doc listing scenarios, failures, mitigations, pending risks.
+    *   **Acceptance Criteria:** Suite passes; sign-off doc signed by QA + ops leads; gating tasks tracked in issue tracker.
+    *   **Dependencies:** [`I5.T1`-`I5.T7`]
+    *   **Parallelizable:** No.
 
-<!-- anchor: task-i5-t9 -->
-*   **Task 5.9:**
-    *   **Task ID:** `I5.T9`
-    *   **Description:** Prepare go-live communication pack (internal announcement, change log, training schedule) and align with operations calendar.
-    *   **Agent Type Hint:** `ProjectManager`
-    *   **Inputs:** Walkthrough doc, support toolkit, release plan.
-    *   **Input Files:** [`docs/ops/change_log.md`, `docs/ops/comm_plan.md`]
-    *   **Target Files:** [`docs/ops/change_log.md`, `docs/ops/comm_plan.md`, `docs/specs/walkthrough.md`]
-    *   **Deliverables:** Change log for MVP, comm plan with audience-specific messaging, training timeline referencing docs.
-    *   **Acceptance Criteria:** Stakeholders listed; plan approved; change log covers features + flags.
-    *   **Dependencies:** `I3.T11`, `I5.T5`
-    *   **Parallelizable:** Yes
-
-<!-- anchor: task-i5-t10 -->
-*   **Task 5.10:**
-    *   **Task ID:** `I5.T10`
-    *   **Description:** Execute PITR + rollback drill combining Supabase restore + Vercel rollback; capture steps, timings, lessons.
-    *   **Agent Type Hint:** `DevOpsAgent`
-    *   **Inputs:** Release checklist, runbooks, Supabase CLI.
-    *   **Input Files:** [`docs/ops/dr_drill.md`, `tooling/scripts/pitr_restore.sh`]
-    *   **Target Files:** [`docs/ops/dr_drill.md`, `tooling/scripts/pitr_restore.sh`, `docs/ops/runbooks/realtime_outage.md`]
-    *   **Deliverables:** Script automating PITR restore, documented drill results, updates to runbooks with actual timings.
-    *   **Acceptance Criteria:** Drill completes within SLA; doc stored; action items tracked.
-    *   **Dependencies:** `I4.T11`, `I5.T4`
-    *   **Parallelizable:** No
-
-<!-- anchor: task-i5-t11 -->
-*   **Task 5.11:**
-    *   **Task ID:** `I5.T11`
-    *   **Description:** Final QA regression (PrepChef, Admin, Display, Notifications) plus sign-off checklist capturing owners, tests run, outstanding risks.
-    *   **Agent Type Hint:** `QualityAgent`
-    *   **Inputs:** Testing matrix, new features, support toolkit.
-    *   **Input Files:** [`tests/e2e/regression_suite.spec.ts`, `docs/quality/testing_matrix.md`, `docs/ops/release_checklist.md`]
-    *   **Target Files:** [`tests/e2e/regression_suite.spec.ts`, `docs/quality/testing_matrix.md`, `docs/ops/release_checklist.md`]
-    *   **Deliverables:** Consolidated regression suite, updated matrix showing 100% coverage for MVP features, final release checklist sign-offs.
-    *   **Acceptance Criteria:** Regression passes; matrix flagged green; release checklist signed by Eng/Ops/Product.
-    *   **Dependencies:** `I5.T1`–`I5.T10`
-    *   **Parallelizable:** No
+*   **Iteration Review Checklist:**
+    - Validate display offline simulation and capture screenshot for runbook.
+    - Review observability alerts to ensure no false positives for 24h.
+    - Conduct release dry-run using runbook and automation scripts.

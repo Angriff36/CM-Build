@@ -2,16 +2,23 @@
   {
     "task_id": "I3.T1",
     "iteration_id": "I3",
-    "iteration_goal": "Build PrepChef/Admin UI components, media upload pipeline, display foundations, and testing matrix so product workflows are demonstrable end-to-end.",
-    "description": "Implement PrepChef task dashboard UI (header summary, filter pills, virtualized list, task rows, bottom nav) using libs/ui tokens + hooks from I2.",
-    "agent_type_hint": "FrontendAgent",
-    "inputs": "Hooks, design tokens, UX spec.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Responsive Task page with realtime badges, sticky header, accessible nav bar, Storybook stories for TaskRow & StatusButton.",
-    "acceptance_criteria": "Page renders with mocked data; virtualization keeps 200 tasks smooth; status changes update visually; tests cover accessibility.",
+    "iteration_goal": "Deliver the knowledge-base stack (recipes, methods, media uploads, training flows) and document the UI interaction blueprint so staff can view contextual instructions while managers curate content safely under RLS.",
+    "description": "Introduce Supabase migrations for `recipes`, `method_documents`, `media_assets`, `role_assignments` history, and supporting indexes/foreign keys.",
+    "agent_type_hint": "DatabaseAgent",
+    "inputs": "Blueprint data model, prior migrations.",
+    "target_files": [
+      "supabase/migrations/0005_recipes_methods.sql",
+      "supabase/migrations/0006_media_assets.sql",
+      "docs/diagrams/supabase_erd.mmd"
+    ],
+    "input_files": [
+      "docs/architecture/01_Blueprint_Foundation.md",
+      "supabase/migrations/0003_task_lifecycle.sql"
+    ],
+    "deliverables": "- SQL migrations adding recipe/method/media tables with versioning, JSONB steps, tags, allergen flags, and media references.\n        - ERD update highlighting new tables and relationships to tasks/combined groups.\n        - Seed data for sample recipes + method documents per tenant.",
+    "acceptance_criteria": "Migrations apply/rollback cleanly; ERD diff logged; seeds load in dev environment; indexes cover `company_id` + `version` + `tags` queries.",
     "dependencies": [
-      "I2.T6"
+      "I2.T1"
     ],
     "parallelizable": false,
     "done": false
@@ -19,52 +26,70 @@
   {
     "task_id": "I3.T2",
     "iteration_id": "I3",
-    "iteration_goal": "Build PrepChef/Admin UI components, media upload pipeline, display foundations, and testing matrix so product workflows are demonstrable end-to-end.",
-    "description": "Implement combine suggestion UI (drawer, suggestion cards, accept/dismiss actions) wired to Supabase heuristics + feature flag gating.",
-    "agent_type_hint": "FrontendAgent",
-    "inputs": "Undo spec, feature flag register, RPCs.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Combine page/drawer with normalized quantity display, breakdown list, Accept/Keep separate buttons, telemetry instrumentation for exposures.",
-    "acceptance_criteria": "Drawer accessible; feature flag toggles visibility; Accept triggers RPC and updates tasks; analytics event recorded.",
-    "dependencies": [
-      "I2.T4",
-      "I2.T3"
+    "iteration_goal": "Deliver the knowledge-base stack (recipes, methods, media uploads, training flows) and document the UI interaction blueprint so staff can view contextual instructions while managers curate content safely under RLS.",
+    "description": "Build Supabase storage buckets, signed upload endpoint, and Edge Function for media transcoding + thumbnail generation, plus CLI utilities to monitor jobs.",
+    "agent_type_hint": "BackendAgent",
+    "inputs": "Storage requirements, blueprint media flow, new migrations.",
+    "target_files": [
+      "supabase/functions/media_ingest/index.ts",
+      "apps/admin-crm/app/api/media/sign/route.ts",
+      "scripts/media/watch_queue.ts",
+      "docs/operations/media_pipeline.md"
     ],
-    "parallelizable": true,
-    "done": false
-  },
-  {
-    "task_id": "I3.T3",
-    "iteration_id": "I3",
-    "iteration_goal": "Build PrepChef/Admin UI components, media upload pipeline, display foundations, and testing matrix so product workflows are demonstrable end-to-end.",
-    "description": "Deliver Media Pipeline Flowchart (Mermaid) plus implementation: signed URL issuance (`/api/media/sign`), Supabase Function for transcoding, Realtime events, UI upload queue.",
-    "agent_type_hint": "FullStackAgent",
-    "inputs": "Storage requirements, docs, hooks.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Diagram + narrative, upload screen with dropzone/progress, Supabase function updating status + triggering realtime, UI badges reflecting processing.",
-    "acceptance_criteria": "Upload of sample file flows end-to-end (mock) with status updates; diagram renders; doc cross-links to spec; tests cover status transitions.",
+    "input_files": [
+      "docs/architecture/01_Blueprint_Foundation.md",
+      "supabase/migrations/0006_media_assets.sql"
+    ],
+    "deliverables": "- Edge Function triggered on storage upload to transcode video, create thumbnails, update `media_assets` status, and emit realtime events.\n        - API route issuing signed URLs, validating MIME/size, and writing pending metadata rows.\n        - Queue watcher script for ops plus documentation on retention + cleanup.",
+    "acceptance_criteria": "Upload -> process -> ready statuses flow; logs show telemetry; watchers alert on backlog; admin docs advise when to escalate.",
     "dependencies": [
-      "I2.T4",
-      "I2.T8"
+      "I3.T1"
     ],
     "parallelizable": false,
     "done": false
   },
   {
+    "task_id": "I3.T3",
+    "iteration_id": "I3",
+    "iteration_goal": "Deliver the knowledge-base stack (recipes, methods, media uploads, training flows) and document the UI interaction blueprint so staff can view contextual instructions while managers curate content safely under RLS.",
+    "description": "Produce the Knowledge Base content flow diagram mapping Admin CRM authoring -> storage -> Supabase functions -> PrepChef drawers.",
+    "agent_type_hint": "DiagrammingAgent",
+    "inputs": "Media pipeline, recipe drawer requirements.",
+    "target_files": [
+      "docs/diagrams/knowledge_flow.mmd",
+      "docs/diagrams/diagram_index.md"
+    ],
+    "input_files": [
+      "docs/operations/media_pipeline.md",
+      "docs/architecture/06_UI_UX_Architecture.md"
+    ],
+    "deliverables": "- Mermaid flowchart describing author upload, validation, processing, realtime updates, playback, and failure recovery.\n        - Diagram index entry noting dependencies and iteration owner.",
+    "acceptance_criteria": "Diagram renders; steps align with Task 3.2 output; fallback paths for failed processing included.",
+    "dependencies": [
+      "I3.T2"
+    ],
+    "parallelizable": true,
+    "done": false
+  },
+  {
     "task_id": "I3.T4",
     "iteration_id": "I3",
-    "iteration_goal": "Build PrepChef/Admin UI components, media upload pipeline, display foundations, and testing matrix so product workflows are demonstrable end-to-end.",
-    "description": "Build `apps/display` skeleton with summary grid, urgent ticker, presence lane, hooking into summary API + realtime fallback logic.",
-    "agent_type_hint": "FrontendAgent",
-    "inputs": "Display requirements, realtime helper.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Display page rotating sections automatically, offline banner state, SSE fallback, tests verifying rotation.",
-    "acceptance_criteria": "Works on kiosk viewport; rotation interval configurable; offline scenario handled; telemetry event recorded for rotations.",
+    "iteration_goal": "Deliver the knowledge-base stack (recipes, methods, media uploads, training flows) and document the UI interaction blueprint so staff can view contextual instructions while managers curate content safely under RLS.",
+    "description": "Create the UI Interaction Blueprint describing PrepChef recipe drawer, undo toasts, filters, admin CMS forms, kiosk display transitions, and offline banners.",
+    "agent_type_hint": "DocumentationAgent",
+    "inputs": "Blueprint UI requirements, new diagrams.",
+    "target_files": [
+      "docs/ux/ui_interaction_blueprint.md",
+      "libs/ui/stories/interaction-blueprint.stories.mdx"
+    ],
+    "input_files": [
+      "docs/architecture/06_UI_UX_Architecture.md",
+      "docs/diagrams/knowledge_flow.mmd"
+    ],
+    "deliverables": "- Markdown blueprint with per-surface interaction patterns, focus order, motion tokens, offline handling, and notifications.\n        - Storybook MDX doc referencing blueprint, demonstrating states, and linking to designs.",
+    "acceptance_criteria": "Document cross-references diagrams + blueprint anchors; Storybook entry passes lint + Chromatic baseline; instructions cover accessible controls.",
     "dependencies": [
-      "I2.T8"
+      "I3.T3"
     ],
     "parallelizable": true,
     "done": false
@@ -72,16 +97,27 @@
   {
     "task_id": "I3.T5",
     "iteration_id": "I3",
-    "iteration_goal": "Build PrepChef/Admin UI components, media upload pipeline, display foundations, and testing matrix so product workflows are demonstrable end-to-end.",
-    "description": "Produce Testing Matrix (`docs/quality/testing_matrix.md`) mapping features to Vitest, Playwright, Storybook coverage, owners, and automation cadence.",
-    "agent_type_hint": "QualityAgent",
-    "inputs": "Completed tests, features.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Matrix table + backlog for missing coverage; references to test files; risk color coding.",
-    "acceptance_criteria": "Matrix covers PrepChef/Admin/Display/Media; indicates automation frequency; cross-linked from docs index.",
+    "iteration_goal": "Deliver the knowledge-base stack (recipes, methods, media uploads, training flows) and document the UI interaction blueprint so staff can view contextual instructions while managers curate content safely under RLS.",
+    "description": "Implement recipe drawer + method viewer UI in PrepChef (tabs, streaming sections, media player, allergen badges) and content forms in Admin CRM (version history, diff viewer, media attachers).",
+    "agent_type_hint": "FrontendAgent",
+    "inputs": "DTOs, UI blueprint, storage pipeline.",
+    "target_files": [
+      "apps/prepchef/components/recipe-drawer.tsx",
+      "apps/prepchef/app/tasks/layout.tsx",
+      "apps/admin-crm/app/recipes/page.tsx",
+      "apps/admin-crm/components/recipe-editor.tsx",
+      "libs/ui/src/components/media-player.tsx"
+    ],
+    "input_files": [
+      "libs/shared/src/dto/tasks.ts",
+      "docs/ux/ui_interaction_blueprint.md",
+      "apps/admin-crm/app/layout.tsx"
+    ],
+    "deliverables": "- PrepChef drawer with tabs (Steps/Ingredients/Media/Notes) pulling data via streaming server component + React Query hydration.\n        - Media player component with progress, fallback thumbnail, and offline banner hooking into realtime statuses.\n        - Admin recipe editor with diff view, version bump confirmation, and media attachment/preview support.\n        - Unit/Storybook tests for drawer states, method steps, and editor validations.",
+    "acceptance_criteria": "Drawer opens/closes smoothly, persists filter state, and handles version mismatch prompts; admin editor prevents concurrent edits; tests + Chromatic snapshots updated.",
     "dependencies": [
-      "I2.T9"
+      "I3.T2",
+      "I3.T4"
     ],
     "parallelizable": true,
     "done": false
@@ -89,16 +125,23 @@
   {
     "task_id": "I3.T6",
     "iteration_id": "I3",
-    "iteration_goal": "Build PrepChef/Admin UI components, media upload pipeline, display foundations, and testing matrix so product workflows are demonstrable end-to-end.",
-    "description": "Expand `libs/ui` with TaskRow, Badge, Toast, Drawer components; add Storybook stories + Chromatic snapshots; align tokens with UI spec.",
-    "agent_type_hint": "FrontendAgent",
-    "inputs": "Section 6 UI architecture, Task flows.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Components with docs + tests; Chromatic build integrated in CI; tokens referencing color palette.",
-    "acceptance_criteria": "Storybook accessible; Chromatic baseline approved; components imported by PrepChef/Admin.",
+    "iteration_goal": "Deliver the knowledge-base stack (recipes, methods, media uploads, training flows) and document the UI interaction blueprint so staff can view contextual instructions while managers curate content safely under RLS.",
+    "description": "Extend RLS catalog/tests to cover recipes/methods/media, including owner-only editing, staff read access, and per-company storage bucket policies.",
+    "agent_type_hint": "SecurityAgent",
+    "inputs": "New migrations, existing RLS harness.",
+    "target_files": [
+      "supabase/migrations/0007_rls_recipes.sql",
+      "supabase/tests/rls_policies.sql",
+      "docs/security/rls_policies.md"
+    ],
+    "input_files": [
+      "supabase/migrations/0005_recipes_methods.sql",
+      "docs/security/rls_policies.md"
+    ],
+    "deliverables": "- RLS rules for recipes/methods/media, ensuring only managers/owners edit, staff read, and tasks reference consistent company data.\n        - pgTAP additions covering role-specific behavior + impersonation tests.\n        - Catalog updates summarizing coverage, TODOs, and impersonation commands for new tables.",
+    "acceptance_criteria": "Tests pass; docs updated with new sections; storage policies mention bucket path conventions.",
     "dependencies": [
-      "I1.T7"
+      "I3.T1"
     ],
     "parallelizable": true,
     "done": false
@@ -106,92 +149,53 @@
   {
     "task_id": "I3.T7",
     "iteration_id": "I3",
-    "iteration_goal": "Build PrepChef/Admin UI components, media upload pipeline, display foundations, and testing matrix so product workflows are demonstrable end-to-end.",
-    "description": "Implement Recipe drawer UI (tabs, steps, ingredients, media viewer, scaling controls) reusing libs/ui components and hooking into Supabase storage signed URLs.",
-    "agent_type_hint": "FrontendAgent",
-    "inputs": "Recipe spec, media pipeline.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Drawer with accessible tabs, streaming data, signed URL usage, fallback state; tests verifying instructions display.",
-    "acceptance_criteria": "Works offline-limited (warns); handles version mismatch; integrated telemetry.",
-    "dependencies": [
-      "I2.T4",
-      "I3.T3"
+    "iteration_goal": "Deliver the knowledge-base stack (recipes, methods, media uploads, training flows) and document the UI interaction blueprint so staff can view contextual instructions while managers curate content safely under RLS.",
+    "description": "Build Admin CRM training playlist manager and PrepChef training drawer hooking into method documents, including presence/personalization suggestions gated by feature flag `methods.training-recommendations`.",
+    "agent_type_hint": "FullStackAgent",
+    "inputs": "Method schema, feature flag docs, UI blueprint.",
+    "target_files": [
+      "apps/admin-crm/app/methods/page.tsx",
+      "apps/admin-crm/components/method-playlist-editor.tsx",
+      "apps/prepchef/components/method-drawer.tsx",
+      "libs/shared/src/hooks/useMethods.ts",
+      "libs/shared/src/flags/training.ts"
     ],
-    "parallelizable": false,
+    "input_files": [
+      "docs/operations/feature_flag_runbook.md",
+      "docs/ux/ui_interaction_blueprint.md",
+      "libs/shared/src/dto/methods.ts"
+    ],
+    "deliverables": "- Admin playlist editor (CRUD, drag-and-drop ordering, video attachments, skill levels, review status).\n        - PrepChef drawer showing recommended methods tied to current tasks when flag ON, with fallback messaging when OFF.\n        - Hooks fetching method data + caching exposures for telemetry.",
+    "acceptance_criteria": "Feature flag toggles behavior; method drawer accessible; playlists persisted with audit logs; tests cover both flag states.",
+    "dependencies": [
+      "I3.T5",
+      "I3.T6"
+    ],
+    "parallelizable": true,
     "done": false
   },
   {
     "task_id": "I3.T8",
     "iteration_id": "I3",
-    "iteration_goal": "Build PrepChef/Admin UI components, media upload pipeline, display foundations, and testing matrix so product workflows are demonstrable end-to-end.",
-    "description": "Wire Admin CRM recipe editor workspace (forms, ingredient builder, media attachments) with optimistic locking and diff summary.",
-    "agent_type_hint": "FullStackAgent",
-    "inputs": "Recipe drawer implementation, media pipeline.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Editor with autosave, version conflicts, diff view, accessory doc referencing spec.",
-    "acceptance_criteria": "Autosave uses Debounce; conflicting edits show diff; media attachments reflect pipeline statuses.",
-    "dependencies": [
-      "I3.T3",
-      "I2.T7"
+    "iteration_goal": "Deliver the knowledge-base stack (recipes, methods, media uploads, training flows) and document the UI interaction blueprint so staff can view contextual instructions while managers curate content safely under RLS.",
+    "description": "Add Playwright and API tests for recipe drawer, media upload flow, admin editor, and method playlists, ensuring coverage for failure cases (upload fail, version conflict, flag OFF).",
+    "agent_type_hint": "QATestingAgent",
+    "inputs": "UI components, media pipeline, feature flags.",
+    "target_files": [
+      "tests/playwright/recipes.spec.ts",
+      "tests/playwright/admin.recipes.spec.ts",
+      "tests/vitest/media_pipeline.test.ts"
     ],
-    "parallelizable": false,
-    "done": false
-  },
-  {
-    "task_id": "I3.T9",
-    "iteration_id": "I3",
-    "iteration_goal": "Build PrepChef/Admin UI components, media upload pipeline, display foundations, and testing matrix so product workflows are demonstrable end-to-end.",
-    "description": "Add telemetry instrumentation to PrepChef/Admin/Display (OpenTelemetry spans, exposure events, offline banners) via libs/shared telemetry helpers; update observability plan.",
-    "agent_type_hint": "DevOpsAgent",
-    "inputs": "Telemetry helpers, Observability doc, UI flows.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Context providers sending spans/logs, documentation of event names + dashboards.",
-    "acceptance_criteria": "Telemetry toggled via env; events appear in dev log sink; docs updated with sampling guidance.",
-    "dependencies": [
-      "I1.T11",
-      "I3.T1",
-      "I3.T4"
+    "input_files": [
+      "tests/playwright/prepchef.tasks.spec.ts",
+      "apps/prepchef/components/recipe-drawer.tsx",
+      "apps/admin-crm/components/recipe-editor.tsx"
     ],
-    "parallelizable": true,
-    "done": false
-  },
-  {
-    "task_id": "I3.T10",
-    "iteration_id": "I3",
-    "iteration_goal": "Build PrepChef/Admin UI components, media upload pipeline, display foundations, and testing matrix so product workflows are demonstrable end-to-end.",
-    "description": "Expand Playwright suite to include media upload, combine approval, and display rotation tests using staged fixtures.",
-    "agent_type_hint": "QualityAgent",
-    "inputs": "Implementation tasks above, testing matrix plan.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Automated flows verifying UI + backend interplay; fixtures for sample media/tasks.",
-    "acceptance_criteria": "Tests stable in CI; tagging allows selective runs; results linked in testing matrix.",
+    "deliverables": "- PrepChef Playwright spec covering drawer open, step navigation, video fallback, offline banner.\n        - Admin Playwright spec covering upload success/failure, version diff, publish workflow.\n        - Vitest suite mocking Supabase functions to test media status transitions.",
+    "acceptance_criteria": "Tests pass locally + CI; screens captured on failure; docs updated with new commands.",
     "dependencies": [
-      "I3.T1",
       "I3.T2",
-      "I3.T3",
-      "I3.T4"
-    ],
-    "parallelizable": true,
-    "done": false
-  },
-  {
-    "task_id": "I3.T11",
-    "iteration_id": "I3",
-    "iteration_goal": "Build PrepChef/Admin UI components, media upload pipeline, display foundations, and testing matrix so product workflows are demonstrable end-to-end.",
-    "description": "Document feature walkthrough (screenshots/gifs) summarizing PrepChef tasks, combine approvals, recipe drawer, media upload, display loop for stakeholder demo.",
-    "agent_type_hint": "DocumentationAgent",
-    "inputs": "Completed UIs, specs.",
-    "target_files": [],
-    "input_files": [],
-    "deliverables": "Narrative doc with embed visuals + links to live routes.",
-    "acceptance_criteria": "Covers each persona journey; stored in docs index; used for sign-off at iteration demo.",
-    "dependencies": [
-      "I3.T1",
-      "I3.T4"
+      "I3.T5"
     ],
     "parallelizable": true,
     "done": false

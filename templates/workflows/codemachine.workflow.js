@@ -1,10 +1,8 @@
-// Workflow that forces every step to use gpt-5.1-codex-max.
-// Based on the default CodeMachine sequence with per-step engine/model overrides.
+// Workflow override to force OpenCode free models (grok-code / big-pickle) and avoid Codex.
 const resolveStep = (agentId, overrides = {}) => ({ agentId, ...overrides });
-const resolveModule = (moduleId, overrides = {}) => ({ moduleId, ...overrides, type: 'module' });
 
 export default {
-  name: 'codemachine-codex-max',
+  name: 'codemachine-opencode',
   steps: [
     // One-time strategic setup steps
     resolveStep('arch-agent', { engine: 'opencode', model: 'opencode/grok-code', modelReasoningEffort: 'high', executeOnce: true }),
@@ -19,7 +17,7 @@ export default {
     resolveStep('task-sanity-check', { engine: 'opencode', model: 'opencode/grok-code', modelReasoningEffort: 'medium' }),
     resolveStep('git-commit', { engine: 'opencode', model: 'opencode/big-pickle', modelReasoningEffort: 'low' }),
 
-    // Loop controller
+    // Single-pass check
     resolveStep('check-task', {
       engine: 'opencode',
       model: 'opencode/grok-code',

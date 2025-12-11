@@ -1,44 +1,44 @@
 <!-- anchor: verification-and-integration-strategy -->
-## 6. Verification and Integration Strategy
+## 5. Verification and Integration Strategy
 
 *   **Testing Levels:**
-    - Unit: Vitest suites across `libs/shared`, `libs/ui`, `libs/supabase` verifying DTO validation, hooks, UI state machines; mandated in tasks I2.T9, I3.T6, I4.T10.
-    - Integration: Supabase pgTAP + impersonation scripts (I2.T10), Playwright flows (I2.T9, I3.T10, I4.T10, I5.T11) covering PrepChef, Admin, Display, Notifications; load/chaos tests (I5.T1) simulate concurrency + realtime drops.
-    - E2E: Release regression suite (I5.T11) spans PrepChef + Admin + Display, run before each release; includes kiosk offline, notification storms, role change flows.
-    - Accessibility: Storybook axe checks, manual audits (I5.T3) for mobile/kiosk; ensures tokens maintain contrast + focus states.
-*   **CI/CD:**
-    - GitHub Actions pipelines from I1.T9 run lint ? typecheck ? unit tests ? Supabase CLI dry-run ? build; Chromatic + Playwright artifacts uploaded for review.
-    - Monitor workflow (I4.T5) executes synthetic checks against `/tasks`, `/admin/events`, `/display`, `/api/health/realtime` and reports to observability dashboards.
-    - Release guard workflow (I4.T11, I5.T4) enforces changesets, Doppler promotion, migration verification, feature flag audit before tagging/staging deployment; records audit trail.
-    - Deployment uses Vercel preview/staging/production, Supabase migrations via CLI, Doppler for secrets; release checklist documented in `docs/ops/release_checklist.md`.
-*   **Code Quality Gates:**
-    - Lint (ESLint, Stylelint) + format enforced via Turbo tasks; failure blocks merge.
-    - TS strict mode, no `any`, no default exports; path aliases validated via ESLint plugin.
-    - Coverage thresholds (=80% libs, 100% critical flows) tracked in testing matrix (I3.T5, I4.T10, I5.T11).
-    - Observability instrumentation required for new endpoints/components prior to merge (I3.T9), ensuring telemetry parity.
-    - Feature flags documented + exposures tracked; no feature merges without spec + flag register update.
+    - Unit: Vitest suites cover shared DTOs, hooks, utilities, Supabase RPC wrappers (`libs/shared`, `libs/supabase`), media pipeline helpers, and heuristics calculations, targeting >=80% coverage.
+    - Integration: Supabase pgTAP exercises schema + RLS; Next.js API handlers tested via supertest; Supabase Edge Functions include k6/perf checks; React Query hooks verified against mocked Supabase client.
+    - End-to-End: Playwright suites span PrepChef (tasks, recipe drawer, combine), Admin CRM (board, recipes, playlists), and Display (offline fallback), including chaos helper toggling realtime.
+    - Performance/Resilience: k6/perf scripts run under load, resilience drills simulate realtime outage, Supabase restart, media backlog, and display offline.
+*   **CI/CD Expectations:**
+    - GitHub Actions pipeline executes pnpm install -> turbo lint/test/build -> Supabase lint/tests -> Storybook/Chromatic -> Playwright (selective on PR, full on release) -> Spectral OpenAPI lint -> Deploy preview gating.
+    - Nightly workflows run impersonation tests, contract suite, perf smoke, automation backlog status updates, and environment sync dry-run.
+    - Release pipeline references `docs/operations/release_runbook.md`, toggling Flagsmith gating, running migrations, verifying observability dashboards.
+*   **Quality Gates:**
+    - Lint (ESLint, Stylelint, Markdown) must pass with zero warnings; TypeScript strict errors blocked.
+    - Vitest coverage enforced (>=80% libs/shared + libs/supabase, >=70% libs/ui), Chromatic diff approval required for UI changes.
+    - pgTAP suite ensures RLS + policy integrity; failing tests block merges; automation surfaces failures in Slack.
+    - Contract tests ensure API responses match OpenAPI spec; schema_version increments accompany breaking changes.
 *   **Artifact Validation:**
-    - PlantUML/Mermaid diagrams linted via CI using `plantuml`/`mmdc` CLI; failing render blocks PR.
-    - OpenAPI spec validated with Spectral (I2.T1); JSON Schemas (display snapshot) validated via ajv tests (I4.T2).
-    - Migration scripts checked with pgTAP + Supabase CLI diff (I1.T6, I2.T10) before applying.
-    - Documentation anchors validated through manifest task (I5.T8); doc lint ensures headings + anchors align with plan manifest.
-    - Playwright screenshot diffs stored for UI-critical surfaces; Chromatic ensures libs/ui components remain stable.
+    - PlantUML/Mermaid diagrams linted via CI script; `docs/diagrams/diagram_index.md` cross-checked against spec list.
+    - OpenAPI spec validated with Spectral + generated client sample; docs reference iteration ID for traceability.
+    - Runbooks/training docs anchored with references to blueprint/plan anchors; plan manifest enumerates all anchors for agents.
+    - Media pipeline validated by uploading sample assets through CLI and verifying statuses/log entries.
+*   **Release Readiness:**
+    - Checklist covers README update, plan manifest generation, Doppler/Flagsmith sync, Supabase migrations applied, dashboards green, QA sign-off captured, resilience drills reported.
+    - Rollback plan includes Supabase PITR coordinates, Vercel redeploy command, feature flag kill-switch instructions, communication templates from incident playbook.
 
 <!-- anchor: glossary -->
-## 7. Glossary
+## 6. Glossary
 
-1. **ADR:** Architecture Decision Record capturing context, choice, and consequences referenced in docs/adr.
-2. **App Router:** Next.js routing paradigm enabling server components per app.
-3. **Audit Log:** Supabase table recording entity, action, diff, actor_id for compliance + undo debugging.
-4. **Doppler:** Secrets management platform providing environment-scoped runtime configs.
-5. **Flagsmith:** Feature flag service gating heuristics, undo windows, kiosk fallbacks.
-6. **Heuristic Engine:** Supabase function generating task combination suggestions with normalized units.
-7. **PITR:** Point-In-Time Recovery setting on Supabase for database rollback.
-8. **PrepChef:** Staff-facing PWA for realtime task execution.
-9. **Realtime Snapshot:** Display payload conforming to `display_snapshot.schema.json` for kiosk offline mode.
-10. **Undo Token:** Short-lived identifier allowing reversal of claim/complete actions; emitted by RPCs and tracked by notification service.
-11. **Supabase Function:** Edge function executing heuristics, media processing, cron jobs, invoked via RPC or event triggers.
-12. **Synthetic Monitor:** Automated script hitting key endpoints to validate uptime and data freshness.
-13. **Turbo Repo:** Monorepo build orchestrator running lint/test/build tasks per package.
-14. **Vitest/Playwright:** Testing stacks for unit/integration and e2e flows respectively.
-15. **Observability Stack:** OpenTelemetry + log sink capturing metrics/events/traces for operations dashboards.
+1. **ADR:** Architecture Decision Record documenting why/how a decision was made and linking to blueprint anchors.
+2. **App Router:** Next.js routing paradigm using server components + nested layouts.
+3. **Audit Log:** Postgres table tracking entity change history with diffs + actor metadata.
+4. **Chromatic:** Visual regression service for Storybook snapshots in libs/ui.
+5. **CI/CD Pipeline:** Turbo + GitHub Actions workflow described in `docs/operations/release_runbook.md` and diagrammed in `docs/diagrams/cicd_pipeline.mmd`.
+6. **Combine Suggestion:** Heuristic-generated recommendation to merge similar prep tasks; requires manager approval and is gated by feature flag `prep.task-combine.v1`.
+7. **Doppler Template:** Configuration describing environment secrets, owners, rotation cadence used by `scripts/env/sync_secrets.*`.
+8. **Feature Flag Matrix:** Document enumerating Flagsmith toggles, defaults, telemetry metrics, and rollback plan.
+9. **Heuristic Engine:** Supabase Edge Function analyzing tasks to normalize ingredients/units, generate TaskSimilaritySuggestions, and store metadata for review.
+10. **OpenAPI Spec:** Canonical REST contract stored at `api/openapi.yaml`, linted via Spectral, consumed by UI + tests.
+11. **PrepChef Drawer:** Sliding UI component showing recipes/methods/media inline within tasks, built in `apps/prepchef/components/recipe-drawer.tsx`.
+12. **Realtime Adapter:** Hook in `libs/supabase/src/realtime/useRealtimeChannel.ts` wrapping Supabase channels with reconnection + polling fallback logic.
+13. **RLS Catalog:** Living doc `docs/security/rls_policies.md` enumerating every row-level security policy, tests, impersonation commands.
+14. **Undo Token:** Short-lived identifier returned from task mutations enabling rollback; stored in `undo_tokens` table and enforced in UI via Notification/Undo service.
+15. **Wall Display SLA:** Contract stating kiosk data must be <15 seconds stale, enforced through heartbeat monitoring + fallback snapshots.

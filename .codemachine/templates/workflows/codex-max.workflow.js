@@ -20,12 +20,11 @@ export default {
     resolveStep('git-commit', { engine: 'opencode', model: 'opencode/big-pickle', modelReasoningEffort: 'low' }),
 
     // Loop controller
-    resolveModule('check-task', {
+    resolveStep('check-task', {
       engine: 'opencode',
-      model: 'opencode/big-pickle',
-      loopSkip: ['runtime-prep'],
-      loopSteps: 6,
-      loopMaxIterations: 20
+      model: 'opencode/grok-code',
+      modelReasoningEffort: 'medium',
+      executeOnce: true
     })
   ]
 };
