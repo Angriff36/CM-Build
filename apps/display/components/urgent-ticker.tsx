@@ -27,14 +27,9 @@ export function UrgentTicker({ assignments }: UrgentTickerProps) {
     (a) => a.status === 'urgent' || a.status === 'high_priority' || a.priority === 'urgent',
   );
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const [rotationSpeed, setRotationSpeed] = useState(1);
-  const [soundEnabled, setSoundEnabled] = useState(true);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const playAudibleCue = () => {
-    if (!soundEnabled) return;
-
     try {
       if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance('Urgent task update');
@@ -62,7 +57,7 @@ export function UrgentTicker({ assignments }: UrgentTickerProps) {
   };
 
   useEffect(() => {
-    if (urgentAssignments.length === 0 || isPaused) {
+    if (urgentAssignments.length === 0) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -70,12 +65,10 @@ export function UrgentTicker({ assignments }: UrgentTickerProps) {
       return;
     }
 
-    const adjustedCadence = DEFAULT_ROTATION_CADENCE / rotationSpeed;
-
     intervalRef.current = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % urgentAssignments.length);
       playAudibleCue();
-    }, adjustedCadence);
+    }, DEFAULT_ROTATION_CADENCE);
 
     return () => {
       if (intervalRef.current) {
@@ -83,17 +76,7 @@ export function UrgentTicker({ assignments }: UrgentTickerProps) {
         intervalRef.current = null;
       }
     };
-  }, [urgentAssignments.length, isPaused, rotationSpeed, soundEnabled]);
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % urgentAssignments.length);
-    playAudibleCue();
-  };
-
-  const handlePrevious = () => {
-    setCurrentIndex((prev) => (prev - 1 + urgentAssignments.length) % urgentAssignments.length);
-    playAudibleCue();
-  };
+  }, [urgentAssignments.length]);
 
   if (urgentAssignments.length === 0) {
     return null;
@@ -141,58 +124,6 @@ export function UrgentTicker({ assignments }: UrgentTickerProps) {
           <div className="flex items-center gap-3">
             <div className="text-sm font-medium bg-white/20 px-2 py-1 rounded">
               {currentIndex + 1} / {urgentAssignments.length}
-            </div>
-
-            {/* Accessibility Controls */}
-            <div className="flex items-center gap-2 bg-black/20 p-2 rounded">
-              <button
-                onClick={handlePrevious}
-                className="p-1 hover:bg-white/20 rounded transition-colors"
-                aria-label="Previous urgent task"
-              >
-                ◀
-              </button>
-              <button
-                onClick={() => setIsPaused(!isPaused)}
-                className="p-1 hover:bg-white/20 rounded transition-colors"
-                aria-label={isPaused ? 'Resume rotation' : 'Pause rotation'}
-              >
-                {isPaused ? '▶' : '⏸'}
-              </button>
-              <button
-                onClick={handleNext}
-                className="p-1 hover:bg-white/20 rounded transition-colors"
-                aria-label="Next urgent task"
-              >
-                ▶
-              </button>
-              <button
-                onClick={() => setSoundEnabled(!soundEnabled)}
-                className="p-1 hover:bg-white/20 rounded transition-colors"
-                aria-label={soundEnabled ? 'Mute sound' : 'Enable sound'}
-              >
-                {soundEnabled ? '🔊' : '🔇'}
-              </button>
-            </div>
-
-            {/* Speed Control */}
-            <div className="flex items-center gap-1 bg-black/20 p-2 rounded">
-              <span className="text-xs">Speed:</span>
-              <button
-                onClick={() => setRotationSpeed(Math.max(0.5, rotationSpeed - 0.5))}
-                className="px-1 hover:bg-white/20 rounded text-xs"
-                aria-label="Decrease rotation speed"
-              >
-                -
-              </button>
-              <span className="text-xs font-medium w-8 text-center">{rotationSpeed}x</span>
-              <button
-                onClick={() => setRotationSpeed(Math.min(3, rotationSpeed + 0.5))}
-                className="px-1 hover:bg-white/20 rounded text-xs"
-                aria-label="Increase rotation speed"
-              >
-                +
-              </button>
             </div>
           </div>
         </div>

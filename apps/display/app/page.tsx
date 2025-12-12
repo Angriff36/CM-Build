@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useDisplayData } from '../hooks/useDisplayData';
-import { StatusSummary } from '../components/StatusSummary';
+import { SummaryGrid } from '../components/summary-grid';
 import { RealtimeUpdater } from '../components/RealtimeUpdater';
 import { UrgentTicker } from '../components/urgent-ticker';
 import { DeviceStatus } from '../components/device-status';
@@ -71,7 +71,7 @@ export default function DisplayPage() {
           <UrgentTicker assignments={displayData?.assignments || []} />
           <div className="pt-20">
             <h1 className="text-6xl font-bold text-center p-4 text-display">Display Dashboard</h1>
-            <StatusSummary
+            <SummaryGrid
               cards={displayData?.cards || []}
               capturedAt={displayData?.captured_at || ''}
               stalenessMs={displayData?.staleness_ms || 0}

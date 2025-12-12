@@ -1,4 +1,44 @@
 import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { SummaryGrid } from './summary-grid';
+
+// Test the SummaryGrid component
+describe('SummaryGrid', () => {
+  it('renders task counts with large fonts', () => {
+    const mockCards = [
+      { type: 'available', count: 5, urgent: false },
+      { type: 'claimed', count: 3, urgent: true },
+      { type: 'completed', count: 10, urgent: false },
+    ];
+
+    render(<SummaryGrid cards={mockCards} capturedAt="2023-10-01T12:00:00Z" stalenessMs={5000} />);
+
+    // Check that counts are displayed
+    expect(screen.getByText('5')).toBeInTheDocument();
+    expect(screen.getByText('3')).toBeInTheDocument();
+    expect(screen.getByText('10')).toBeInTheDocument();
+
+    // Check that types are displayed
+    expect(screen.getByText('available')).toBeInTheDocument();
+    expect(screen.getByText('claimed')).toBeInTheDocument();
+    expect(screen.getByText('completed')).toBeInTheDocument();
+
+    // Check urgent indicator
+    expect(screen.getByText('URGENT')).toBeInTheDocument();
+
+    // Check last updated
+    expect(screen.getByText(/Last updated:/)).toBeInTheDocument();
+  });
+
+  it('formats duration correctly', () => {
+    const mockCards = [{ type: 'available', count: 1, urgent: false, avg_duration_ms: 120000 }];
+
+    render(<SummaryGrid cards={mockCards} capturedAt="2023-10-01T12:00:00Z" stalenessMs={0} />);
+
+    expect(screen.getByText('Avg: 2m')).toBeInTheDocument();
+  });
+});
 
 // Test the utility functions from SummaryGrid
 describe('SummaryGrid utils', () => {

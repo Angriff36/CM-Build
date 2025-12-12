@@ -29,9 +29,9 @@ jest.mock('../apps/display/hooks/useDisplayData', () => ({
   }),
 }));
 
-jest.mock('../apps/display/components/StatusSummary', () => ({
-  StatusSummary: ({ cards, capturedAt, stalenessMs }: any) => (
-    <div data-testid="status-summary">
+jest.mock('../apps/display/components/summary-grid', () => ({
+  SummaryGrid: ({ cards, capturedAt, stalenessMs }: any) => (
+    <div data-testid="summary-grid">
       <div data-testid="card-count">{cards.length}</div>
       <div data-testid="captured-at">{capturedAt}</div>
       <div data-testid="staleness">{stalenessMs}</div>
@@ -98,9 +98,9 @@ describe('Display Integration Tests', () => {
     const title = screen.getByText('Display Dashboard');
     expect(title).toHaveClass('text-6xl');
 
-    // Check for status summary
-    const statusSummary = screen.getByTestId('status-summary');
-    expect(statusSummary).toBeInTheDocument();
+    // Check for summary grid
+    const summaryGrid = screen.getByTestId('summary-grid');
+    expect(summaryGrid).toBeInTheDocument();
 
     // Check card counts are displayed
     const cardCount = screen.getByTestId('card-count');
@@ -190,7 +190,7 @@ describe('Display Integration Tests', () => {
 
     // Should still render properly on 4K
     expect(screen.getByText('Display Dashboard')).toBeInTheDocument();
-    expect(screen.getByTestId('status-summary')).toBeInTheDocument();
+    expect(screen.getByTestId('summary-grid')).toBeInTheDocument();
   });
 
   test('no interactive controls (passive display only)', async () => {
