@@ -27,6 +27,10 @@ describe('RecipeViewer', () => {
       data: mockRecipe,
       isLoading: false,
       error: null,
+      realtimeState: {
+        isConnected: true,
+        lastUpdate: new Date(),
+      },
     } as any);
   });
 

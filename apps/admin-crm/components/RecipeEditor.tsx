@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { z } from 'zod';
 import { useRecipe } from '@caterkingapp/shared/hooks/useRecipe';
 import { useToast } from '@caterkingapp/shared/hooks/useToast';
+import { OfflineBanner } from './offline-banner';
 import {
   RecipeSchema,
   IngredientSchema,
@@ -16,7 +17,7 @@ interface RecipeEditorProps {
 }
 
 export function RecipeEditor({ recipeId }: RecipeEditorProps) {
-  const { data: recipe, isLoading, updateRecipe } = useRecipe(recipeId);
+  const { data: recipe, isLoading, updateRecipe, realtimeState } = useRecipe(recipeId);
   const { addToast } = useToast();
   const [formData, setFormData] = useState<Partial<Recipe>>({
     name: '',
@@ -221,6 +222,7 @@ export function RecipeEditor({ recipeId }: RecipeEditorProps) {
           <p>You are currently offline. Changes will be saved when connection is restored.</p>
         </div>
       )}
+      {!realtimeState.isConnected && <OfflineBanner />}
       <h1 className="text-2xl font-bold mb-6">Edit Recipe</h1>
 
       <div className="space-y-6">

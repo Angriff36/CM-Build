@@ -8,6 +8,15 @@ import { useCombinationSuggestions } from '@caterkingapp/shared/hooks/useCombina
 import { ToastProvider, useToast } from '@caterkingapp/shared/hooks/useToast';
 import { CombinationSuggestion } from '../components/CombinationSuggestion';
 
+vi.mock('@caterkingapp/supabase/client', () => ({
+  createClient: vi.fn(() => ({
+    rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
+    from: vi.fn(() => ({
+      insert: vi.fn().mockResolvedValue({ error: null }),
+    })),
+  })),
+}));
+
 vi.mock('@caterkingapp/shared/hooks/useCombinationSuggestions', () => ({
   useCombinationSuggestions: vi.fn(),
 }));
@@ -29,6 +38,12 @@ const createUseCombinationSuggestionsResult = (
     data: [],
     isLoading: false,
     error: null,
+    realtimeState: {
+      isConnected: true,
+      connectionAttempts: 0,
+      lastSuccessfulConnection: null,
+      isPolling: false,
+    },
     ...overrides,
   }) as UseCombinationSuggestionsResult;
 

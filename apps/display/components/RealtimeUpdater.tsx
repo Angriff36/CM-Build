@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@caterkingapp/supabase';
+import { useRealtimeSync } from '@caterkingapp/shared/hooks/useRealtimeSync';
 
 interface RealtimeUpdaterProps {
   onDataUpdate: (data: any) => void;
@@ -13,76 +14,30 @@ export function RealtimeUpdater({ onDataUpdate }: RealtimeUpdaterProps) {
   >('connecting');
   const [retryCount, setRetryCount] = useState(0);
 
-  useEffect(() => {
-    // Initialize Supabase client for realtime updates
-    let supabase;
+  const fetchFreshData = async () => {
     try {
-      supabase = createClient();
+      const response = await fetch('/api/display/summary?agg=live');
+      if (response.ok) {
+        const data = await response.json();
+        onDataUpdate(data);
+      }
     } catch (error) {
-      console.warn('Failed to create Supabase client, falling back to polling:', error);
-      setConnectionStatus('disconnected');
-      startPollingFallback();
-      return;
+      console.error('Failed to fetch fresh data:', error);
     }
+  };
 
-    const fetchFreshData = async () => {
-      try {
-        const response = await fetch('/api/display/summary?agg=live');
-        if (response.ok) {
-          const data = await response.json();
-          onDataUpdate(data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch fresh data:', error);
-      }
-    };
+  useEffect(() => {
+    // Fallback polling when realtime is disconnected
+    if (!realtimeState.isConnected) {
+      const pollingInterval = setInterval(fetchFreshData, 15000);
+      return () => clearInterval(pollingInterval);
+    }
+  }, [realtimeState.isConnected, onDataUpdate]);
 
-    // Subscribe to realtime changes
-    const channel = supabase
-      .channel('display-updates')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'tasks',
-        },
-        (payload: any) => {
-          console.log('Realtime update received:', payload);
-          // Fetch fresh data when changes occur
-          fetchFreshData();
-        },
-      )
-      .subscribe((status: any) => {
-        console.log('Subscription status:', status);
-        if (status === 'SUBSCRIBED') {
-          setConnectionStatus('connected');
-          setRetryCount(0);
-        } else {
-          setConnectionStatus('disconnected');
-        }
-      });
-
-    // Fallback polling for when realtime is unavailable
-    const pollingInterval = setInterval(() => {
-      if (connectionStatus === 'disconnected') {
-        fetchFreshData();
-      }
-    }, 15000); // 15 second polling as fallback
-
-    const startPollingFallback = () => {
-      const fallbackInterval = setInterval(fetchFreshData, 15000);
-      return () => clearInterval(fallbackInterval);
-    };
-
-    // Cleanup
-    return () => {
-      if (channel) {
-        channel.unsubscribe();
-      }
-      clearInterval(pollingInterval);
-    };
-  }, [connectionStatus, onDataUpdate]);
+  // Update connection status from realtime state
+  useEffect(() => {
+    setConnectionStatus(realtimeState.isConnected ? 'connected' : 'disconnected');
+  }, [realtimeState.isConnected]);
 
   // Connection status indicator (hidden in production but useful for debugging)
   if (process.env.NODE_ENV === 'development') {

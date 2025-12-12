@@ -6,6 +6,7 @@ import { createClient } from '@caterkingapp/supabase/client';
 import { Button } from '@caterkingapp/ui';
 import { useCombinationSuggestions } from '@caterkingapp/shared/hooks/useCombinationSuggestions';
 import { useToast } from '@caterkingapp/shared/hooks/useToast';
+import { OfflineBanner } from './offline-banner';
 
 interface Suggestion {
   id: string;
@@ -40,7 +41,11 @@ export function CombinationSuggestion({ companyId }: CombinationSuggestionProps)
   const queryClient = useQueryClient();
   const supabase = createClient();
   const { addToast } = useToast();
-  const { data: suggestions = [], isLoading } = useCombinationSuggestions({ companyId });
+  const {
+    data: suggestions = [],
+    isLoading,
+    realtimeState,
+  } = useCombinationSuggestions({ companyId });
 
   const acceptMutation = useMutation({
     mutationFn: async (suggestion: Suggestion) => {
@@ -93,60 +98,63 @@ export function CombinationSuggestion({ companyId }: CombinationSuggestionProps)
   if (suggestions.length === 0) return null;
 
   return (
-    <div className="mb-6">
-      {suggestions.map((suggestion) => (
-        <div
-          key={suggestion.id}
-          className="border border-gray-200 rounded-lg p-4 mb-4 bg-yellow-50 relative"
-          role="alert"
-          aria-live="polite"
-        >
-          <button
-            onClick={() => rejectMutation.mutate(suggestion.id)}
-            disabled={rejectMutation.isPending}
-            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-            aria-label="Dismiss suggestion"
+    <>
+      <div className="mb-6">
+        {suggestions.map((suggestion) => (
+          <div
+            key={suggestion.id}
+            className="border border-gray-200 rounded-lg p-4 mb-4 bg-yellow-50 relative"
+            role="alert"
+            aria-live="polite"
           >
-            ×
-          </button>
-          <div className="flex justify-between items-start mb-4 pr-8">
-            <div className="flex-1 grid grid-cols-2 gap-4">
-              <div>
-                <h3 className="font-semibold">Task A</h3>
-                <p>{suggestion.task.name}</p>
-                <p>
-                  Quantity: {suggestion.task.quantity} {suggestion.task.unit}
-                </p>
-                <p>Status: {suggestion.task.status}</p>
-              </div>
-              <div>
-                <h3 className="font-semibold">Task B</h3>
-                <p>{suggestion.suggested_task.name}</p>
-                <p>
-                  Quantity: {suggestion.suggested_task.quantity} {suggestion.suggested_task.unit}
-                </p>
-                <p>Status: {suggestion.suggested_task.status}</p>
-              </div>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              onClick={() => acceptMutation.mutate(suggestion)}
-              disabled={acceptMutation.isPending}
-              variant="primary"
-            >
-              Accept
-            </Button>
-            <Button
+            <button
               onClick={() => rejectMutation.mutate(suggestion.id)}
               disabled={rejectMutation.isPending}
-              variant="outline"
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              aria-label="Dismiss suggestion"
             >
-              Reject
-            </Button>
+              ×
+            </button>
+            <div className="flex justify-between items-start mb-4 pr-8">
+              <div className="flex-1 grid grid-cols-2 gap-4">
+                <div>
+                  <h3 className="font-semibold">Task A</h3>
+                  <p>{suggestion.task.name}</p>
+                  <p>
+                    Quantity: {suggestion.task.quantity} {suggestion.task.unit}
+                  </p>
+                  <p>Status: {suggestion.task.status}</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold">Task B</h3>
+                  <p>{suggestion.suggested_task.name}</p>
+                  <p>
+                    Quantity: {suggestion.suggested_task.quantity} {suggestion.suggested_task.unit}
+                  </p>
+                  <p>Status: {suggestion.suggested_task.status}</p>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => acceptMutation.mutate(suggestion)}
+                disabled={acceptMutation.isPending}
+                variant="primary"
+              >
+                Accept
+              </Button>
+              <Button
+                onClick={() => rejectMutation.mutate(suggestion.id)}
+                disabled={rejectMutation.isPending}
+                variant="outline"
+              >
+                Reject
+              </Button>
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+      {!realtimeState.isConnected && <OfflineBanner />}
+    </>
   );
 }

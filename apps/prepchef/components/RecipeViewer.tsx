@@ -20,7 +20,7 @@ export function RecipeViewer({ recipeId, onClose, taskQuantity }: RecipeViewerPr
   const drawerRef = useRef<HTMLDivElement>(null);
   const firstFocusableRef = useRef<HTMLButtonElement>(null);
 
-  const { data: recipe, isLoading, error } = useRecipe(recipeId);
+  const { data: recipe, isLoading, error, realtimeState } = useRecipe(recipeId);
 
   useEffect(() => {
     // Trigger slide-in animation
@@ -88,7 +88,7 @@ export function RecipeViewer({ recipeId, onClose, taskQuantity }: RecipeViewerPr
   return (
     <div className="fixed inset-0 z-50 flex">
       <div className="flex-1 bg-black bg-opacity-50" onClick={onClose} />
-      {!isOnline && <OfflineBanner mode="offline" />}
+      {!realtimeState.isConnected && <OfflineBanner mode="offline" />}
       <div
         ref={drawerRef}
         className={`w-full max-w-md bg-white shadow-lg transform transition-transform duration-300 ease-out ${
