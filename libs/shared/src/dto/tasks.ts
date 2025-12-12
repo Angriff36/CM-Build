@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { TaskStatus, TaskPriority } from '../enums';
 
 // Claim Task
 export const ClaimTaskRequestSchema = z.object({

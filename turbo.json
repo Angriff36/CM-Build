@@ -1,7 +1,14 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["tsconfig.base.json", ".eslintrc.cjs"],
-  "globalEnv": ["SUPABASE_URL", "SUPABASE_ANON_KEY", "FLAGS_API_KEY", "DOPPLER_TOKEN"],
+  "globalEnv": [
+    "SUPABASE_URL",
+    "SUPABASE_ANON_KEY",
+    "FLAGS_API_KEY",
+    "DOPPLER_TOKEN",
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+  ],
   "tasks": {
     "dev": {
       "cache": false,

@@ -6,7 +6,7 @@ export interface FlagEvaluation {
   variant?: string;
 }
 
-export const evaluateFlag = (flagKey: string, userId?: string): FlagEvaluation => {
+export const evaluateFlag = (flagKey: string, _userId?: string): FlagEvaluation => {
   // TODO: Integrate with Flagsmith SDK
   // For now, return enabled for prep.task-combine.v1
   if (flagKey === 'prep.task-combine.v1') {

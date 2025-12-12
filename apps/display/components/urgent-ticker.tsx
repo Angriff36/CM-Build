@@ -13,14 +13,15 @@ interface UrgentTickerProps {
 }
 
 const DEFAULT_ROTATION_CADENCE = 5000; // 5 seconds
-const ROTATION_CADENCE = parseInt(
-  typeof window !== 'undefined'
-    ? (window as any).__DISPLAY_CONFIG__?.rotationCadence ||
-        process.env.DISPLAY_ROTATION_CADENCE ||
-        '5000'
-    : process.env.DISPLAY_ROTATION_CADENCE || '5000',
-  10,
-);
+const ROTATION_CADENCE =
+  parseInt(
+    typeof window !== 'undefined'
+      ? (window as any).__DISPLAY_CONFIG__?.rotationCadence ||
+          process.env.DISPLAY_ROTATION_CADENCE ||
+          '5000'
+      : process.env.DISPLAY_ROTATION_CADENCE || '5000',
+    10,
+  ) || DEFAULT_ROTATION_CADENCE;
 
 export function UrgentTicker({ assignments }: UrgentTickerProps) {
   const urgentAssignments = assignments.filter(

@@ -40,12 +40,12 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        cards: data.cards,
-        assignments: data.assignments,
+        cards: data?.cards || [],
+        assignments: data?.assignments || [],
       },
       meta: {
         schema_version: SCHEMA_VERSION,
-        captured_at: data.captured_at,
+        captured_at: data?.captured_at || new Date().toISOString(),
         staleness_ms: 0,
         realtime_channel: 'company:{company_id}:display_snapshots',
       },

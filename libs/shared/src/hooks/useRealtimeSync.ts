@@ -12,7 +12,7 @@ export interface UseRealtimeSyncOptions {
   channelConfig: ChannelConfig;
   queryKeysToInvalidate?: string[][];
   onPostgresChange?: () => void;
-  onBroadcast?: (payload: any) => void;
+  onBroadcast?: (payload: unknown) => void;
   enablePollingOnDisconnect?: boolean;
   pollingInterval?: number;
   onConnectionStatusChange?: (connected: boolean) => void;
@@ -54,7 +54,7 @@ export function useRealtimeSync({
   }, [queryClient, queryKeysToInvalidate, onPostgresChange]);
 
   const handleBroadcast = useCallback(
-    (payload: any) => {
+    (payload: unknown) => {
       // Call custom handler if provided
       onBroadcast?.(payload);
     },
@@ -62,7 +62,7 @@ export function useRealtimeSync({
   );
 
   const handleConnectionStatus = useCallback(
-    (status: string, err?: any) => {
+    (status: string, err?: unknown) => {
       const isConnected = status === 'SUBSCRIBED';
       setState((prev) => ({
         ...prev,

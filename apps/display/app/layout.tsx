@@ -89,7 +89,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <body className={isKiosk ? 'cursor-none' : ''}>
         <Providers>
-          {!realtimeState.isConnected && <OfflineBanner />}
+          {!realtimeState.isConnected && <OfflineBanner mode="realtime" />}
           {children}
           {isKiosk && (
             <div className="fixed bottom-2 right-2 text-xs text-gray-500 bg-black bg-opacity-50 p-1 rounded">

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@caterkingapp/supabase';
 import { useTasks } from '@caterkingapp/shared/hooks/useTasks';
 import { useRealtimeSync } from '@caterkingapp/shared/hooks/useRealtimeSync';
@@ -32,6 +32,8 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
   });
   const [userId, setUserId] = useState<string | null>(null);
   const [companyId, setCompanyId] = useState<string | null>(null);
+  const supabase = createClient();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const getUser = async () => {

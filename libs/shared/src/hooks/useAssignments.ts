@@ -51,9 +51,9 @@ export function useAssignments() {
       await queryClient.cancelQueries({ queryKey: ['tasks'] });
       const previousTasks = queryClient.getQueryData(['tasks']);
 
-      queryClient.setQueryData(['tasks'], (old: any) => {
+      queryClient.setQueryData(['tasks'], (old: unknown) => {
         if (!old) return old;
-        return old.map((task: any) =>
+        return (old as any[]).map((task: any) =>
           task.id === variables.task_id
             ? { ...task, assigned_user_id: variables.user_id || null }
             : task,

@@ -5,7 +5,8 @@ import { mapSupabaseError } from '../../../../../libs/shared/src/utils/errors';
 
 const SCHEMA_VERSION = '1.0';
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   try {
     const body = await request.json();
     const validation = UndoTaskRequestSchema.safeParse(body);
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       actor_id: 'current-user-id',
       company_id: 'current-company-id',
       feature_flag_state: {},
-      endpoint: `/api/tasks/${params.id}/undo`,
+      endpoint: `/api/tasks/${id}/undo`,
       method: 'POST',
     });
 

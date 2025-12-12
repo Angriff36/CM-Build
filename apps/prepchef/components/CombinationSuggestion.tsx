@@ -154,7 +154,7 @@ export function CombinationSuggestion({ companyId }: CombinationSuggestionProps)
           </div>
         ))}
       </div>
-      {!realtimeState.isConnected && <OfflineBanner />}
+      {!realtimeState.isConnected && <OfflineBanner mode="realtime" />}
     </>
   );
 }

@@ -54,7 +54,7 @@ export function ToastProvider({ children }: { children: ReactNode }): JSX.Elemen
 function ToastContainer(): JSX.Element {
   const { toasts, removeToast } = useToast();
 
-  if (toasts.length === 0) return null;
+  if (toasts.length === 0) return <></>;
 
   return (
     <div className="fixed top-4 right-4 z-50 space-y-2">
