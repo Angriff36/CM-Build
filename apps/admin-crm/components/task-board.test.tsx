@@ -1,8 +1,30 @@
 import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { TaskBoard } from '../components/task-board';
 
-// Mock the hooks
+// Mock Supabase client - must be first
+vi.mock('@caterkingapp/supabase', () => ({
+  createClient: vi.fn(() => ({
+    channel: () => ({
+      on: () => ({ subscribe: () => {} }),
+    }),
+    removeChannel: vi.fn(),
+    auth: {
+      getUser: () => Promise.resolve({ data: { user: { user_metadata: { company_id: 'test' } } } }),
+    },
+  })),
+}));
+
+// Mock the shared hooks
+vi.mock('@caterkingapp/shared/hooks/useRealtimeSync', () => ({
+  useRealtimeSync: () => ({
+    isConnected: true,
+    subscribe: vi.fn(),
+    unsubscribe: vi.fn(),
+  }),
+}));
+
 vi.mock('@caterkingapp/shared/hooks/useTasks', () => ({
   useTasks: () => ({
     tasks: [{ id: '1', name: 'Test Task', status: 'pending', assigned_user_id: null }],
@@ -29,19 +51,6 @@ vi.mock('@caterkingapp/shared/hooks/useAssignments', () => ({
   useAssignments: () => ({
     assignTask: vi.fn(),
     isAssigning: false,
-  }),
-}));
-
-// Mock Supabase client
-vi.mock('@caterkingapp/supabase', () => ({
-  createClient: () => ({
-    channel: () => ({
-      on: () => ({ subscribe: () => {} }),
-    }),
-    removeChannel: vi.fn(),
-    auth: {
-      getUser: () => Promise.resolve({ data: { user: { user_metadata: { company_id: 'test' } } } }),
-    },
   }),
 }));
 
