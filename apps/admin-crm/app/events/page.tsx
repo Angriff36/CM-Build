@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useEvents } from '@caterkingapp/shared/hooks/useEvents';
 import { useToast } from '@caterkingapp/shared/hooks/useToast';
+import { useUser } from '@caterkingapp/shared/hooks/useUser';
 import { EventForm } from '../../components/EventForm';
 
 interface Event {
@@ -17,12 +18,11 @@ interface Event {
 export default function EventsPage() {
   const { events, isLoading, createEvent, updateEvent, deleteEvent } = useEvents();
   const { addToast } = useToast();
+  const { data: user } = useUser();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
-  // Placeholder for role checking - replace with actual user role hook
-  const userRole = 'owner'; // Mock role
-  const canManageEvents = ['owner', 'manager'].includes(userRole);
+  const canManageEvents = user && ['owner', 'manager', 'event_lead'].includes(user.role);
 
   const handleCreate = async (eventData: Omit<Event, 'id'>) => {
     try {

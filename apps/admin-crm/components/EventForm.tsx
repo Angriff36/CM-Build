@@ -45,7 +45,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errorMap: Record<string, string> = {};
-        error.errors.forEach((err) => {
+        error.issues.forEach((err) => {
           if (err.path[0]) errorMap[err.path[0] as string] = err.message;
         });
         setErrors(errorMap);
@@ -64,8 +64,11 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
         <h2 className="text-xl font-bold mb-4">{event ? 'Edit Event' : 'Create Event'}</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
+            <label htmlFor="event-name" className="block text-sm font-medium mb-1">
+              Name
+            </label>
             <input
+              id="event-name"
               type="text"
               value={formData.name}
               onChange={(e) => handleChange('name', e.target.value)}
@@ -74,8 +77,11 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
             {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Date</label>
+            <label htmlFor="event-date" className="block text-sm font-medium mb-1">
+              Date
+            </label>
             <input
+              id="event-date"
               type="datetime-local"
               value={formData.date}
               onChange={(e) => handleChange('date', e.target.value)}
@@ -84,8 +90,11 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
             {errors.date && <p className="text-red-500 text-sm">{errors.date}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Location</label>
+            <label htmlFor="event-location" className="block text-sm font-medium mb-1">
+              Location
+            </label>
             <input
+              id="event-location"
               type="text"
               value={formData.location}
               onChange={(e) => handleChange('location', e.target.value)}
@@ -94,8 +103,11 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
             {errors.location && <p className="text-red-500 text-sm">{errors.location}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Status</label>
+            <label htmlFor="event-status" className="block text-sm font-medium mb-1">
+              Status
+            </label>
             <select
+              id="event-status"
               value={formData.status}
               onChange={(e) => handleChange('status', e.target.value)}
               className="w-full p-2 border rounded"

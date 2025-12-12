@@ -5,6 +5,7 @@ import { useStaff } from '@caterkingapp/shared/hooks/useStaff';
 import { useToast } from '@caterkingapp/shared/hooks/useToast';
 import { useTasks } from '@caterkingapp/shared/hooks/useTasks';
 import { useAssignments } from '@caterkingapp/shared/hooks/useAssignments';
+import { useUser } from '@caterkingapp/shared/hooks/useUser';
 import {
   DndContext,
   closestCenter,
@@ -79,6 +80,7 @@ export default function StaffPage() {
   const { addToast } = useToast();
   const { data: tasks } = useTasks();
   const { assignTask } = useAssignments();
+  const { data: user } = useUser();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
   const [formData, setFormData] = useState<StaffFormData>({
@@ -88,9 +90,7 @@ export default function StaffPage() {
     shift_end: '',
   });
 
-  // Placeholder for role checking
-  const userRole = 'owner'; // Mock role
-  const canManageStaff = ['owner', 'manager'].includes(userRole);
+  const canManageStaff = user && ['owner', 'manager'].includes(user.role);
 
   const handleCreate = async () => {
     try {
@@ -365,7 +365,9 @@ export default function StaffPage() {
                 </button>
               </div>
             </div>
-      </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

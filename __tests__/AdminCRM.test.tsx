@@ -3,13 +3,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-import { useEvents } from '@caterkingapp/shared/hooks/useEvents';
-import { useStaff } from '@caterkingapp/shared/hooks/useStaff';
-import { useRecipe } from '@caterkingapp/shared/hooks/useRecipe';
-import { useToast } from '@caterkingapp/shared/hooks/useToast';
-import { EventForm } from '../apps/admin-crm/components/EventForm';
-import { RecipeEditor } from '../apps/admin-crm/components/RecipeEditor';
-
 vi.mock('@caterkingapp/shared/hooks/useEvents', () => ({
   useEvents: vi.fn(),
 }));
@@ -18,12 +11,24 @@ vi.mock('@caterkingapp/shared/hooks/useStaff', () => ({
   useStaff: vi.fn(),
 }));
 
+vi.mock('@caterkingapp/shared/hooks/useTasks', () => ({
+  useTasks: vi.fn(),
+}));
+
+vi.mock('@caterkingapp/shared/hooks/useAssignments', () => ({
+  useAssignments: vi.fn(),
+}));
+
 vi.mock('@caterkingapp/shared/hooks/useRecipe', () => ({
   useRecipe: vi.fn(),
 }));
 
 vi.mock('@caterkingapp/shared/hooks/useToast', () => ({
   useToast: vi.fn(),
+}));
+
+vi.mock('@caterkingapp/shared/hooks/useUser', () => ({
+  useUser: vi.fn(),
 }));
 
 vi.mock('@caterkingapp/supabase/client', () => ({
@@ -52,10 +57,15 @@ vi.mock('@caterkingapp/supabase/client', () => ({
   })),
 }));
 
-const mockUseEvents = vi.mocked(useEvents);
-const mockUseStaff = vi.mocked(useStaff);
+import { useRecipe } from '@caterkingapp/shared/hooks/useRecipe';
+import { useToast } from '@caterkingapp/shared/hooks/useToast';
+import { useUser } from '@caterkingapp/shared/hooks/useUser';
+import { EventForm } from '../apps/admin-crm/components/EventForm';
+import { RecipeEditor } from '../apps/admin-crm/components/RecipeEditor';
+
 const mockUseRecipe = vi.mocked(useRecipe);
 const mockUseToast = vi.mocked(useToast);
+const mockUseUser = vi.mocked(useUser);
 
 const TestWrapper = ({ children }: { children: React.ReactNode }) => {
   const queryClient = new QueryClient({
@@ -73,6 +83,10 @@ describe('AdminCRM Components', () => {
     vi.clearAllMocks();
     mockUseToast.mockReturnValue({
       addToast: vi.fn(),
+    });
+    mockUseUser.mockReturnValue({
+      data: { id: 'user1', role: 'owner', company_id: 'comp1' },
+      isLoading: false,
     });
   });
 

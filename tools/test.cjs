@@ -34,11 +34,24 @@ function resolvePythonExecutable() {
     : path.join(venvPath, 'bin', 'python3');
 }
 
+function isTurboMonorepo(pkg) {
+  return pkg.devDependencies && pkg.devDependencies.turbo;
+}
+
 function runNodeTests() {
   const pkg = readPackageJson();
   const scripts = pkg.scripts || {};
 
   if (scripts.test) {
+    // For turbo monorepos, use turbo run test
+    if (isTurboMonorepo(pkg)) {
+      const result = installer.runPackageManager(['run', 'test']);
+      if (result.status !== 0) {
+        throw new Error(`Turbo test command failed with exit code ${result.status ?? 'unknown'}.`);
+      }
+      return;
+    }
+
     const result = installer.runPackageManager(['run', 'test']);
     if (result.status !== 0) {
       throw new Error(`Test script failed with exit code ${result.status ?? 'unknown'}.`);
@@ -52,7 +65,7 @@ function runNodeTests() {
 function pythonModuleAvailable(pythonExecutable, moduleName) {
   const check = spawnSync(pythonExecutable, ['-m', moduleName, '--version'], {
     cwd: rootDir,
-    stdio: 'ignore'
+    stdio: 'ignore',
   });
   return check.status === 0;
 }
@@ -62,7 +75,7 @@ function runPythonTests() {
   if (pythonModuleAvailable(pythonExecutable, 'pytest')) {
     const result = spawnSync(pythonExecutable, ['-m', 'pytest'], {
       cwd: rootDir,
-      stdio: 'inherit'
+      stdio: 'inherit',
     });
 
     if (result.status === 0) {
@@ -76,7 +89,7 @@ function runPythonTests() {
 
   const result = spawnSync(pythonExecutable, ['-m', 'unittest', 'discover'], {
     cwd: rootDir,
-    stdio: 'inherit'
+    stdio: 'inherit',
   });
 
   if (result.status !== 0) {
@@ -114,5 +127,5 @@ if (require.main === module) {
 
 module.exports = {
   runTests,
-  ensureInstall
+  ensureInstall,
 };

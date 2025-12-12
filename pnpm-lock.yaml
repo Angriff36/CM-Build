@@ -105,6 +105,9 @@ importers:
       vitest:
         specifier: ^1.6.0
         version: 1.6.1(@types/node@20.19.26)(@vitest/ui@4.0.15)(jsdom@23.2.0)
+      zod:
+        specifier: ^4.1.13
+        version: 4.1.13
 
   apps/display:
     dependencies:

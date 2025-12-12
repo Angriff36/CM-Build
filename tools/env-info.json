@@ -1,7 +1,7 @@
 {
   "type": "node",
   "lockFile": "pnpm-lock.yaml",
-  "lockHash": "ffcf5c574100cb4e0697f4c063083e8276a7059326bfa74c04370fddd45f8279",
+  "lockHash": "f9a77d6db69958f6170738d2e3c802ef7a1eb2d3b67bb0d30dd4930ce5b02613",
   "executables": {
     "binDir": "C:\\Projects\\codemachine\\node_modules\\.bin"
   },
@@ -9,6 +9,6 @@
     "name": "pnpm",
     "version": "10.16.1"
   },
-  "timestamp": "2025-12-11T22:19:29.235Z",
+  "timestamp": "2025-12-12T03:50:34.596Z",
   "rootDir": "C:\\Projects\\codemachine"
 }

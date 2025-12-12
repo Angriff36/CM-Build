@@ -3,6 +3,7 @@
 .codemachine/prompts
 .codemachine/agents
 .codemachine/template.json
+.codemachine/artifacts
 .codemachine/.env
 node_modules
 .pnpm

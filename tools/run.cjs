@@ -29,6 +29,10 @@ function pickRunScript(pkg) {
   return null;
 }
 
+function isTurboMonorepo(pkg) {
+  return pkg.devDependencies && pkg.devDependencies.turbo;
+}
+
 function ensureInstall() {
   execSync('node tools/install.cjs', { stdio: 'inherit' });
 }
@@ -69,6 +73,15 @@ function runNodeApplication() {
   const scriptName = pickRunScript(pkg);
 
   if (scriptName) {
+    // For turbo monorepos, prefer turbo run if available
+    if (isTurboMonorepo(pkg) && scriptName === 'dev') {
+      const result = installer.runPackageManager(['run', 'dev']);
+      if (result.status !== 0) {
+        throw new Error(`Turbo dev command failed with exit code ${result.status ?? 'unknown'}.`);
+      }
+      return;
+    }
+
     const result = installer.runPackageManager(['run', scriptName]);
     if (result.status !== 0) {
       throw new Error(
