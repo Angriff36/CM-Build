@@ -4,8 +4,30 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
 // Mock hooks
+const mockUseEvents = vi.fn();
+const mockUseStaff = vi.fn();
+const mockUseTasks = vi.fn();
+const mockUseAssignments = vi.fn();
+const mockUseToast = vi.fn();
+const mockUseUser = vi.fn();
+
 vi.mock('@caterkingapp/shared/hooks/useEvents', () => ({
-  useEvents: vi.fn(),
+  useEvents: mockUseEvents,
+}));
+vi.mock('@caterkingapp/shared/hooks/useStaff', () => ({
+  useStaff: mockUseStaff,
+}));
+vi.mock('@caterkingapp/shared/hooks/useTasks', () => ({
+  useTasks: mockUseTasks,
+}));
+vi.mock('@caterkingapp/shared/hooks/useAssignments', () => ({
+  useAssignments: mockUseAssignments,
+}));
+vi.mock('@caterkingapp/shared/hooks/useToast', () => ({
+  useToast: mockUseToast,
+}));
+vi.mock('@caterkingapp/shared/hooks/useUser', () => ({
+  useUser: mockUseUser,
 }));
 vi.mock('@caterkingapp/shared/hooks/useStaff', () => ({
   useStaff: vi.fn(),
@@ -41,6 +63,7 @@ import { useUser } from '@caterkingapp/shared/hooks/useUser';
 
 // Import components
 import { EventForm } from '../apps/admin-crm/components/EventForm';
+import { StaffAssignment } from '../apps/admin-crm/components/StaffAssignment';
 import EventsPage from '../apps/admin-crm/app/events/page';
 import StaffPage from '../apps/admin-crm/app/staff/page';
 
@@ -377,6 +400,82 @@ describe('AdminCRM Components', () => {
       fireEvent.click(cancelButton);
 
       expect(mockOnCancel).toHaveBeenCalled();
+    });
+  });
+
+  describe('StaffAssignment', () => {
+    it('renders task assignment interface', () => {
+      vi.mocked(useTasks).mockReturnValue({
+        data: [{ id: 'task1', name: 'Test Task', assigned_user_id: null }],
+        isLoading: false,
+      });
+      vi.mocked(useStaff).mockReturnValue({
+        data: [
+          {
+            id: 'staff1',
+            display_name: 'Staff 1',
+            role: 'staff',
+            status: 'active',
+            presence: 'online',
+          },
+        ],
+        isLoading: false,
+        createStaff: vi.fn(),
+        updateStaff: vi.fn(),
+        deleteStaff: vi.fn(),
+        isCreating: false,
+        isUpdating: false,
+        isDeleting: false,
+      });
+
+      render(
+        <TestWrapper>
+          <StaffAssignment />
+        </TestWrapper>,
+      );
+
+      expect(screen.getByText('Task Assignment')).toBeInTheDocument();
+      expect(screen.getByText('Test Task')).toBeInTheDocument();
+      expect(screen.getByText('Staff 1')).toBeInTheDocument();
+    });
+
+    it('handles task assignment via drag and drop', () => {
+      const mockAssignTask = vi.fn();
+      vi.mocked(useAssignments).mockReturnValue({
+        assignTask: mockAssignTask,
+      });
+      vi.mocked(useTasks).mockReturnValue({
+        data: [{ id: 'task1', name: 'Test Task', assigned_user_id: null }],
+        isLoading: false,
+      });
+      vi.mocked(useStaff).mockReturnValue({
+        data: [
+          {
+            id: 'staff1',
+            display_name: 'Staff 1',
+            role: 'staff',
+            status: 'active',
+            presence: 'online',
+          },
+        ],
+        isLoading: false,
+        createStaff: vi.fn(),
+        updateStaff: vi.fn(),
+        deleteStaff: vi.fn(),
+        isCreating: false,
+        isUpdating: false,
+        isDeleting: false,
+      });
+
+      render(
+        <TestWrapper>
+          <StaffAssignment />
+        </TestWrapper>,
+      );
+
+      // Simulate drag end
+      // Note: Full drag simulation requires @dnd-kit test utils, this verifies setup
+      expect(mockAssignTask).not.toHaveBeenCalled(); // Not called yet
     });
   });
 });

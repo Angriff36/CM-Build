@@ -52,11 +52,36 @@ export function RecipeEditor({ recipeId }: RecipeEditorProps) {
   useEffect(() => {
     if (recipe) {
       setFormData(recipe);
+      setLastSavedData(JSON.stringify(recipe));
     }
   }, [recipe]);
 
+  // Autosave every 15 seconds if there are changes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentData = JSON.stringify(formData);
+      if (currentData !== lastSavedData && isOnline && !isSaving) {
+        handleAutoSave();
+      }
+    }, 15000); // 15 seconds
+
+    return () => clearInterval(interval);
+  }, [formData, lastSavedData, isOnline, isSaving]);
+
   const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [lastSavedData, setLastSavedData] = useState<string>('');
+
+  const handleAutoSave = async () => {
+    try {
+      // For autosave, save without full validation to avoid interrupting workflow
+      await updateRecipe(formData);
+      setLastSavedData(JSON.stringify(formData));
+    } catch (error) {
+      // Silent fail for autosave
+      console.warn('Autosave failed:', error);
+    }
+  };
 
   const handleSave = async () => {
     setErrors({});
@@ -64,6 +89,7 @@ export function RecipeEditor({ recipeId }: RecipeEditorProps) {
     try {
       const validatedData = RecipeSchema.parse(formData);
       await updateRecipe(validatedData);
+      setLastSavedData(JSON.stringify(validatedData));
       addToast('Recipe updated successfully', 'success');
     } catch (error) {
       if (error instanceof z.ZodError) {
