@@ -53,9 +53,26 @@ export default defineConfig({
 
     /* E2E tests */
     {
-      name: 'e2e',
+      name: 'e2e-prepchef',
       testDir: './e2e',
-      use: { ...devices['Desktop Chrome'] },
+      testMatch:
+        '**/*{task-claim-complete,task-combination,recipe-viewer,offline-fallback}.spec.ts',
+      use: { ...devices['Desktop Chrome'], baseURL: 'http://localhost:3000' },
+      timeout: 30000, // 30 second timeout for E2E tests
+    },
+    {
+      name: 'e2e-admin',
+      testDir: './e2e',
+      testMatch: '**/*admin-workflows.spec.ts',
+      use: { ...devices['Desktop Chrome'], baseURL: 'http://localhost:3001' },
+      timeout: 30000,
+    },
+    {
+      name: 'e2e-display',
+      testDir: './e2e',
+      testMatch: '**/*kiosk-realtime.spec.ts',
+      use: { ...devices['Desktop Chrome'], baseURL: 'http://localhost:3002' },
+      timeout: 30000,
     },
 
     /* Test against branded browsers. */
@@ -71,7 +88,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'pnpm dev',
+    command: 'cd .. && pnpm dev:prepchef',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
   },
