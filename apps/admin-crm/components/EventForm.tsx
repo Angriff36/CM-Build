@@ -2,24 +2,11 @@
 
 import React, { useState } from 'react';
 import { z } from 'zod';
+import { EventSchema, CreateEventRequestSchema, Event } from '@caterkingapp/shared/dto/events';
 
-// Assuming Event schema exists, create a simple one for now
-const EventSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  date: z.string().min(1, 'Date is required'),
-  location: z.string().min(1, 'Location is required'),
-  status: z.string().optional(),
-});
+type EventFormData = z.infer<typeof CreateEventRequestSchema>;
 
-type EventFormData = z.infer<typeof EventSchema>;
-
-interface Event {
-  id: string;
-  name: string;
-  date: string;
-  location: string;
-  status?: string;
-}
+// Event type imported from DTO
 
 interface EventFormProps {
   event?: Event | null;
@@ -30,7 +17,7 @@ interface EventFormProps {
 export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
   const [formData, setFormData] = useState<EventFormData>({
     name: event?.name || '',
-    date: event?.date || '',
+    date: event?.scheduled_at || event?.date || '',
     location: event?.location || '',
     status: event?.status || 'planned',
   });
@@ -40,7 +27,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const validatedData = EventSchema.parse(formData);
+      const validatedData = CreateEventRequestSchema.parse(formData);
       const submitData = event ? { ...event, ...validatedData } : { ...validatedData, id: '' };
       onSubmit(submitData);
     } catch (error) {

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@caterkingapp/supabase/client';
 import { useToast } from '@caterkingapp/shared/hooks/useToast';
+import { useUser } from '@caterkingapp/shared/hooks/useUser';
 import Link from 'next/link';
 
 interface Recipe {
@@ -18,7 +19,10 @@ interface Recipe {
 
 export default function RecipesPage() {
   const { addToast } = useToast();
+  const { data: user } = useUser();
   const [searchTerm, setSearchTerm] = useState('');
+
+  const canManageRecipes = user && ['owner', 'manager'].includes(user.role);
 
   const { data: recipes, isLoading } = useQuery({
     queryKey: ['recipes'],
@@ -67,12 +71,14 @@ export default function RecipesPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Recipes</h1>
-          <Link
-            href="/recipes/new"
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-          >
-            Create Recipe
-          </Link>
+          {canManageRecipes && (
+            <Link
+              href="/recipes/new"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            >
+              Create Recipe
+            </Link>
+          )}
         </div>
 
         <div className="mb-6">
@@ -113,12 +119,14 @@ export default function RecipesPage() {
                   <span className="text-xs text-gray-500">
                     Updated {new Date(recipe.updated_at).toLocaleDateString()}
                   </span>
-                  <Link
-                    href={`/recipes/${recipe.id}`}
-                    className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition"
-                  >
-                    Edit
-                  </Link>
+                  {canManageRecipes && (
+                    <Link
+                      href={`/recipes/${recipe.id}`}
+                      className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition"
+                    >
+                      Edit
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>
@@ -130,12 +138,14 @@ export default function RecipesPage() {
             <div className="text-gray-500">
               {searchTerm ? 'No recipes found matching your search' : 'No recipes found'}
             </div>
-            <Link
-              href="/recipes/new"
-              className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-            >
-              Create your first recipe
-            </Link>
+            {canManageRecipes && (
+              <Link
+                href="/recipes/new"
+                className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              >
+                Create your first recipe
+              </Link>
+            )}
           </div>
         )}
       </div>

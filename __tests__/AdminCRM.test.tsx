@@ -12,28 +12,32 @@ vi.mock('@caterkingapp/shared/hooks/useRecipe');
 vi.mock('@caterkingapp/shared/hooks/useToast');
 vi.mock('@caterkingapp/shared/hooks/useUser');
 
+const mockUseEvents = vi.mocked(useEvents);
+const mockUseStaff = vi.mocked(useStaff);
+const mockUseTasks = vi.mocked(useTasks);
+const mockUseAssignments = vi.mocked(useAssignments);
+// const mockUseRecipe = vi.mocked(useRecipe); // Commented out since RecipeEditor not tested
+const mockUseToast = vi.mocked(useToast);
+const mockUseUser = vi.mocked(useUser);
+
 // Import hooks
 import { useEvents } from '@caterkingapp/shared/hooks/useEvents';
 import { useStaff } from '@caterkingapp/shared/hooks/useStaff';
 import { useTasks } from '@caterkingapp/shared/hooks/useTasks';
 import { useAssignments } from '@caterkingapp/shared/hooks/useAssignments';
-import { useRecipe } from '@caterkingapp/shared/hooks/useRecipe';
+// import { useRecipe } from '@caterkingapp/shared/hooks/useRecipe'; // Commented out since RecipeEditor not tested
 import { useToast } from '@caterkingapp/shared/hooks/useToast';
 import { useUser } from '@caterkingapp/shared/hooks/useUser';
 
+// Mock components
+vi.mock('../apps/admin-crm/components/RecipeEditor', () => ({
+  RecipeEditor: () => <div>RecipeEditor Mock</div>,
+}));
+
 // Import components
 import { EventForm } from '../apps/admin-crm/components/EventForm';
-// import { RecipeEditor } from '../apps/admin-crm/components/RecipeEditor'; // Commented out due to mocking issues
 import EventsPage from '../apps/admin-crm/app/events/page';
 import StaffPage from '../apps/admin-crm/app/staff/page';
-
-const mockUseEvents = vi.mocked(useEvents);
-const mockUseStaff = vi.mocked(useStaff);
-const mockUseTasks = vi.mocked(useTasks);
-const mockUseAssignments = vi.mocked(useAssignments);
-// const mockUseRecipe = vi.mocked(useRecipe); // Commented out due to mocking issues
-const mockUseToast = vi.mocked(useToast);
-const mockUseUser = vi.mocked(useUser);
 
 const TestWrapper = ({ children }: { children: React.ReactNode }) => {
   const queryClient = new QueryClient({
@@ -84,18 +88,18 @@ describe('AdminCRM Components', () => {
     mockUseAssignments.mockReturnValue({
       assignTask: vi.fn(),
     } as any);
-    mockUseRecipe.mockReturnValue({
-      data: {
-        id: 'recipe1',
-        name: 'Test Recipe',
-        ingredients: [{ name: 'Flour', quantity: 2, unit: 'cups' }],
-        steps: ['Mix ingredients'],
-        media_urls: [],
-      },
-      isLoading: false,
-      updateRecipe: vi.fn(),
-      realtimeState: { isConnected: true },
-    } as any);
+    // mockUseRecipe.mockReturnValue({ // Commented out since RecipeEditor not tested
+    //   data: {
+    //     id: 'recipe1',
+    //     name: 'Test Recipe',
+    //     ingredients: [{ name: 'Flour', quantity: 2, unit: 'cups' }],
+    //     steps: ['Mix ingredients'],
+    //     media_urls: [],
+    //   },
+    //   isLoading: false,
+    //   updateRecipe: vi.fn(),
+    //   realtimeState: { isConnected: true },
+    // } as any);
   });
 
   describe('EventsPage', () => {
