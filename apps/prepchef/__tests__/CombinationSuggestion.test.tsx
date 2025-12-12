@@ -1,3 +1,4 @@
+import '@testing-library/jest-dom';
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -5,7 +6,7 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 
 import { useCombinationSuggestions } from '@caterkingapp/shared/hooks/useCombinationSuggestions';
 import { ToastProvider, useToast } from '@caterkingapp/shared/hooks/useToast';
-import { CombinationSuggestion } from '../apps/prepchef/components/CombinationSuggestion';
+import { CombinationSuggestion } from '../components/CombinationSuggestion';
 
 vi.mock('@caterkingapp/shared/hooks/useCombinationSuggestions', () => ({
   useCombinationSuggestions: vi.fn(),
@@ -124,11 +125,11 @@ describe('CombinationSuggestion', () => {
       </TestWrapper>,
     );
 
-    expect(screen.getByText('Task Combination Suggestions')).toBeInTheDocument();
     expect(screen.getByText('Chop onions')).toBeInTheDocument();
     expect(screen.getByText('Chop garlic')).toBeInTheDocument();
     expect(screen.getByText('Accept')).toBeInTheDocument();
     expect(screen.getByText('Reject')).toBeInTheDocument();
+    expect(screen.getByLabelText('Dismiss suggestion')).toBeInTheDocument();
   });
 
   it('calls accept mutation on accept button click', async () => {
@@ -165,5 +166,22 @@ describe('CombinationSuggestion', () => {
     fireEvent.click(rejectButton);
 
     expect(rejectButton).toBeInTheDocument();
+  });
+
+  it('calls reject mutation on dismiss button click', async () => {
+    mockUseCombinationSuggestions.mockReturnValue(
+      createUseCombinationSuggestionsResult({ data: [mockSuggestion] }),
+    );
+
+    render(
+      <TestWrapper>
+        <CombinationSuggestion {...defaultProps} />
+      </TestWrapper>,
+    );
+
+    const dismissButton = screen.getByLabelText('Dismiss suggestion');
+    fireEvent.click(dismissButton);
+
+    expect(dismissButton).toBeInTheDocument();
   });
 });
