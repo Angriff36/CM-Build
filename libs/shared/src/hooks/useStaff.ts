@@ -183,6 +183,7 @@ export function useStaff({ eventId }: UseStaffOptions = {}) {
         : [],
     },
     queryKeysToInvalidate: [['staff']],
+    enablePollingOnDisconnect: true,
   });
 
   return {

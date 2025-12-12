@@ -153,6 +153,7 @@ export function useEvents() {
         : [],
     },
     queryKeysToInvalidate: [['events']],
+    enablePollingOnDisconnect: true,
   });
 
   return {

@@ -53,7 +53,7 @@ export function useCombinationSuggestions({ companyId }: UseCombinationSuggestio
 
   const realtimeState = useRealtimeSync({
     channelConfig: {
-      name: `company:${companyId}:task_similarity_suggestions`,
+      name: `company:${companyId}:suggestions`,
       postgresChanges: [
         {
           event: '*',
@@ -63,6 +63,7 @@ export function useCombinationSuggestions({ companyId }: UseCombinationSuggestio
       ],
     },
     queryKeysToInvalidate: [['combinationSuggestions', companyId]],
+    enablePollingOnDisconnect: true,
   });
 
   return {

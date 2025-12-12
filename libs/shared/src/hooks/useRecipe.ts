@@ -133,6 +133,7 @@ export function useRecipe(
         : [],
     },
     queryKeysToInvalidate: [['recipe']],
+    enablePollingOnDisconnect: true,
   });
 
   return {
