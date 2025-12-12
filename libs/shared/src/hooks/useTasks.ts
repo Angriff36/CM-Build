@@ -1,13 +1,47 @@
 import { useQuery } from '@tanstack/react-query';
-import { createClient } from '@caterkingapp/supabase/client';
+import { useEffect, useState } from 'react';
+import { createClient } from '@caterkingapp/supabase';
+import { useRealtimeSync } from './useRealtimeSync';
 
 interface UseTasksOptions {
   eventId?: string;
   status?: string | string[];
   search?: string;
+  enableRealtime?: boolean;
 }
 
-export function useTasks({ eventId, status, search }: UseTasksOptions = {}) {
+export function useTasks({ eventId, status, search, enableRealtime = true }: UseTasksOptions = {}) {
+  const [companyId, setCompanyId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getCompanyId = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setCompanyId(user?.user_metadata?.company_id || null);
+    };
+    if (enableRealtime) {
+      getCompanyId();
+    }
+  }, [enableRealtime]);
+
+  // Realtime sync for tasks
+  useRealtimeSync({
+    channelConfig: {
+      name: companyId ? `company:${companyId}:tasks` : 'tasks',
+      postgresChanges: [
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tasks',
+        },
+      ],
+    },
+    queryKeysToInvalidate: [['tasks']],
+    enablePollingOnDisconnect: true,
+  });
+
   return useQuery({
     queryKey: ['tasks', eventId, status, search],
     queryFn: async () => {

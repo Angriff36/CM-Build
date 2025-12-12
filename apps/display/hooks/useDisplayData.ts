@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@caterkingapp/supabase';
+import { useRealtimeSync } from '@caterkingapp/shared/hooks/useRealtimeSync';
 
 interface DisplaySummaryResponse {
   cards: Array<{
@@ -37,6 +38,18 @@ export function useDisplayData(options: UseDisplayDataOptions = {}) {
   const [offlineBanner, setOfflineBanner] = useState(false);
   const [connectionAttempts, setConnectionAttempts] = useState(0);
   const [lastSuccessfulFetch, setLastSuccessfulFetch] = useState<Date | null>(null);
+  const [companyId, setCompanyId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getCompanyId = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setCompanyId(user?.user_metadata?.company_id || null);
+    };
+    getCompanyId();
+  }, []);
 
   const query = useQuery({
     queryKey: ['display-summary', options],
@@ -92,51 +105,42 @@ export function useDisplayData(options: UseDisplayDataOptions = {}) {
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
-  useEffect(() => {
-    if (!query.data?.realtime_channel) return;
-
-    const channel = supabase
-      .channel(`display-summary-${query.data.realtime_channel}`, {
-        config: {
-          broadcast: { self: true },
-        },
-      })
-      .on('broadcast', { event: 'summary_update' }, (payload: { data: DisplaySummaryResponse }) => {
-        queryClient.setQueryData(['display-summary', options], payload.data);
-        setIsRealtimeConnected(true);
-        setOfflineBanner(false);
-        setConnectionAttempts(0);
-      })
-      .on('broadcast', { event: 'connection_status' }, (payload: { status: string }) => {
-        if (payload.status === 'connected') {
-          setIsRealtimeConnected(true);
-          setOfflineBanner(false);
-        }
-      })
-      .subscribe((status: string, err?: any) => {
-        if (status === 'SUBSCRIBED') {
-          setIsRealtimeConnected(true);
-          setOfflineBanner(false);
-          setConnectionAttempts(0);
-        } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
-          setIsRealtimeConnected(false);
-          setOfflineBanner(true);
-        }
-      });
-
-    // Set up connection health check
-    const healthCheck = setInterval(() => {
-      if (channel.state !== 'SUBSCRIBED') {
-        setIsRealtimeConnected(false);
-        setOfflineBanner(true);
-      }
-    }, 10000);
-
-    return () => {
-      clearInterval(healthCheck);
-      supabase.removeChannel(channel);
-    };
-  }, [query.data?.realtime_channel, queryClient, options]);
+  const realtimeState =
+    query.data?.realtime_channel && companyId
+      ? useRealtimeSync({
+          channelConfig: {
+            name: `company:${companyId}:display_summary`,
+            broadcasts: [{ event: 'summary_update', self: true }, { event: 'connection_status' }],
+          },
+          queryKeysToInvalidate: [],
+          onBroadcast: (payload: any) => {
+            if (payload.event === 'summary_update') {
+              queryClient.setQueryData(['display-summary', options], payload.data);
+              setIsRealtimeConnected(true);
+              setOfflineBanner(false);
+              setConnectionAttempts(0);
+            } else if (payload.event === 'connection_status' && payload.status === 'connected') {
+              setIsRealtimeConnected(true);
+              setOfflineBanner(false);
+            }
+          },
+          onConnectionStatusChange: (connected: boolean) => {
+            setIsRealtimeConnected(connected);
+            setOfflineBanner(!connected);
+            if (connected) {
+              setConnectionAttempts(0);
+            } else {
+              setConnectionAttempts((prev) => prev + 1);
+            }
+          },
+          enablePollingOnDisconnect: true,
+        })
+      : {
+          isConnected: false,
+          connectionAttempts: 0,
+          lastSuccessfulConnection: null,
+          isPolling: false,
+        };
 
   // Manual refresh function
   const refresh = useCallback(() => {

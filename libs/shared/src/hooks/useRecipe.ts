@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { createClient } from '@caterkingapp/supabase/client';
+import { createClient } from '@caterkingapp/supabase';
 import { Recipe, RecipeSchema } from '../dto/recipes';
 
 // Export both interfaces to support both usage patterns

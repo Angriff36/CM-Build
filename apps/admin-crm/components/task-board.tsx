@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -21,7 +21,9 @@ import { useAssignments } from '@caterkingapp/shared/hooks/useAssignments';
 import { useTasks } from '@caterkingapp/shared/hooks/useTasks';
 import { useStaff } from '@caterkingapp/shared/hooks/useStaff';
 import { useEffect } from 'react';
-import { createClient } from '@caterkingapp/supabase/client';
+import { createClient } from '@caterkingapp/supabase';
+import { useRealtimeSync } from '@caterkingapp/shared/hooks/useRealtimeSync';
+import { OfflineBanner } from './offline-banner';
 
 interface Task {
   id: string;
@@ -52,30 +54,44 @@ export function TaskBoard({ eventId }: TaskBoardProps) {
   const { tasks, isLoading, refetch } = useTasks({ eventId });
   const { staff } = useStaff();
   const { assignTask } = useAssignments();
+  const [companyId, setCompanyId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getCompanyId = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setCompanyId(user?.user_metadata?.company_id || null);
+    };
+    getCompanyId();
+  }, []);
 
   // Real-time subscription
-  useEffect(() => {
-    const supabase = createClient();
-
-    const channel = supabase
-      .channel('task_changes')
-      .on(
-        'postgres_changes',
+  const realtimeState = useRealtimeSync({
+    channelConfig: {
+      name: companyId ? `company:${companyId}:tasks` : 'task_changes',
+      postgresChanges: [
         {
           event: '*',
           schema: 'public',
           table: 'tasks',
         },
-        () => {
-          refetch();
-        },
-      )
-      .subscribe();
+      ],
+    },
+    queryKeysToInvalidate: [],
+    onPostgresChange: () => refetch(),
+    enablePollingOnDisconnect: true,
+  });
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [refetch]);
+  const OfflineBanner = () => (
+    <div
+      className="bg-amber-100 border-l-4 border-amber-300 text-amber-800 p-4 fixed top-0 left-0 right-0 z-40"
+      role="alert"
+    >
+      <p>Realtime connection lost. Switching to polling mode.</p>
+    </div>
+  );
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -115,6 +131,7 @@ export function TaskBoard({ eventId }: TaskBoardProps) {
 
   return (
     <div className="flex h-full">
+      {!realtimeState.isConnected && <OfflineBanner />}
       {/* Task Board */}
       <div className="flex-1 p-4">
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>

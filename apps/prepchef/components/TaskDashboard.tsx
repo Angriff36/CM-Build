@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useQueryClient, useMutation } from '@tanstack/react-query';
-import { createClient } from '@caterkingapp/supabase/client';
+import { useMutation } from '@tanstack/react-query';
+import { createClient } from '@caterkingapp/supabase';
 import { useTasks } from '@caterkingapp/shared/hooks/useTasks';
+import { useRealtimeSync } from '@caterkingapp/shared/hooks/useRealtimeSync';
+import { OfflineBanner } from './offline-banner';
 import { TaskFilters } from './TaskFilters';
 import { TaskRow } from './TaskRow';
 import { CombinationSuggestion } from './CombinationSuggestion';
@@ -31,9 +33,6 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
   const [userId, setUserId] = useState<string | null>(null);
   const [companyId, setCompanyId] = useState<string | null>(null);
 
-  const queryClient = useQueryClient();
-  const supabase = createClient();
-
   useEffect(() => {
     const getUser = async () => {
       const {
@@ -45,38 +44,21 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
     getUser();
   }, [supabase]);
 
-  // Realtime subscription
-  useEffect(() => {
-    const channel = supabase
-      .channel('tasks')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => {
-        queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [supabase, queryClient]);
-
   // Realtime for suggestions
-  useEffect(() => {
-    if (!companyId) return;
-    const channel = supabase
-      .channel(`company:${companyId}:task_similarity_suggestions`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'task_similarity_suggestions' },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['combinationSuggestions'] });
+  const realtimeState = useRealtimeSync({
+    channelConfig: {
+      name: `company:${companyId}:task_similarity_suggestions`,
+      postgresChanges: [
+        {
+          event: '*',
+          schema: 'public',
+          table: 'task_similarity_suggestions',
         },
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [supabase, queryClient, companyId]);
+      ],
+    },
+    queryKeysToInvalidate: [['combinationSuggestions']],
+    enablePollingOnDisconnect: true,
+  });
 
   const { data: tasks = [], isLoading, error } = useTasks(filters);
 
@@ -118,6 +100,15 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
 
   return (
     <main className="max-w-4xl mx-auto p-6" role="main">
+      {!realtimeState.isConnected && (
+        <OfflineBanner
+          mode="realtime"
+          lastSync={realtimeState.lastSuccessfulConnection || undefined}
+          telemetry={{
+            reconnectAttempts: realtimeState.connectionAttempts,
+          }}
+        />
+      )}
       <header>
         <h1 className="text-2xl font-bold mb-6">Task Dashboard</h1>
       </header>
