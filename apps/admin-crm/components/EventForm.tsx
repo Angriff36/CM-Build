@@ -35,6 +35,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
     status: event?.status || 'planned',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [shakeFields, setShakeFields] = useState<Set<string>>(new Set());
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,10 +46,16 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errorMap: Record<string, string> = {};
+        const shakeSet = new Set<string>();
         error.issues.forEach((err) => {
-          if (err.path[0]) errorMap[err.path[0] as string] = err.message;
+          if (err.path[0]) {
+            errorMap[err.path[0] as string] = err.message;
+            shakeSet.add(err.path[0] as string);
+          }
         });
         setErrors(errorMap);
+        setShakeFields(shakeSet);
+        setTimeout(() => setShakeFields(new Set()), 300);
       }
     }
   };
@@ -72,7 +79,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
               type="text"
               value={formData.name}
               onChange={(e) => handleChange('name', e.target.value)}
-              className="w-full p-2 border rounded"
+              className={`w-full p-2 border rounded transition-transform ${shakeFields.has('name') ? 'animate-shake' : ''}`}
             />
             {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
           </div>
@@ -85,7 +92,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
               type="datetime-local"
               value={formData.date}
               onChange={(e) => handleChange('date', e.target.value)}
-              className="w-full p-2 border rounded"
+              className={`w-full p-2 border rounded transition-transform ${shakeFields.has('date') ? 'animate-shake' : ''}`}
             />
             {errors.date && <p className="text-red-500 text-sm">{errors.date}</p>}
           </div>
@@ -98,7 +105,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
               type="text"
               value={formData.location}
               onChange={(e) => handleChange('location', e.target.value)}
-              className="w-full p-2 border rounded"
+              className={`w-full p-2 border rounded transition-transform ${shakeFields.has('location') ? 'animate-shake' : ''}`}
             />
             {errors.location && <p className="text-red-500 text-sm">{errors.location}</p>}
           </div>

@@ -7,26 +7,38 @@ import { RecipeEditor } from '../components/RecipeEditor';
 import { EventForm } from '../components/EventForm';
 
 // Mock hooks
+let mockUseEvents: any;
+let mockUseStaff: any;
+let mockUseRecipe: any;
+let mockUseToast: any;
+let mockUseTasks: any;
+let mockUseAssignments: any;
+let mockUseUser: any;
+let mockCreateClient: any;
+
 vi.mock('@caterkingapp/shared/hooks/useEvents', () => ({
-  useEvents: vi.fn(),
+  useEvents: (...args: any[]) => mockUseEvents(...args),
 }));
 vi.mock('@caterkingapp/shared/hooks/useStaff', () => ({
-  useStaff: vi.fn(),
+  useStaff: (...args: any[]) => mockUseStaff(...args),
 }));
 vi.mock('@caterkingapp/shared/hooks/useRecipe', () => ({
-  useRecipe: vi.fn(),
+  useRecipe: (...args: any[]) => mockUseRecipe(...args),
 }));
 vi.mock('@caterkingapp/shared/hooks/useToast', () => ({
-  useToast: vi.fn(),
+  useToast: (...args: any[]) => mockUseToast(...args),
 }));
 vi.mock('@caterkingapp/shared/hooks/useTasks', () => ({
-  useTasks: vi.fn(),
+  useTasks: (...args: any[]) => mockUseTasks(...args),
 }));
 vi.mock('@caterkingapp/shared/hooks/useAssignments', () => ({
-  useAssignments: vi.fn(),
+  useAssignments: (...args: any[]) => mockUseAssignments(...args),
+}));
+vi.mock('@caterkingapp/shared/hooks/useUser', () => ({
+  useUser: (...args: any[]) => mockUseUser(...args),
 }));
 vi.mock('@caterkingapp/supabase/client', () => ({
-  createClient: vi.fn(),
+  createClient: (...args: any[]) => mockCreateClient(...args),
 }));
 
 const createTestQueryClient = () =>
@@ -42,10 +54,21 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 describe('AdminCRM Components', () => {
+  beforeEach(() => {
+    mockUseEvents = vi.fn();
+    mockUseStaff = vi.fn();
+    mockUseRecipe = vi.fn();
+    mockUseToast = vi.fn().mockReturnValue({ addToast: vi.fn() });
+    mockUseTasks = vi.fn();
+    mockUseAssignments = vi.fn().mockReturnValue({ assignTask: vi.fn() });
+    mockUseUser = vi.fn().mockReturnValue({ data: { role: 'owner' }, isLoading: false });
+    mockCreateClient = vi.fn();
+  });
+
   describe('EventsPage', () => {
     it('renders loading state', () => {
-      vi.mocked('@caterkingapp/shared/hooks/useEvents').useEvents.mockReturnValue({
-        events: [],
+      mockUseEvents.mockReturnValue({
+        data: [],
         isLoading: true,
         createEvent: vi.fn(),
         updateEvent: vi.fn(),
@@ -57,8 +80,8 @@ describe('AdminCRM Components', () => {
     });
 
     it('renders events list', () => {
-      vi.mocked('@caterkingapp/shared/hooks/useEvents').useEvents.mockReturnValue({
-        events: [
+      mockUseEvents.mockReturnValue({
+        data: [
           {
             id: '1',
             name: 'Test Event',
@@ -73,8 +96,13 @@ describe('AdminCRM Components', () => {
         deleteEvent: vi.fn(),
       } as any);
 
-      vi.mocked('@caterkingapp/shared/hooks/useToast').useToast.mockReturnValue({
+      mockUseToast.mockReturnValue({
         addToast: vi.fn(),
+      } as any);
+
+      mockUseUser.mockReturnValue({
+        data: { role: 'owner' },
+        isLoading: false,
       } as any);
 
       render(<EventsPage />, { wrapper });
@@ -83,24 +111,33 @@ describe('AdminCRM Components', () => {
     });
 
     it('opens create form when button clicked', () => {
-      vi.mocked('@caterkingapp/shared/hooks/useEvents').useEvents.mockReturnValue({
-        events: [],
+      mockUseEvents.mockReturnValue({
+        data: [],
         isLoading: false,
         createEvent: vi.fn(),
         updateEvent: vi.fn(),
         deleteEvent: vi.fn(),
       } as any);
 
+      mockUseToast.mockReturnValue({
+        addToast: vi.fn(),
+      } as any);
+
+      mockUseUser.mockReturnValue({
+        data: { role: 'owner' },
+        isLoading: false,
+      } as any);
+
       render(<EventsPage />, { wrapper });
-      fireEvent.click(screen.getByText('Create Event'));
-      expect(screen.getByText('Create Event')).toBeInTheDocument(); // Form title
+      fireEvent.click(screen.getByRole('button', { name: 'Create Event' }));
+      expect(screen.getByRole('heading', { name: 'Create Event' })).toBeInTheDocument();
     });
   });
 
   describe('StaffPage', () => {
     it('renders staff list', () => {
-      vi.mocked('@caterkingapp/shared/hooks/useStaff').useStaff.mockReturnValue({
-        staff: [
+      mockUseStaff.mockReturnValue({
+        data: [
           {
             id: '1',
             display_name: 'John Doe',
@@ -117,25 +154,32 @@ describe('AdminCRM Components', () => {
         deleteStaff: vi.fn(),
       } as any);
 
-      vi.mocked('@caterkingapp/shared/hooks/useTasks').useTasks.mockReturnValue({
+      mockUseTasks.mockReturnValue({
         data: [],
         isLoading: false,
       } as any);
 
-      vi.mocked('@caterkingapp/shared/hooks/useAssignments').useAssignments.mockReturnValue({
+      mockUseAssignments.mockReturnValue({
         assignTask: vi.fn(),
-        isAssigning: false,
-        assignError: null,
+      } as any);
+
+      mockUseToast.mockReturnValue({
+        addToast: vi.fn(),
+      } as any);
+
+      mockUseUser.mockReturnValue({
+        data: { role: 'owner' },
+        isLoading: false,
       } as any);
 
       render(<StaffPage />, { wrapper });
-      expect(screen.getByText('John Doe')).toBeInTheDocument();
+      expect(screen.getAllByText('John Doe')).toHaveLength(2);
       expect(screen.getByText('Add Staff Member')).toBeInTheDocument();
     });
 
     it('renders task assignment interface', () => {
-      vi.mocked('@caterkingapp/shared/hooks/useStaff').useStaff.mockReturnValue({
-        staff: [
+      mockUseStaff.mockReturnValue({
+        data: [
           {
             id: '1',
             display_name: 'John Doe',
@@ -152,7 +196,7 @@ describe('AdminCRM Components', () => {
         deleteStaff: vi.fn(),
       } as any);
 
-      vi.mocked('@caterkingapp/shared/hooks/useTasks').useTasks.mockReturnValue({
+      mockUseTasks.mockReturnValue({
         data: [
           {
             id: 'task1',
@@ -163,10 +207,17 @@ describe('AdminCRM Components', () => {
         isLoading: false,
       } as any);
 
-      vi.mocked('@caterkingapp/shared/hooks/useAssignments').useAssignments.mockReturnValue({
+      mockUseAssignments.mockReturnValue({
         assignTask: vi.fn(),
-        isAssigning: false,
-        assignError: null,
+      } as any);
+
+      mockUseToast.mockReturnValue({
+        addToast: vi.fn(),
+      } as any);
+
+      mockUseUser.mockReturnValue({
+        data: { role: 'owner' },
+        isLoading: false,
       } as any);
 
       render(<StaffPage />, { wrapper });
@@ -177,9 +228,9 @@ describe('AdminCRM Components', () => {
   });
 
   describe('RecipeEditor', () => {
-    it('renders recipe form', () => {
-      vi.mocked('@caterkingapp/shared/hooks/useRecipe').useRecipe.mockReturnValue({
-        recipe: {
+    it('renders recipe data', () => {
+      mockUseRecipe.mockReturnValue({
+        data: {
           id: '1',
           name: 'Test Recipe',
           ingredients: [],
@@ -190,14 +241,18 @@ describe('AdminCRM Components', () => {
         updateRecipe: vi.fn(),
       } as any);
 
+      mockUseToast.mockReturnValue({
+        addToast: vi.fn(),
+      } as any);
+
       render(<RecipeEditor recipeId="1" />, { wrapper });
       expect(screen.getByDisplayValue('Test Recipe')).toBeInTheDocument();
       expect(screen.getByText('Save Recipe')).toBeInTheDocument();
     });
 
     it('adds ingredient', () => {
-      vi.mocked('@caterkingapp/shared/hooks/useRecipe').useRecipe.mockReturnValue({
-        recipe: {
+      mockUseRecipe.mockReturnValue({
+        data: {
           id: '1',
           name: 'Test Recipe',
           ingredients: [],
@@ -206,6 +261,10 @@ describe('AdminCRM Components', () => {
         },
         isLoading: false,
         updateRecipe: vi.fn(),
+      } as any);
+
+      mockUseToast.mockReturnValue({
+        addToast: vi.fn(),
       } as any);
 
       render(<RecipeEditor recipeId="1" />, { wrapper });
@@ -245,12 +304,10 @@ describe('AdminCRM Components', () => {
         },
       };
 
-      vi.mocked('@caterkingapp/supabase/client').createClient.mockReturnValue(
-        mockSupabaseClient as any,
-      );
+      mockCreateClient.mockReturnValue(mockSupabaseClient as any);
 
-      vi.mocked('@caterkingapp/shared/hooks/useRecipe').useRecipe.mockReturnValue({
-        recipe: {
+      mockUseRecipe.mockReturnValue({
+        data: {
           id: '1',
           name: 'Test Recipe',
           ingredients: [],
@@ -261,10 +318,14 @@ describe('AdminCRM Components', () => {
         updateRecipe: vi.fn(),
       } as any);
 
+      mockUseToast.mockReturnValue({
+        addToast: vi.fn(),
+      } as any);
+
       render(<RecipeEditor recipeId="1" />, { wrapper });
 
       const file = new File(['test'], 'test.jpg', { type: 'image/jpeg' });
-      const input = screen.getByLabelText('Upload Media');
+      const input = screen.getByLabelText(/Drag and drop/);
       fireEvent.change(input, { target: { files: [file] } });
 
       await waitFor(() => {

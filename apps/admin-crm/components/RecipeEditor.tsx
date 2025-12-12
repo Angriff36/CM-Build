@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { z } from 'zod';
 import { useRecipe } from '@caterkingapp/shared/hooks/useRecipe';
 import { useToast } from '@caterkingapp/shared/hooks/useToast';
 import {
@@ -30,6 +31,22 @@ export function RecipeEditor({ recipeId }: RecipeEditorProps) {
   });
   const [newStep, setNewStep] = useState('');
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    setIsOnline(navigator.onLine);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   useEffect(() => {
     if (recipe) {
@@ -37,13 +54,29 @@ export function RecipeEditor({ recipeId }: RecipeEditorProps) {
     }
   }, [recipe]);
 
+  const [isSaving, setIsSaving] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   const handleSave = async () => {
+    setErrors({});
+    setIsSaving(true);
     try {
       const validatedData = RecipeSchema.parse(formData);
       await updateRecipe(validatedData);
       addToast('Recipe updated successfully', 'success');
     } catch (error) {
-      addToast('Failed to update recipe', 'error');
+      if (error instanceof z.ZodError) {
+        const errorMap: Record<string, string> = {};
+        error.issues.forEach((err) => {
+          if (err.path[0]) errorMap[err.path[0] as string] = err.message;
+        });
+        setErrors(errorMap);
+        addToast('Please fix the errors below', 'error');
+      } else {
+        addToast('Failed to update recipe', 'error');
+      }
+    } finally {
+      setTimeout(() => setIsSaving(false), 500); // Keep loading for motion
     }
   };
 
@@ -84,10 +117,10 @@ export function RecipeEditor({ recipeId }: RecipeEditorProps) {
     }));
   };
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const handleFileUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
 
+    const file = files[0];
     setUploadProgress(10);
 
     try {
@@ -166,21 +199,51 @@ export function RecipeEditor({ recipeId }: RecipeEditorProps) {
     }
   };
 
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const files = event.dataTransfer.files;
+    handleFileUpload(files);
+  };
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+  };
+
   if (isLoading) return <div className="p-4">Loading recipe...</div>;
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
+      {!isOnline && (
+        <div
+          className="bg-amber-100 border-l-4 border-amber-300 text-amber-800 p-4 mb-6"
+          role="alert"
+        >
+          <p>You are currently offline. Changes will be saved when connection is restored.</p>
+        </div>
+      )}
       <h1 className="text-2xl font-bold mb-6">Edit Recipe</h1>
 
       <div className="space-y-6">
         <div>
-          <label className="block text-sm font-medium mb-2">Recipe Name</label>
+          <label htmlFor="recipe-name" className="block text-sm font-medium mb-2">
+            Recipe Name
+          </label>
           <input
+            id="recipe-name"
             type="text"
             value={formData.name || ''}
-            onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-            className="w-full p-2 border rounded"
+            onChange={(e) => {
+              setFormData((prev) => ({ ...prev, name: e.target.value }));
+              if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
+            }}
+            className={`w-full p-2 border rounded ${errors.name ? 'border-red-500' : ''}`}
+            aria-describedby={errors.name ? 'recipe-name-error' : undefined}
           />
+          {errors.name && (
+            <p id="recipe-name-error" className="text-red-500 text-sm mt-1" role="alert">
+              {errors.name}
+            </p>
+          )}
         </div>
 
         <div>
@@ -282,31 +345,48 @@ export function RecipeEditor({ recipeId }: RecipeEditorProps) {
                     }))
                   }
                   className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                  aria-label={`Remove media ${index + 1}`}
                 >
                   ×
                 </button>
               </div>
             ))}
           </div>
-          <div>
+          <div
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors"
+          >
             <input
               type="file"
               accept="image/*,video/*"
-              onChange={handleFileUpload}
+              onChange={(e) => handleFileUpload(e.target.files)}
               className="hidden"
               id="media-upload"
             />
-            <label
-              htmlFor="media-upload"
-              className="inline-block px-4 py-2 bg-blue-600 text-white rounded cursor-pointer hover:bg-blue-700"
-            >
-              Upload Media
+            <label htmlFor="media-upload" className="cursor-pointer">
+              <div className="text-gray-600">
+                <svg
+                  className="mx-auto h-12 w-12 text-gray-400"
+                  stroke="currentColor"
+                  fill="none"
+                  viewBox="0 0 48 48"
+                >
+                  <path
+                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <p className="mt-1 text-sm">Drag and drop media files here, or click to select</p>
+              </div>
             </label>
             {uploadProgress > 0 && (
-              <div className="mt-2">
+              <div className="mt-4">
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className="bg-blue-600 h-2 rounded-full transition-all"
+                    className="bg-blue-600 h-2 rounded-full transition-all duration-500"
                     style={{ width: `${uploadProgress}%` }}
                   />
                 </div>
@@ -319,8 +399,27 @@ export function RecipeEditor({ recipeId }: RecipeEditorProps) {
         <div className="flex gap-4">
           <button
             onClick={handleSave}
-            className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            disabled={isSaving || !isOnline}
+            className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
+            {isSaving && (
+              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            )}
             Save Recipe
           </button>
         </div>

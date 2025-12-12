@@ -51,9 +51,7 @@ export default function CombinePage() {
 
     const supabase = createClient();
     const fetchData = async () => {
-      const { data: suggestionsData } = await supabase
-        .from('task_similarity_suggestions')
-        .select(`
+      const { data: suggestionsData } = await supabase.from('task_similarity_suggestions').select(`
           id,
           task_id,
           suggested_task_id,
@@ -90,8 +88,13 @@ export default function CombinePage() {
     return <div>Feature not enabled</div>;
   }
 
-  const filteredSuggestions = suggestions.filter(s => {
-    if (eventFilter && s.tasks.event_id !== eventFilter && s.suggested_tasks.event_id !== eventFilter) return false;
+  const filteredSuggestions = suggestions.filter((s) => {
+    if (
+      eventFilter &&
+      s.tasks.event_id !== eventFilter &&
+      s.suggested_tasks.event_id !== eventFilter
+    )
+      return false;
     if (confidenceFilter) {
       const conf = parseFloat(confidenceFilter);
       if (s.similarity_score < conf) return false;
@@ -116,64 +119,8 @@ export default function CombinePage() {
           <option value="0.7">Very High (0.7+)</option>
         </select>
       </div>
-      <CombineReview suggestions={filteredSuggestions} auditLogs={auditLogs} onUpdate={() => {
-        // Refresh data
-        const supabase = createClient();
-        const fetchData = async () => {
-          const { data: suggestionsData } = await supabase
-            .from('task_similarity_suggestions')
-            .select(`
-              id,
-              task_id,
-              suggested_task_id,
-              similarity_score,
-              created_at,
-              tasks!task_id (
-                id,
-                name,
-                quantity,
-                unit,
-                event_id
-              ),
-              suggested_tasks:tasks!suggested_task_id (
-                id,
-                name,
-                quantity,
-                unit,
-                event_id
-              )
-            `);
-          setSuggestions(suggestionsData || []);
-
-          const { data: logs } = await supabase
-            .from('audit_logs')
-            .select('*')
-            .eq('entity_type', 'task')
-            .eq('action', 'combine');
-          setAuditLogs(logs || []);
-        };
-        fetchData();
-      }} />
-    </main>
-  );
-}
-
-  return (
-    <main className="p-8">
-      <h1>Task Combine Approval Board</h1>
-      <div className="filters">
-        <select>
-          <option>All Events</option>
-        </select>
-        <select>
-          <option>All Stations</option>
-        </select>
-        <select>
-          <option>All Confidence</option>
-        </select>
-      </div>
       <CombineReview
-        suggestions={suggestions}
+        suggestions={filteredSuggestions}
         auditLogs={auditLogs}
         onUpdate={() => {
           // Refresh data
