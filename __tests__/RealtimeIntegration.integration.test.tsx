@@ -5,6 +5,7 @@ import { useEvents } from '@caterkingapp/shared/hooks/useEvents';
 import { useStaff } from '@caterkingapp/shared/hooks/useStaff';
 import { useRecipe } from '@caterkingapp/shared/hooks/useRecipe';
 import { useCombinationSuggestions } from '@caterkingapp/shared/hooks/useCombinationSuggestions';
+import { useUser } from '@caterkingapp/shared/hooks/useUser';
 import { createClient } from '@caterkingapp/supabase/client';
 
 // Mock Supabase client
@@ -378,6 +379,44 @@ describe('RealtimeIntegration', () => {
 
     await waitFor(() => {
       expect(mockSupabaseWithAuth.channel).toHaveBeenCalledWith('company:company1:recipes');
+    });
+  });
+
+  test('useUser integrates realtime with correct channel name', async () => {
+    const mockSupabaseWithAuth = {
+      ...mockSupabase,
+      auth: {
+        getUser: jest.fn(() => Promise.resolve({ data: { user: { id: 'user1' } }, error: null })),
+      },
+      from: jest.fn((table) => {
+        if (table === 'users') {
+          return {
+            select: jest.fn(() => ({
+              eq: jest.fn(() => ({
+                single: jest.fn(() => Promise.resolve({ data: { company_id: 'company1' }, error: null })),
+              })),
+            })),
+          };
+        }
+        return {};
+      }),
+    };
+
+    (createClient as jest.Mock).mockReturnValue(mockSupabaseWithAuth);
+
+    const TestComponent = () => {
+      const { realtimeState } = useUser();
+      return <div>{realtimeState.isConnected ? 'connected' : 'disconnected'}</div>;
+    };
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <TestComponent />
+      </QueryClientProvider>,
+    );
+
+    await waitFor(() => {
+      expect(mockSupabaseWithAuth.channel).toHaveBeenCalledWith('company:company1:users');
     });
   });
 });
