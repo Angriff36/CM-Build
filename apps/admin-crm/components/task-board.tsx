@@ -84,15 +84,6 @@ export function TaskBoard({ eventId }: TaskBoardProps) {
     enablePollingOnDisconnect: true,
   });
 
-  const OfflineBanner = () => (
-    <div
-      className="bg-amber-100 border-l-4 border-amber-300 text-amber-800 p-4 fixed top-0 left-0 right-0 z-40"
-      role="alert"
-    >
-      <p>Realtime connection lost. Switching to polling mode.</p>
-    </div>
-  );
-
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {

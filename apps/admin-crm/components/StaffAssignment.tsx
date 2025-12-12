@@ -5,6 +5,7 @@ import { useTasks } from '@caterkingapp/shared/hooks/useTasks';
 import { useAssignments } from '@caterkingapp/shared/hooks/useAssignments';
 import { useToast } from '@caterkingapp/shared/hooks/useToast';
 import { useStaff } from '@caterkingapp/shared/hooks/useStaff';
+import { OfflineBanner } from './offline-banner';
 import {
   DndContext,
   closestCenter,
@@ -75,8 +76,8 @@ function SortableItem({ id, children }: { id: string; children: React.ReactNode 
 }
 
 export function StaffAssignment() {
-  const { data: staff, isLoading: staffLoading } = useStaff();
-  const { data: tasks, isLoading: tasksLoading } = useTasks();
+  const { data: staff, isLoading: staffLoading, realtimeState: staffRealtimeState } = useStaff();
+  const { data: tasks, isLoading: tasksLoading, realtimeState: tasksRealtimeState } = useTasks();
   const { assignTask } = useAssignments();
   const { addToast } = useToast();
 
@@ -105,6 +106,7 @@ export function StaffAssignment() {
 
   return (
     <div className="mb-8">
+      {(!staffRealtimeState.isConnected || !tasksRealtimeState.isConnected) && <OfflineBanner />}
       <h2 className="text-xl font-semibold mb-4">Task Assignment</h2>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -3,42 +3,41 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-// Mock hooks
-const mockUseEvents = vi.fn();
-const mockUseStaff = vi.fn();
-const mockUseTasks = vi.fn();
-const mockUseAssignments = vi.fn();
-const mockUseRecipe = vi.fn();
-const mockUseToast = vi.fn();
-const mockUseUser = vi.fn();
-
+// Mock hooks - define mocks inline to avoid hoisting issues
 vi.mock('@caterkingapp/shared/hooks/useEvents', () => ({
-  useEvents: mockUseEvents,
+  useEvents: vi.fn(),
 }));
 vi.mock('@caterkingapp/shared/hooks/useStaff', () => ({
-  useStaff: mockUseStaff,
+  useStaff: vi.fn(),
 }));
 vi.mock('@caterkingapp/shared/hooks/useTasks', () => ({
-  useTasks: mockUseTasks,
+  useTasks: vi.fn(),
 }));
 vi.mock('@caterkingapp/shared/hooks/useAssignments', () => ({
-  useAssignments: mockUseAssignments,
+  useAssignments: vi.fn(),
 }));
 vi.mock('@caterkingapp/shared/hooks/useRecipe', () => ({
-  useRecipe: mockUseRecipe,
+  useRecipe: vi.fn(),
 }));
 vi.mock('@caterkingapp/shared/hooks/useToast', () => ({
-  useToast: mockUseToast,
+  useToast: vi.fn(),
 }));
 vi.mock('@caterkingapp/shared/hooks/useUser', () => ({
-  useUser: mockUseUser,
+  useUser: vi.fn(),
 }));
 
-// Import components
+// Import components and mocked hooks
 import { EventForm } from '../components/EventForm';
 import { RecipeEditor } from '../components/RecipeEditor';
 import EventsPage from '../app/events/page';
 import StaffPage from '../app/staff/page';
+import { useEvents } from '@caterkingapp/shared/hooks/useEvents';
+import { useStaff } from '@caterkingapp/shared/hooks/useStaff';
+import { useTasks } from '@caterkingapp/shared/hooks/useTasks';
+import { useAssignments } from '@caterkingapp/shared/hooks/useAssignments';
+import { useRecipe } from '@caterkingapp/shared/hooks/useRecipe';
+import { useToast } from '@caterkingapp/shared/hooks/useToast';
+import { useUser } from '@caterkingapp/shared/hooks/useUser';
 
 const TestWrapper = ({ children }: { children: React.ReactNode }) => {
   const queryClient = new QueryClient({
@@ -55,7 +54,7 @@ describe('AdminCRM Components', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Default mocks
-    mockUseEvents.mockReturnValue({
+    (useEvents as any).mockReturnValue({
       data: [],
       isLoading: false,
       createEvent: vi.fn(),
@@ -64,15 +63,21 @@ describe('AdminCRM Components', () => {
       isCreating: false,
       isUpdating: false,
       isDeleting: false,
+      realtimeState: {
+        isConnected: true,
+        connectionAttempts: 0,
+        lastSuccessfulConnection: null,
+        isPolling: false,
+      },
     } as any);
-    mockUseToast.mockReturnValue({
+    (useToast as any).mockReturnValue({
       addToast: vi.fn(),
     } as any);
-    mockUseUser.mockReturnValue({
+    (useUser as any).mockReturnValue({
       data: { id: 'user1', role: 'owner', company_id: 'comp1' },
       isLoading: false,
     } as any);
-    mockUseStaff.mockReturnValue({
+    (useStaff as any).mockReturnValue({
       data: [],
       isLoading: false,
       createStaff: vi.fn(),
@@ -81,19 +86,31 @@ describe('AdminCRM Components', () => {
       isCreating: false,
       isUpdating: false,
       isDeleting: false,
+      realtimeState: {
+        isConnected: true,
+        connectionAttempts: 0,
+        lastSuccessfulConnection: null,
+        isPolling: false,
+      },
     } as any);
-    mockUseTasks.mockReturnValue({
+    (useTasks as any).mockReturnValue({
       data: [],
       isLoading: false,
+      realtimeState: {
+        isConnected: true,
+        connectionAttempts: 0,
+        lastSuccessfulConnection: null,
+        isPolling: false,
+      },
     } as any);
-    mockUseAssignments.mockReturnValue({
+    (useAssignments as any).mockReturnValue({
       assignTask: vi.fn(),
     } as any);
   });
 
   describe('EventsPage', () => {
     it('renders loading state', () => {
-      mockUseEvents.mockReturnValue({
+      (useEvents as any).mockReturnValue({
         data: [],
         isLoading: true,
         createEvent: vi.fn(),
@@ -102,6 +119,12 @@ describe('AdminCRM Components', () => {
         isCreating: false,
         isUpdating: false,
         isDeleting: false,
+        realtimeState: {
+          isConnected: true,
+          connectionAttempts: 0,
+          lastSuccessfulConnection: null,
+          isPolling: false,
+        },
       } as any);
 
       render(
@@ -114,7 +137,7 @@ describe('AdminCRM Components', () => {
     });
 
     it('renders events list', () => {
-      mockUseEvents.mockReturnValue({
+      (useEvents as any).mockReturnValue({
         data: [
           {
             id: '1',
@@ -131,6 +154,12 @@ describe('AdminCRM Components', () => {
         isCreating: false,
         isUpdating: false,
         isDeleting: false,
+        realtimeState: {
+          isConnected: true,
+          connectionAttempts: 0,
+          lastSuccessfulConnection: null,
+          isPolling: false,
+        },
       } as any);
 
       render(
@@ -158,7 +187,7 @@ describe('AdminCRM Components', () => {
     });
 
     it('hides create button for non-managers', () => {
-      mockUseUser.mockReturnValue({
+      (useUser as any).mockReturnValue({
         data: { id: 'user1', role: 'staff', company_id: 'comp1' },
         isLoading: false,
       } as any);
@@ -173,7 +202,7 @@ describe('AdminCRM Components', () => {
     });
 
     it('shows create button for event_lead', () => {
-      mockUseUser.mockReturnValue({
+      (useUser as any).mockReturnValue({
         data: { id: 'user1', role: 'event_lead', company_id: 'comp1' },
         isLoading: false,
       } as any);
@@ -190,7 +219,7 @@ describe('AdminCRM Components', () => {
     it('handles create event success', async () => {
       const mockCreateEvent = vi.fn().mockResolvedValue({});
       const mockAddToast = vi.fn();
-      mockUseEvents.mockReturnValue({
+      (useEvents as any).mockReturnValue({
         data: [],
         isLoading: false,
         createEvent: mockCreateEvent,
@@ -199,8 +228,14 @@ describe('AdminCRM Components', () => {
         isCreating: false,
         isUpdating: false,
         isDeleting: false,
+        realtimeState: {
+          isConnected: true,
+          connectionAttempts: 0,
+          lastSuccessfulConnection: null,
+          isPolling: false,
+        },
       } as any);
-      mockUseToast.mockReturnValue({
+      (useToast as any).mockReturnValue({
         addToast: mockAddToast,
       });
 
@@ -235,7 +270,7 @@ describe('AdminCRM Components', () => {
     it('handles create event error', async () => {
       const mockCreateEvent = vi.fn().mockRejectedValue(new Error('Failed'));
       const mockAddToast = vi.fn();
-      mockUseEvents.mockReturnValue({
+      (useEvents as any).mockReturnValue({
         data: [],
         isLoading: false,
         createEvent: mockCreateEvent,
@@ -244,8 +279,14 @@ describe('AdminCRM Components', () => {
         isCreating: false,
         isUpdating: false,
         isDeleting: false,
+        realtimeState: {
+          isConnected: true,
+          connectionAttempts: 0,
+          lastSuccessfulConnection: null,
+          isPolling: false,
+        },
       } as any);
-      mockUseToast.mockReturnValue({
+      (useToast as any).mockReturnValue({
         addToast: mockAddToast,
       });
 
@@ -273,7 +314,7 @@ describe('AdminCRM Components', () => {
 
   describe('StaffPage', () => {
     beforeEach(() => {
-      mockUseStaff.mockReturnValue({
+      (useStaff as any).mockReturnValue({
         data: [],
         isLoading: false,
         createStaff: vi.fn(),
@@ -282,25 +323,37 @@ describe('AdminCRM Components', () => {
         isCreating: false,
         isUpdating: false,
         isDeleting: false,
+        realtimeState: {
+          isConnected: true,
+          connectionAttempts: 0,
+          lastSuccessfulConnection: null,
+          isPolling: false,
+        },
       } as any);
-      mockUseTasks.mockReturnValue({
+      (useTasks as any).mockReturnValue({
         data: [],
         isLoading: false,
+        realtimeState: {
+          isConnected: true,
+          connectionAttempts: 0,
+          lastSuccessfulConnection: null,
+          isPolling: false,
+        },
       } as any);
-      mockUseAssignments.mockReturnValue({
+      (useAssignments as any).mockReturnValue({
         assignTask: vi.fn(),
       } as any);
-      mockUseToast.mockReturnValue({
+      (useToast as any).mockReturnValue({
         addToast: vi.fn(),
       });
-      mockUseUser.mockReturnValue({
+      (useUser as any).mockReturnValue({
         data: { id: 'user1', role: 'owner', company_id: 'comp1' },
         isLoading: false,
       } as any);
     });
 
     it('renders staff list', () => {
-      mockUseStaff.mockReturnValue({
+      (useStaff as any).mockReturnValue({
         data: [
           { id: '1', display_name: 'Staff 1', role: 'staff', status: 'active', presence: 'online' },
         ],
@@ -311,6 +364,12 @@ describe('AdminCRM Components', () => {
         isCreating: false,
         isUpdating: false,
         isDeleting: false,
+        realtimeState: {
+          isConnected: true,
+          connectionAttempts: 0,
+          lastSuccessfulConnection: null,
+          isPolling: false,
+        },
       } as any);
 
       render(
@@ -334,7 +393,7 @@ describe('AdminCRM Components', () => {
     });
 
     it('hides management buttons for non-managers', () => {
-      mockUseUser.mockReturnValue({
+      (useUser as any).mockReturnValue({
         data: { id: 'user1', role: 'staff', company_id: 'comp1' },
         isLoading: false,
       } as any);
@@ -349,7 +408,7 @@ describe('AdminCRM Components', () => {
     });
 
     it('shows management buttons for managers', () => {
-      mockUseUser.mockReturnValue({
+      (useUser as any).mockReturnValue({
         data: { id: 'user1', role: 'manager', company_id: 'comp1' },
         isLoading: false,
       } as any);
@@ -365,14 +424,20 @@ describe('AdminCRM Components', () => {
 
     it('handles task assignment on drag end', () => {
       const mockAssignTask = vi.fn();
-      mockUseAssignments.mockReturnValue({
+      (useAssignments as any).mockReturnValue({
         assignTask: mockAssignTask,
       });
-      mockUseTasks.mockReturnValue({
+      (useTasks as any).mockReturnValue({
         data: [{ id: 'task1', name: 'Task 1', assigned_user_id: null }],
         isLoading: false,
+        realtimeState: {
+          isConnected: true,
+          connectionAttempts: 0,
+          lastSuccessfulConnection: null,
+          isPolling: false,
+        },
       });
-      mockUseStaff.mockReturnValue({
+      (useStaff as any).mockReturnValue({
         data: [
           {
             id: 'staff1',
@@ -389,6 +454,12 @@ describe('AdminCRM Components', () => {
         isCreating: false,
         isUpdating: false,
         isDeleting: false,
+        realtimeState: {
+          isConnected: true,
+          connectionAttempts: 0,
+          lastSuccessfulConnection: null,
+          isPolling: false,
+        },
       } as any);
 
       render(
@@ -424,7 +495,7 @@ describe('AdminCRM Components', () => {
     beforeEach(() => {
       mockOnSubmit.mockClear();
       mockOnCancel.mockClear();
-      mockUseToast.mockReturnValue({
+      (useToast as any).mockReturnValue({
         addToast: vi.fn(),
       });
     });
@@ -529,13 +600,19 @@ describe('AdminCRM Components', () => {
     };
 
     beforeEach(() => {
-      mockUseRecipe.mockReturnValue({
+      (useRecipe as any).mockReturnValue({
         data: mockRecipe,
         isLoading: false,
         updateRecipe: vi.fn(),
         isUpdating: false,
+        realtimeState: {
+          isConnected: true,
+          connectionAttempts: 0,
+          lastSuccessfulConnection: null,
+          isPolling: false,
+        },
       } as any);
-      mockUseToast.mockReturnValue({
+      (useToast as any).mockReturnValue({
         addToast: vi.fn(),
       } as any);
     });
@@ -632,11 +709,17 @@ describe('AdminCRM Components', () => {
 
     it('saves recipe', () => {
       const mockUpdateRecipe = vi.fn();
-      mockUseRecipe.mockReturnValue({
+      (useRecipe as any).mockReturnValue({
         data: mockRecipe,
         isLoading: false,
         updateRecipe: mockUpdateRecipe,
         isUpdating: false,
+        realtimeState: {
+          isConnected: true,
+          connectionAttempts: 0,
+          lastSuccessfulConnection: null,
+          isPolling: false,
+        },
       } as any);
 
       render(

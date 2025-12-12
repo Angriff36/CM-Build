@@ -5,6 +5,7 @@ import { useStaff } from '@caterkingapp/shared/hooks/useStaff';
 import { useToast } from '@caterkingapp/shared/hooks/useToast';
 import { useUser } from '@caterkingapp/shared/hooks/useUser';
 import { StaffAssignment } from '../../components/StaffAssignment';
+import { OfflineBanner } from '../../components/offline-banner';
 
 interface Staff {
   id: string;
@@ -24,7 +25,14 @@ interface StaffFormData {
 }
 
 export default function StaffPage() {
-  const { data: staff, isLoading, createStaff, updateStaff, deleteStaff } = useStaff();
+  const {
+    data: staff,
+    isLoading,
+    createStaff,
+    updateStaff,
+    deleteStaff,
+    realtimeState,
+  } = useStaff();
   const { addToast } = useToast();
   const { data: user } = useUser();
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -94,6 +102,7 @@ export default function StaffPage() {
 
   return (
     <div className="p-6">
+      {!realtimeState.isConnected && <OfflineBanner />}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Staff Management</h1>
         {canManageStaff && (

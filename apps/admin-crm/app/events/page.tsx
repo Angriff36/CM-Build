@@ -5,6 +5,7 @@ import { useEvents } from '@caterkingapp/shared/hooks/useEvents';
 import { useToast } from '@caterkingapp/shared/hooks/useToast';
 import { useUser } from '@caterkingapp/shared/hooks/useUser';
 import { EventForm } from '../../components/EventForm';
+import { OfflineBanner } from '../../components/offline-banner';
 
 interface Event {
   id: string;
@@ -16,7 +17,14 @@ interface Event {
 }
 
 export default function EventsPage() {
-  const { data: events, isLoading, createEvent, updateEvent, deleteEvent } = useEvents();
+  const {
+    data: events,
+    isLoading,
+    createEvent,
+    updateEvent,
+    deleteEvent,
+    realtimeState,
+  } = useEvents();
   const { addToast } = useToast();
   const { data: user } = useUser();
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -58,6 +66,7 @@ export default function EventsPage() {
 
   return (
     <div className="p-6">
+      {!realtimeState.isConnected && <OfflineBanner />}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Events</h1>
         {canManageEvents && (

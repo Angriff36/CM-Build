@@ -60,7 +60,12 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
     enablePollingOnDisconnect: true,
   });
 
-  const { data: tasks = [], isLoading, error } = useTasks(filters);
+  const {
+    data: tasks = [],
+    isLoading,
+    error,
+    realtimeState: tasksRealtimeState,
+  } = useTasks(filters);
 
   const claimMutation = useMutation({
     mutationFn: async (taskId: string) => {
@@ -100,12 +105,19 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
 
   return (
     <main className="max-w-4xl mx-auto p-6" role="main">
-      {!realtimeState.isConnected && (
+      {(!realtimeState.isConnected || !tasksRealtimeState.isConnected) && (
         <OfflineBanner
           mode="realtime"
-          lastSync={realtimeState.lastSuccessfulConnection || undefined}
+          lastSync={
+            realtimeState.lastSuccessfulConnection ||
+            tasksRealtimeState.lastSuccessfulConnection ||
+            undefined
+          }
           telemetry={{
-            reconnectAttempts: realtimeState.connectionAttempts,
+            reconnectAttempts: Math.max(
+              realtimeState.connectionAttempts,
+              tasksRealtimeState.connectionAttempts,
+            ),
           }}
         />
       )}
