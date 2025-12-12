@@ -53,7 +53,7 @@ export function useCombinationSuggestions({ companyId }: UseCombinationSuggestio
 
   const realtimeState = useRealtimeSync({
     channelConfig: {
-      name: `company:${companyId}:suggestions`,
+      name: `company:${companyId}:task_similarity_suggestions`,
       postgresChanges: [
         {
           event: '*',
