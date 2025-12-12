@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@caterkingapp/supabase';
-import { useRealtimeSync } from '@caterkingapp/shared/hooks/useRealtimeSync';
+import { useRealtimeSync } from '@caterkingapp/shared';
 
 interface DisplaySummaryResponse {
   cards: Array<{

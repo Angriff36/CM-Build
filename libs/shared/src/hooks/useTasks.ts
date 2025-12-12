@@ -27,22 +27,24 @@ export function useTasks({ eventId, status, search, enableRealtime = true }: Use
   }, [enableRealtime]);
 
   // Realtime sync for tasks
-  useRealtimeSync({
+  const realtimeState = useRealtimeSync({
     channelConfig: {
       name: companyId ? `company:${companyId}:tasks` : 'tasks',
-      postgresChanges: [
-        {
-          event: '*',
-          schema: 'public',
-          table: 'tasks',
-        },
-      ],
+      postgresChanges: companyId
+        ? [
+            {
+              event: '*',
+              schema: 'public',
+              table: 'tasks',
+            },
+          ]
+        : [],
     },
     queryKeysToInvalidate: [['tasks']],
     enablePollingOnDisconnect: true,
   });
 
-  return useQuery({
+  const tasksQuery = useQuery({
     queryKey: ['tasks', eventId, status, search],
     queryFn: async () => {
       const supabase = createClient();
@@ -65,4 +67,9 @@ export function useTasks({ eventId, status, search, enableRealtime = true }: Use
       return data;
     },
   });
+
+  return {
+    ...tasksQuery,
+    realtimeState,
+  };
 }

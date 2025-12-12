@@ -1,6 +1,10 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useRealtimeSync } from '@caterkingapp/shared/hooks/useRealtimeSync';
+import { useEvents } from '@caterkingapp/shared/hooks/useEvents';
+import { useStaff } from '@caterkingapp/shared/hooks/useStaff';
+import { useRecipe } from '@caterkingapp/shared/hooks/useRecipe';
+import { useCombinationSuggestions } from '@caterkingapp/shared/hooks/useCombinationSuggestions';
 import { createClient } from '@caterkingapp/supabase/client';
 
 // Mock Supabase client
@@ -152,6 +156,231 @@ describe('RealtimeIntegration', () => {
       }),
     );
   });
+
+  test('useEvents integrates realtime with correct channel name', async () => {
+    const mockSupabaseWithAuth = {
+      ...mockSupabase,
+      auth: {
+        getUser: jest.fn(() => Promise.resolve({ data: { user: { id: 'user1' } }, error: null })),
+      },
+      from: jest.fn((table) => {
+        if (table === 'users') {
+          return {
+            select: jest.fn(() => ({
+              eq: jest.fn(() => ({
+                single: jest.fn(() => Promise.resolve({ data: { company_id: 'company1' }, error: null })),
+              })),
+            })),
+          };
+        }
+        if (table === 'events') {
+          return {
+            select: jest.fn(() => ({
+              eq: jest.fn(() => ({
+                in: jest.fn(() => ({
+                  order: jest.fn(() => Promise.resolve({ data: [], error: null })),
+                })),
+              })),
+            })),
+          };
+        }
+        return {};
+      }),
+    };
+
+    (createClient as jest.Mock).mockReturnValue(mockSupabaseWithAuth);
+
+    const TestComponent = () => {
+      const { realtimeState } = useEvents();
+      return <div>{realtimeState.isConnected ? 'connected' : 'disconnected'}</div>;
+    };
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <TestComponent />
+      </QueryClientProvider>,
+    );
+
+    await waitFor(() => {
+      expect(mockSupabaseWithAuth.channel).toHaveBeenCalledWith('company:company1:events');
+    });
+  });
+
+  test('useCombinationSuggestions integrates realtime with correct channel name', async () => {
+    const mockSupabaseWithQuery = {
+      ...mockSupabase,
+      from: jest.fn(() => ({
+        select: jest.fn(() => ({
+          eq: jest.fn(() => Promise.resolve({ data: [], error: null })),
+        })),
+      })),
+    };
+
+    (createClient as jest.Mock).mockReturnValue(mockSupabaseWithQuery);
+
+    const TestComponent = () => {
+      const { realtimeState } = useCombinationSuggestions({ companyId: 'company1' });
+      return <div>{realtimeState.isConnected ? 'connected' : 'disconnected'}</div>;
+    };
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <TestComponent />
+      </QueryClientProvider>,
+    );
+
+    await waitFor(() => {
+      expect(mockSupabaseWithQuery.channel).toHaveBeenCalledWith('company:company1:suggestions');
+    });
+  });
+
+  test('useTasks integrates realtime with correct channel name', async () => {
+    const mockSupabaseWithAuth = {
+      ...mockSupabase,
+      auth: {
+        getUser: jest.fn(() => Promise.resolve({ data: { user: { id: 'user1' } }, error: null })),
+      },
+      from: jest.fn((table) => {
+        if (table === 'users') {
+          return {
+            select: jest.fn(() => ({
+              eq: jest.fn(() => ({
+                single: jest.fn(() => Promise.resolve({ data: { company_id: 'company1' }, error: null })),
+              })),
+            })),
+          };
+        }
+        if (table === 'tasks') {
+          return {
+            select: jest.fn(() => ({
+              eq: jest.fn(() => ({
+                in: jest.fn(() => ({
+                  ilike: jest.fn(() => Promise.resolve({ data: [], error: null })),
+                })),
+              })),
+            })),
+          };
+        }
+        return {};
+      }),
+    };
+
+    (createClient as jest.Mock).mockReturnValue(mockSupabaseWithAuth);
+
+    const TestComponent = () => {
+      const { realtimeState } = useTasks({ enableRealtime: true });
+      return <div>{realtimeState.isConnected ? 'connected' : 'disconnected'}</div>;
+    };
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <TestComponent />
+      </QueryClientProvider>,
+    );
+
+    await waitFor(() => {
+      expect(mockSupabaseWithAuth.channel).toHaveBeenCalledWith('company:company1:tasks');
+    });
+  });
+
+  test('useStaff integrates realtime with correct channel name', async () => {
+    const mockSupabaseWithAuth = {
+      ...mockSupabase,
+      auth: {
+        getUser: jest.fn(() => Promise.resolve({ data: { user: { id: 'user1' } }, error: null })),
+      },
+      from: jest.fn((table) => {
+        if (table === 'users') {
+          return {
+            select: jest.fn(() => ({
+              eq: jest.fn(() => ({
+                single: jest.fn(() => Promise.resolve({ data: { company_id: 'company1' }, error: null })),
+              })),
+            })),
+          };
+        }
+        if (table === 'users') {
+          return {
+            select: jest.fn(() => ({
+              eq: jest.fn(() => ({
+                eq: jest.fn(() => ({
+                  in: jest.fn(() => Promise.resolve({ data: [], error: null })),
+                })),
+              })),
+            })),
+          };
+        }
+        return {};
+      }),
+    };
+
+    (createClient as jest.Mock).mockReturnValue(mockSupabaseWithAuth);
+
+    const TestComponent = () => {
+      const { realtimeState } = useStaff();
+      return <div>{realtimeState.isConnected ? 'connected' : 'disconnected'}</div>;
+    };
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <TestComponent />
+      </QueryClientProvider>,
+    );
+
+    await waitFor(() => {
+      expect(mockSupabaseWithAuth.channel).toHaveBeenCalledWith('company:company1:users');
+    });
+  });
+
+  test('useRecipe integrates realtime with correct channel name', async () => {
+    const mockSupabaseWithAuth = {
+      ...mockSupabase,
+      auth: {
+        getUser: jest.fn(() => Promise.resolve({ data: { user: { id: 'user1' } }, error: null })),
+      },
+      from: jest.fn((table) => {
+        if (table === 'users') {
+          return {
+            select: jest.fn(() => ({
+              eq: jest.fn(() => ({
+                single: jest.fn(() => Promise.resolve({ data: { company_id: 'company1' }, error: null })),
+              })),
+            })),
+          };
+        }
+        if (table === 'recipes') {
+          return {
+            select: jest.fn(() => ({
+              eq: jest.fn(() => ({
+                eq: jest.fn(() => ({
+                  single: jest.fn(() => Promise.resolve({ data: null, error: null })),
+                })),
+              })),
+            })),
+          };
+        }
+        return {};
+      }),
+    };
+
+    (createClient as jest.Mock).mockReturnValue(mockSupabaseWithAuth);
+
+    const TestComponent = () => {
+      const { realtimeState } = useRecipe('recipe1');
+      return <div>{realtimeState.isConnected ? 'connected' : 'disconnected'}</div>;
+    };
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <TestComponent />
+      </QueryClientProvider>,
+    );
+
+    await waitFor(() => {
+      expect(mockSupabaseWithAuth.channel).toHaveBeenCalledWith('company:company1:recipes');
+    });
+  });
+});
 
   test('useRealtimeSync triggers cache invalidation on postgres changes', async () => {
     const invalidateQueriesSpy = jest.spyOn(queryClient, 'invalidateQueries');

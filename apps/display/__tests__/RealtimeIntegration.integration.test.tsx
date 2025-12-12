@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import { useDisplayData } from '../hooks/useDisplayData';
 
 // Mock the supabase client
-vi.mock('@caterkingapp/supabase', () => ({
+vi.mock('@caterkingapp/supabase/client', () => ({
   createClient: vi.fn(() => ({
     auth: {
       getUser: vi.fn(() =>

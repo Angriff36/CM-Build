@@ -12,6 +12,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@caterkingapp/shared": "workspace:*",
     "@caterkingapp/ui": "workspace:*",
     "@caterkingapp/supabase": "workspace:*",
     "@tanstack/react-query": "^5.17.15",

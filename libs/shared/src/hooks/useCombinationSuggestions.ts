@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@caterkingapp/supabase/client';
+import { useRealtimeSync } from './useRealtimeSync';
 
 interface Suggestion {
   id: string;
@@ -31,7 +32,7 @@ interface UseCombinationSuggestionsOptions {
 }
 
 export function useCombinationSuggestions({ companyId }: UseCombinationSuggestionsOptions) {
-  return useQuery({
+  const query = useQuery({
     queryKey: ['combinationSuggestions', companyId],
     queryFn: async () => {
       const supabase = createClient();
@@ -49,4 +50,23 @@ export function useCombinationSuggestions({ companyId }: UseCombinationSuggestio
       return data as Suggestion[];
     },
   });
+
+  const realtimeState = useRealtimeSync({
+    channelConfig: {
+      name: `company:${companyId}:suggestions`,
+      postgresChanges: [
+        {
+          event: '*',
+          schema: 'public',
+          table: 'task_similarity_suggestions',
+        },
+      ],
+    },
+    queryKeysToInvalidate: [['combinationSuggestions', companyId]],
+  });
+
+  return {
+    ...query,
+    realtimeState,
+  };
 }

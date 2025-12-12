@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import { createClient } from '@caterkingapp/supabase';
 import { Recipe, RecipeSchema } from '../dto/recipes';
+import { useRealtimeSync } from './useRealtimeSync';
 
 // Export both interfaces to support both usage patterns
 interface UseRecipeOptions {
@@ -13,6 +15,24 @@ export function useRecipe(
   options: UseRecipeOptions = {},
 ) {
   const queryClient = useQueryClient();
+  const [companyId, setCompanyId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCompanyId = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: userData } = await supabase
+        .from('users')
+        .select('company_id')
+        .eq('id', user.id)
+        .single();
+      if (userData) setCompanyId(userData.company_id);
+    };
+    fetchCompanyId();
+  }, []);
 
   // Handle both usage patterns: useRecipe(recipeId) and useRecipe({ recipeId })
   let recipeId: string | null;
@@ -35,10 +55,26 @@ export function useRecipe(
       if (!recipeId) return null;
 
       const supabase = createClient();
+
+      // Get user's company_id for filtering
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { data: userData } = await supabase
+        .from('users')
+        .select('company_id')
+        .eq('id', user.id)
+        .single();
+
+      if (!userData) throw new Error('User company not found');
+
       const { data, error } = await supabase
         .from('recipes')
         .select('*')
         .eq('id', recipeId)
+        .eq('company_id', userData.company_id)
         .single();
 
       if (error) {
@@ -83,9 +119,26 @@ export function useRecipe(
     },
   });
 
+  const realtimeState = useRealtimeSync({
+    channelConfig: {
+      name: companyId ? `company:${companyId}:recipes` : 'recipes',
+      postgresChanges: companyId
+        ? [
+            {
+              event: '*',
+              schema: 'public',
+              table: 'recipes',
+            },
+          ]
+        : [],
+    },
+    queryKeysToInvalidate: [['recipe']],
+  });
+
   return {
     ...recipeQuery,
     updateRecipe: updateRecipeMutation.mutateAsync,
     isUpdating: updateRecipeMutation.isPending,
+    realtimeState,
   };
 }

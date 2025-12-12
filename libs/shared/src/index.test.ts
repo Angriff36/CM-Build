@@ -1,5 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { UserRole, UserStatus, TaskStatus, EventStatus } from './index';
+
+// Mock supabase client to avoid import issues in tests
+vi.mock('@caterkingapp/supabase/client', () => ({
+  createClient: vi.fn(),
+}));
 
 describe('Shared Enums', () => {
   it('exports UserRole', () => {
