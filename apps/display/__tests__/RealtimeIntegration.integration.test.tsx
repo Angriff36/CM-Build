@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useDisplayData } from '../hooks/useDisplayData';
 
 // Mock the supabase client
@@ -14,8 +15,8 @@ vi.mock('@caterkingapp/supabase/client', () => ({
   })),
 }));
 
-// Mock the realtime sync
-vi.mock('@caterkingapp/shared/hooks/useRealtimeSync', () => ({
+// Mock the shared package
+vi.mock('@caterkingapp/shared', () => ({
   useRealtimeSync: vi.fn(() => ({
     isConnected: true,
     connectionAttempts: 0,
@@ -26,6 +27,18 @@ vi.mock('@caterkingapp/shared/hooks/useRealtimeSync', () => ({
 
 // Mock fetch
 global.fetch = vi.fn();
+
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  });
+
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+  <QueryClientProvider client={createTestQueryClient()}>{children}</QueryClientProvider>
+);
 
 describe('Realtime Integration Tests', () => {
   beforeEach(() => {
@@ -63,7 +76,7 @@ describe('Realtime Integration Tests', () => {
       return <div data-testid="count">{data?.cards[0]?.count}</div>;
     }
 
-    render(<TestComponent />);
+    render(<TestComponent />, { wrapper });
 
     // Wait for initial data
     await waitFor(() => {
@@ -99,7 +112,7 @@ describe('Realtime Integration Tests', () => {
       );
     }
 
-    render(<TestComponent />);
+    render(<TestComponent />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByTestId('error')).toBeInTheDocument();
@@ -131,7 +144,7 @@ describe('Realtime Integration Tests', () => {
       return <div data-testid="count">{data?.cards[0]?.count}</div>;
     }
 
-    render(<TestComponent />);
+    render(<TestComponent />, { wrapper });
 
     // Initial load
     await waitFor(() => {

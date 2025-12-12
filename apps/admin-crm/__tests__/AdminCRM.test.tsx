@@ -7,13 +7,27 @@ import { RecipeEditor } from '../components/RecipeEditor';
 import { EventForm } from '../components/EventForm';
 
 // Mock hooks
-vi.mock('@caterkingapp/shared/hooks/useEvents');
-vi.mock('@caterkingapp/shared/hooks/useStaff');
-vi.mock('@caterkingapp/shared/hooks/useRecipe');
-vi.mock('@caterkingapp/shared/hooks/useToast');
-vi.mock('@caterkingapp/shared/hooks/useTasks');
-vi.mock('@caterkingapp/shared/hooks/useAssignments');
-vi.mock('@caterkingapp/supabase/client');
+vi.mock('@caterkingapp/shared/hooks/useEvents', () => ({
+  useEvents: vi.fn(),
+}));
+vi.mock('@caterkingapp/shared/hooks/useStaff', () => ({
+  useStaff: vi.fn(),
+}));
+vi.mock('@caterkingapp/shared/hooks/useRecipe', () => ({
+  useRecipe: vi.fn(),
+}));
+vi.mock('@caterkingapp/shared/hooks/useToast', () => ({
+  useToast: vi.fn(),
+}));
+vi.mock('@caterkingapp/shared/hooks/useTasks', () => ({
+  useTasks: vi.fn(),
+}));
+vi.mock('@caterkingapp/shared/hooks/useAssignments', () => ({
+  useAssignments: vi.fn(),
+}));
+vi.mock('@caterkingapp/supabase/client', () => ({
+  createClient: vi.fn(),
+}));
 
 const createTestQueryClient = () =>
   new QueryClient({
