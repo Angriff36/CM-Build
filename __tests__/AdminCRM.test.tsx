@@ -16,9 +16,14 @@ vi.mock('@caterkingapp/shared/hooks/useTasks', () => ({
 vi.mock('@caterkingapp/shared/hooks/useAssignments', () => ({
   useAssignments: vi.fn(),
 }));
-// vi.mock('@caterkingapp/shared/hooks/useRecipe', () => ({
-//   useRecipe: vi.fn(),
-// }));
+vi.mock('@caterkingapp/shared/hooks/useRecipe', () => ({
+  useRecipe: () => ({
+    data: null,
+    isLoading: false,
+    updateRecipe: () => {},
+    realtimeState: { isConnected: true },
+  }),
+}));
 vi.mock('@caterkingapp/shared/hooks/useToast', () => ({
   useToast: vi.fn(),
 }));
@@ -31,28 +36,13 @@ import { useEvents } from '@caterkingapp/shared/hooks/useEvents';
 import { useStaff } from '@caterkingapp/shared/hooks/useStaff';
 import { useTasks } from '@caterkingapp/shared/hooks/useTasks';
 import { useAssignments } from '@caterkingapp/shared/hooks/useAssignments';
-// import { useRecipe } from '@caterkingapp/shared/hooks/useRecipe';
 import { useToast } from '@caterkingapp/shared/hooks/useToast';
 import { useUser } from '@caterkingapp/shared/hooks/useUser';
-
-// Mock components
-// vi.mock('../apps/admin-crm/components/RecipeEditor', () => ({
-//   RecipeEditor: () => <div>RecipeEditor Mock</div>,
-// }));
 
 // Import components
 import { EventForm } from '../apps/admin-crm/components/EventForm';
 import EventsPage from '../apps/admin-crm/app/events/page';
 import StaffPage from '../apps/admin-crm/app/staff/page';
-// import { RecipeEditor } from '../apps/admin-crm/components/RecipeEditor';
-
-const mockUseEvents = useEvents;
-const mockUseStaff = useStaff;
-const mockUseTasks = useTasks;
-const mockUseAssignments = useAssignments;
-// const mockUseRecipe = useRecipe;
-const mockUseToast = useToast;
-const mockUseUser = useUser;
 
 const TestWrapper = ({ children }: { children: React.ReactNode }) => {
   const queryClient = new QueryClient({
@@ -69,7 +59,7 @@ describe('AdminCRM Components', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Default mocks
-    mockUseEvents.mockReturnValue({
+    vi.mocked(useEvents).mockReturnValue({
       data: [],
       isLoading: false,
       createEvent: vi.fn(),
@@ -79,14 +69,14 @@ describe('AdminCRM Components', () => {
       isUpdating: false,
       isDeleting: false,
     } as any);
-    mockUseToast.mockReturnValue({
+    vi.mocked(useToast).mockReturnValue({
       addToast: vi.fn(),
     } as any);
-    mockUseUser.mockReturnValue({
+    vi.mocked(useUser).mockReturnValue({
       data: { id: 'user1', role: 'owner', company_id: 'comp1' },
       isLoading: false,
     } as any);
-    mockUseStaff.mockReturnValue({
+    vi.mocked(useStaff).mockReturnValue({
       data: [],
       isLoading: false,
       createStaff: vi.fn(),
@@ -96,85 +86,18 @@ describe('AdminCRM Components', () => {
       isUpdating: false,
       isDeleting: false,
     } as any);
-    mockUseTasks.mockReturnValue({
+    vi.mocked(useTasks).mockReturnValue({
       data: [],
       isLoading: false,
     } as any);
-    mockUseAssignments.mockReturnValue({
+    vi.mocked(useAssignments).mockReturnValue({
       assignTask: vi.fn(),
-    } as any);
-    mockUseRecipe.mockReturnValue({
-      data: {
-        id: 'recipe1',
-        name: 'Test Recipe',
-        ingredients: [{ name: 'Flour', quantity: 2, unit: 'cups' }],
-        steps: ['Mix ingredients'],
-        media_urls: [],
-      },
-      isLoading: false,
-      updateRecipe: vi.fn(),
-      realtimeState: { isConnected: true },
-    } as any);
-  });
-
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
-};
-
-describe('AdminCRM Components', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    // Default mocks
-    mockUseEvents.mockReturnValue({
-      data: [],
-      isLoading: false,
-      createEvent: vi.fn(),
-      updateEvent: vi.fn(),
-      deleteEvent: vi.fn(),
-      isCreating: false,
-      isUpdating: false,
-      isDeleting: false,
-    } as any);
-    mockUseToast.mockReturnValue({
-      addToast: vi.fn(),
-    } as any);
-    mockUseUser.mockReturnValue({
-      data: { id: 'user1', role: 'owner', company_id: 'comp1' },
-      isLoading: false,
-    } as any);
-    mockUseStaff.mockReturnValue({
-      data: [],
-      isLoading: false,
-      createStaff: vi.fn(),
-      updateStaff: vi.fn(),
-      deleteStaff: vi.fn(),
-      isCreating: false,
-      isUpdating: false,
-      isDeleting: false,
-    } as any);
-    mockUseTasks.mockReturnValue({
-      data: [],
-      isLoading: false,
-    } as any);
-    mockUseAssignments.mockReturnValue({
-      assignTask: vi.fn(),
-    } as any);
-    vi.mocked(useRecipe).mockReturnValue({
-      data: {
-        id: 'recipe1',
-        name: 'Test Recipe',
-        ingredients: [{ name: 'Flour', quantity: 2, unit: 'cups' }],
-        steps: ['Mix ingredients'],
-        media_urls: [],
-      },
-      isLoading: false,
-      updateRecipe: vi.fn(),
-      realtimeState: { isConnected: true },
     } as any);
   });
 
   describe('EventsPage', () => {
     it('renders loading state', () => {
-      mockUseEvents.mockReturnValue({
+      vi.mocked(useEvents).mockReturnValue({
         data: [],
         isLoading: true,
         createEvent: vi.fn(),
@@ -195,7 +118,7 @@ describe('AdminCRM Components', () => {
     });
 
     it('renders events list', () => {
-      mockUseEvents.mockReturnValue({
+      vi.mocked(useEvents).mockReturnValue({
         data: [
           {
             id: '1',
@@ -239,7 +162,7 @@ describe('AdminCRM Components', () => {
     });
 
     it('handles role-based permissions for owner', () => {
-      mockUseUser.mockReturnValue({
+      vi.mocked(useUser).mockReturnValue({
         data: { id: 'user1', role: 'owner', company_id: 'comp1' },
         isLoading: false,
       });
@@ -254,7 +177,7 @@ describe('AdminCRM Components', () => {
     });
 
     it('hides create button for non-manager roles', () => {
-      mockUseUser.mockReturnValue({
+      vi.mocked(useUser).mockReturnValue({
         data: { id: 'user1', role: 'staff', company_id: 'comp1' },
         isLoading: false,
       });
@@ -271,7 +194,7 @@ describe('AdminCRM Components', () => {
 
   describe('StaffPage', () => {
     it('renders staff list', () => {
-      mockUseStaff.mockReturnValue({
+      vi.mocked(useStaff).mockReturnValue({
         data: [
           { id: '1', display_name: 'Staff 1', role: 'staff', status: 'active', presence: 'online' },
         ],
@@ -306,14 +229,14 @@ describe('AdminCRM Components', () => {
 
     it('handles drag and drop task assignment', () => {
       const mockAssignTask = vi.fn();
-      mockUseAssignments.mockReturnValue({
+      vi.mocked(useAssignments).mockReturnValue({
         assignTask: mockAssignTask,
       });
-      mockUseTasks.mockReturnValue({
+      vi.mocked(useTasks).mockReturnValue({
         data: [{ id: 'task1', name: 'Test Task', assigned_user_id: null }],
         isLoading: false,
       });
-      mockUseStaff.mockReturnValue({
+      vi.mocked(useStaff).mockReturnValue({
         data: [
           {
             id: 'staff1',
@@ -349,186 +272,111 @@ describe('AdminCRM Components', () => {
       expect(screen.getByText('Test Task')).toBeInTheDocument();
     });
   });
-});
 
-describe('EventForm', () => {
-  const mockOnSubmit = vi.fn();
-  const mockOnCancel = vi.fn();
+  describe('EventForm', () => {
+    const mockOnSubmit = vi.fn();
+    const mockOnCancel = vi.fn();
 
-  const defaultProps = {
-    onSubmit: mockOnSubmit,
-    onCancel: mockOnCancel,
-  };
-
-  beforeEach(() => {
-    mockOnSubmit.mockClear();
-    mockOnCancel.mockClear();
-    mockUseToast.mockReturnValue({
-      addToast: vi.fn(),
-    });
-  });
-
-  it('renders create form correctly', () => {
-    render(
-      <TestWrapper>
-        <EventForm {...defaultProps} />
-      </TestWrapper>,
-    );
-
-    expect(screen.getByText('Create Event')).toBeInTheDocument();
-    expect(screen.getByLabelText(/Name/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Date/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Location/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Status/)).toBeInTheDocument();
-  });
-
-  it('renders edit form with pre-filled data', () => {
-    const event = {
-      id: '1',
-      name: 'Test Event',
-      date: '2025-12-11T10:00',
-      location: 'Test Location',
-      status: 'planned',
+    const defaultProps = {
+      onSubmit: mockOnSubmit,
+      onCancel: mockOnCancel,
     };
 
-    render(
-      <TestWrapper>
-        <EventForm event={event} {...defaultProps} />
-      </TestWrapper>,
-    );
-
-    expect(screen.getByText('Edit Event')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('Test Event')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('Test Location')).toBeInTheDocument();
-  });
-
-  it('validates required fields', async () => {
-    render(
-      <TestWrapper>
-        <EventForm {...defaultProps} />
-      </TestWrapper>,
-    );
-
-    const submitButton = screen.getByText('Create');
-    fireEvent.click(submitButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('Name is required')).toBeInTheDocument();
-      expect(screen.getByText('Date is required')).toBeInTheDocument();
-      expect(screen.getByText('Location is required')).toBeInTheDocument();
-    });
-  });
-
-  it('submits form with valid data', async () => {
-    render(
-      <TestWrapper>
-        <EventForm {...defaultProps} />
-      </TestWrapper>,
-    );
-
-    fireEvent.change(screen.getByLabelText(/Name/), { target: { value: 'New Event' } });
-    fireEvent.change(screen.getByLabelText(/Date/), { target: { value: '2025-12-11T10:00' } });
-    fireEvent.change(screen.getByLabelText(/Location/), { target: { value: 'New Location' } });
-
-    const submitButton = screen.getByText('Create');
-    fireEvent.click(submitButton);
-
-    await waitFor(() => {
-      expect(mockOnSubmit).toHaveBeenCalledWith({
-        name: 'New Event',
-        date: '2025-12-11T10:00',
-        location: 'New Location',
-        status: 'planned',
-        id: '',
+    beforeEach(() => {
+      mockOnSubmit.mockClear();
+      mockOnCancel.mockClear();
+      vi.mocked(useToast).mockReturnValue({
+        addToast: vi.fn(),
       });
     });
-  });
 
-  it('calls onCancel when cancel button is clicked', () => {
-    render(
-      <TestWrapper>
-        <EventForm {...defaultProps} />
-      </TestWrapper>,
-    );
+    it('renders create form correctly', () => {
+      render(
+        <TestWrapper>
+          <EventForm {...defaultProps} />
+        </TestWrapper>,
+      );
 
-    const cancelButton = screen.getByText('Cancel');
-    fireEvent.click(cancelButton);
+      expect(screen.getByText('Create Event')).toBeInTheDocument();
+      expect(screen.getByLabelText(/Name/)).toBeInTheDocument();
+      expect(screen.getByLabelText(/Date/)).toBeInTheDocument();
+      expect(screen.getByLabelText(/Location/)).toBeInTheDocument();
+      expect(screen.getByLabelText(/Status/)).toBeInTheDocument();
+    });
 
-    expect(mockOnCancel).toHaveBeenCalled();
+    it('renders edit form with pre-filled data', () => {
+      const event = {
+        id: '1',
+        name: 'Test Event',
+        date: '2025-12-11T10:00',
+        location: 'Test Location',
+        status: 'planned',
+      };
+
+      render(
+        <TestWrapper>
+          <EventForm event={event} {...defaultProps} />
+        </TestWrapper>,
+      );
+
+      expect(screen.getByText('Edit Event')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('Test Event')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('Test Location')).toBeInTheDocument();
+    });
+
+    it('validates required fields', async () => {
+      render(
+        <TestWrapper>
+          <EventForm {...defaultProps} />
+        </TestWrapper>,
+      );
+
+      const submitButton = screen.getByText('Create');
+      fireEvent.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.getByText('Name is required')).toBeInTheDocument();
+        expect(screen.getByText('Date is required')).toBeInTheDocument();
+        expect(screen.getByText('Location is required')).toBeInTheDocument();
+      });
+    });
+
+    it('submits form with valid data', async () => {
+      render(
+        <TestWrapper>
+          <EventForm {...defaultProps} />
+        </TestWrapper>,
+      );
+
+      fireEvent.change(screen.getByLabelText(/Name/), { target: { value: 'New Event' } });
+      fireEvent.change(screen.getByLabelText(/Date/), { target: { value: '2025-12-11T10:00' } });
+      fireEvent.change(screen.getByLabelText(/Location/), { target: { value: 'New Location' } });
+
+      const submitButton = screen.getByText('Create');
+      fireEvent.click(submitButton);
+
+      await waitFor(() => {
+        expect(mockOnSubmit).toHaveBeenCalledWith({
+          name: 'New Event',
+          date: '2025-12-11T10:00',
+          location: 'New Location',
+          status: 'planned',
+          id: '',
+        });
+      });
+    });
+
+    it('calls onCancel when cancel button is clicked', () => {
+      render(
+        <TestWrapper>
+          <EventForm {...defaultProps} />
+        </TestWrapper>,
+      );
+
+      const cancelButton = screen.getByText('Cancel');
+      fireEvent.click(cancelButton);
+
+      expect(mockOnCancel).toHaveBeenCalled();
+    });
   });
 });
-
-// describe('RecipeEditor', () => {
-//   it('renders recipe data', () => {
-//     render(
-//       <TestWrapper>
-//         <RecipeEditor recipeId="recipe1" />
-//       </TestWrapper>,
-//     );
-
-//     expect(screen.getByDisplayValue('Test Recipe')).toBeInTheDocument();
-//     expect(screen.getByText('Flour')).toBeInTheDocument();
-//     expect(screen.getByText('Mix ingredients')).toBeInTheDocument();
-//   });
-
-//   it('adds ingredient', () => {
-//     render(
-//       <TestWrapper>
-//         <RecipeEditor recipeId="recipe1" />
-//       </TestWrapper>,
-//     );
-
-//     fireEvent.change(screen.getByPlaceholderText('Ingredient name'), {
-//       target: { value: 'Sugar' },
-//     });
-//     fireEvent.change(screen.getByPlaceholderText('Quantity'), { target: { value: '1' } });
-//     fireEvent.change(screen.getByPlaceholderText('Unit'), { target: { value: 'cup' } });
-//     fireEvent.click(screen.getByText('Add'));
-
-//     expect(screen.getByText('Sugar')).toBeInTheDocument();
-//     expect(screen.getByText('1 cup')).toBeInTheDocument();
-//   });
-
-//   it('adds step', () => {
-//     render(
-//       <TestWrapper>
-//         <RecipeEditor recipeId="recipe1" />
-//       </TestWrapper>,
-//     );
-
-//     fireEvent.change(screen.getByPlaceholderText('Add a step'), {
-//       target: { value: 'Bake at 350°F' },
-//     });
-//     fireEvent.click(screen.getByText('Add Step'));
-
-//     expect(screen.getByText('Bake at 350°F')).toBeInTheDocument();
-//   });
-
-//   it('saves recipe', async () => {
-//     const mockUpdateRecipe = vi.fn();
-//     mockUseRecipe.mockReturnValue({
-//       data: {
-//         id: 'recipe1',
-//         name: 'Test Recipe',
-//         ingredients: [],
-//         steps: [],
-//         media_urls: [],
-//       },
-//       isLoading: false,
-//       updateRecipe: mockUpdateRecipe,
-//       realtimeState: { isConnected: true },
-//     } as any);
-
-//     render(
-//       <TestWrapper>
-//         <RecipeEditor recipeId="recipe1" />
-//       </TestWrapper>,
-//     );
-
-//     fireEvent.click(screen.getByText('Save Recipe'));
-
-//     await waitFor(() => {
-//       expect(mockUpdateRecipe).toHaveBeenCalled();
-//     });
-//   });
-// });
