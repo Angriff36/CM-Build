@@ -147,51 +147,75 @@ export function RecipeEditor({ recipeId }: RecipeEditorProps) {
 
       setUploadProgress(30);
 
-      // Create unique file path
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `${userData.company_id}/${fileName}`;
+      // Request signed URL from API
+      const response = await fetch('/api/media/sign', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fileName: file.name,
+          fileSize: file.size,
+          mimeType: file.type,
+          companyId: userData.company_id,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to get signed URL');
+      }
+
+      const { data: signData } = await response.json();
+      const { signedUrl, path, mediaAssetId } = signData;
 
       setUploadProgress(50);
 
-      // Upload to Supabase storage
-      const { error: uploadError } = await supabase.storage.from('media').upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: false,
+      // Upload file to signed URL
+      const uploadResponse = await fetch(signedUrl, {
+        method: 'PUT',
+        body: file,
+        headers: {
+          'Content-Type': file.type,
+        },
       });
 
-      if (uploadError) throw uploadError;
+      if (!uploadResponse.ok) {
+        throw new Error('Failed to upload file');
+      }
 
       setUploadProgress(80);
 
-      // Get public URL
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from('media').getPublicUrl(filePath);
+      // Wait for processing (media_ingest will update the record)
+      // For now, we'll poll or assume it's processed
+      // In a real implementation, you might listen to realtime events
+      let attempts = 0;
+      const maxAttempts = 10;
+      while (attempts < maxAttempts) {
+        const { data: mediaAsset } = await supabase
+          .from('media_assets')
+          .select('url, status')
+          .eq('id', mediaAssetId)
+          .single();
 
-      // Create media asset record
-      const { data: mediaAsset, error: assetError } = await supabase
-        .from('media_assets')
-        .insert({
-          company_id: userData.company_id,
-          url: publicUrl,
-          type: file.type,
-          storage_path: filePath,
-          status: 'ready', // For images, no processing needed
-        })
-        .select()
-        .single();
+        if (mediaAsset?.status === 'ready' && mediaAsset.url) {
+          setFormData((prev) => ({
+            ...prev,
+            media_urls: [...(prev.media_urls || []), mediaAsset.url],
+          }));
+          addToast('Media uploaded successfully', 'success');
+          break;
+        }
 
-      if (assetError) throw assetError;
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        attempts++;
+      }
+
+      if (attempts >= maxAttempts) {
+        addToast('Media uploaded but processing may take longer', 'success');
+      }
 
       setUploadProgress(100);
-
-      setFormData((prev) => ({
-        ...prev,
-        media_urls: [...(prev.media_urls || []), publicUrl],
-      }));
-
-      addToast('Media uploaded successfully', 'success');
     } catch (error) {
       console.error('Upload error:', error);
       addToast('Failed to upload media', 'error');
