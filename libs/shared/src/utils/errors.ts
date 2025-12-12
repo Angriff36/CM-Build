@@ -4,7 +4,7 @@ export interface ApiError {
   remediation?: string;
 }
 
-export function mapSupabaseError(error: any): { status: number; error: ApiError } {
+export function mapSupabaseError(error: unknown): { status: number; error: ApiError } {
   const message = error.message || 'Unknown error';
 
   if (message.includes('Task not found')) {

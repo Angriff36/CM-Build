@@ -593,11 +593,15 @@ describe('AdminCRM Components', () => {
 
   describe('RecipeEditor', () => {
     const mockRecipe = {
-      id: 'recipe1',
+      id: '550e8400-e29b-41d4-a716-446655440000',
+      company_id: '550e8400-e29b-41d4-a716-446655440001',
       name: 'Test Recipe',
       ingredients: [{ name: 'Flour', quantity: 2, unit: 'cups' }],
       steps: ['Mix ingredients'],
       media_urls: [],
+      version: 1,
+      tags: [],
+      allergen_flags: {},
     };
 
     beforeEach(() => {
@@ -742,10 +746,9 @@ describe('AdminCRM Components', () => {
     });
 
     it('saves recipe', async () => {
-      const mockUpdateRecipe = vi.fn();
+      const mockUpdateRecipe = vi.fn().mockResolvedValue(undefined);
 
-      // Clear any existing mocks and set up the test-specific mock
-      vi.clearAllMocks();
+      // Set up the test-specific mock
       (useRecipe as any).mockReturnValue({
         data: mockRecipe,
         isLoading: false,

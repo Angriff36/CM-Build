@@ -8,6 +8,14 @@ import {
   ChannelConfig,
 } from '../utils/realtimeSubscriptions';
 
+declare global {
+  interface Window {
+    analytics?: {
+      track: (event: string, properties: Record<string, unknown>) => void;
+    };
+  }
+}
+
 export interface UseRealtimeSyncOptions {
   channelConfig: ChannelConfig;
   queryKeysToInvalidate?: string[][];
@@ -73,8 +81,8 @@ export function useRealtimeSync({
       onConnectionStatusChange?.(isConnected);
 
       // Track telemetry
-      if (typeof window !== 'undefined' && (window as any).analytics) {
-        (window as any).analytics.track('realtime_connection_status', {
+      if (typeof window !== 'undefined' && window.analytics) {
+        window.analytics.track('realtime_connection_status', {
           channel: channelConfig.name,
           status,
           error: err?.message,
@@ -96,8 +104,8 @@ export function useRealtimeSync({
     subscribeToChannel(channel, handleConnectionStatus);
 
     // Track channel subscription
-    if (typeof window !== 'undefined' && (window as any).analytics) {
-      (window as any).analytics.track('realtime_channel_subscribed', {
+    if (typeof window !== 'undefined' && window.analytics) {
+      window.analytics.track('realtime_channel_subscribed', {
         channel: channelConfig.name,
         postgresChanges: channelConfig.postgresChanges?.length || 0,
         broadcasts: channelConfig.broadcasts?.length || 0,

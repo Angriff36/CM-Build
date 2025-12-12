@@ -31,7 +31,7 @@ export function createPostgresChangeSubscription(
 export function createBroadcastSubscription(
   supabase: SupabaseClient,
   config: BroadcastConfig,
-  onBroadcast: (payload: any) => void,
+  onBroadcast: (payload: unknown) => void,
 ): RealtimeChannel {
   return supabase
     .channel(`broadcast_${config.event}`)
@@ -42,7 +42,7 @@ export function createRealtimeChannel(
   supabase: SupabaseClient,
   config: ChannelConfig,
   onPostgresChange?: () => void,
-  onBroadcast?: (payload: any) => void,
+  onBroadcast?: (payload: unknown) => void,
 ): RealtimeChannel {
   let channel = supabase.channel(config.name);
 
@@ -67,7 +67,7 @@ export function createRealtimeChannel(
 
 export function subscribeToChannel(
   channel: RealtimeChannel,
-  onSubscribe?: (status: string, err?: any) => void,
+  onSubscribe?: (status: string, err?: unknown) => void,
 ): RealtimeChannel {
   return channel.subscribe(onSubscribe);
 }

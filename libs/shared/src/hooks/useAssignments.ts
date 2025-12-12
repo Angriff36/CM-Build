@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AssignTaskRequest } from '../dto/tasks';
+import type { TaskDTO } from '../types';
 import { createClient } from '@caterkingapp/supabase/client';
 
 export function useAssignments() {
@@ -53,7 +54,7 @@ export function useAssignments() {
 
       queryClient.setQueryData(['tasks'], (old: unknown) => {
         if (!old) return old;
-        return (old as any[]).map((task: any) =>
+        return (old as TaskDTO[]).map((task: TaskDTO) =>
           task.id === variables.task_id
             ? { ...task, assigned_user_id: variables.user_id || null }
             : task,
