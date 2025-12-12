@@ -185,7 +185,7 @@ describe('AdminCRM Components', () => {
       fireEvent.click(createButton);
 
       await waitFor(() => {
-        expect(screen.getByRole('heading', { name: 'Create Event' })).toBeInTheDocument();
+        expect(screen.getByText('Create Event', { selector: 'h2' })).toBeInTheDocument();
       });
     });
 
@@ -201,7 +201,7 @@ describe('AdminCRM Components', () => {
         </TestWrapper>,
       );
 
-      expect(screen.getByText('Create Event')).toBeInTheDocument();
+      expect(screen.getByText('Create Event', { selector: 'button' })).toBeInTheDocument();
     });
 
     it('hides create button for non-manager roles', () => {
@@ -216,7 +216,7 @@ describe('AdminCRM Components', () => {
         </TestWrapper>,
       );
 
-      expect(screen.queryByText('Create Event')).not.toBeInTheDocument();
+      expect(screen.queryByText('Create Event', { selector: 'button' })).not.toBeInTheDocument();
     });
   });
 
@@ -386,6 +386,7 @@ describe('AdminCRM Components', () => {
       await waitFor(() => {
         expect(mockOnSubmit).toHaveBeenCalledWith(
           expect.objectContaining({
+            id: '',
             name: 'New Event',
             date: '2025-12-11T10:00',
             location: 'New Location',
@@ -442,7 +443,7 @@ describe('AdminCRM Components', () => {
 
       expect(screen.getByText('Task Assignment')).toBeInTheDocument();
       expect(screen.getByText('Test Task')).toBeInTheDocument();
-      expect(screen.getByText('Staff 1')).toBeInTheDocument();
+      expect(screen.getAllByText('Staff 1')).toHaveLength(2);
     });
 
     it('handles task assignment via drag and drop', () => {
