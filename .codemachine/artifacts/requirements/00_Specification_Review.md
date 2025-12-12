@@ -11,71 +11,69 @@ This document is an automated analysis of the provided project specifications. I
 
 ### **2.0 Synthesized Project Vision**
 
-_Based on the provided data, the core project objective is to engineer a system that:_
-
-A unified kitchen management platform that centralizes tasks, recipes, and methods while automatically standardizing and combining work across events. The system enables real-time task management, multi-event coordination, and provides staff with access to recipes and methods, resulting in streamlined execution, reduced waste, and consistent product quality.
+Based on the provided data, the core project objective is to engineer a system that centralizes kitchen task management, recipe storage, and multi-event coordination in a real-time, multi-tenant platform. The system enables staff to claim and complete tasks efficiently, managers to oversee operations, and owners to manage content, while automatically detecting and suggesting task combinations to reduce duplication and improve consistency.
 
 ### **3.0 Critical Assertions & Required Clarifications**
 
 ---
 
-#### **Assertion 1: Task Similarity Detection Algorithm**
+#### **Assertion 1: Task Combination Algorithm Implementation**
 
-- **Observation:** The specification requires advanced heuristic matching for task consolidation using fuzzy text comparison, ingredient normalization, and context-aware bundling, but the exact implementation details and thresholds are undefined.
-- **Architectural Impact:** This decision impacts the core business logic, computational complexity, and user experience for task combination suggestions.
-  - **Path A (Rule-Based):** Implement predefined rules for similarity based on keyword matching and basic transformations.
-  - **Path B (ML-Driven):** Use machine learning models for semantic similarity and context understanding.
-- **Default Assumption & Required Action:** To minimize initial complexity, the system will assume **Path A (Rule-Based)** with configurable thresholds. **The specification must be updated** to define the similarity algorithm, matching criteria, and false positive handling.
-
----
-
-#### **Assertion 2: Unit Conversion and Scaling Mechanism**
-
-- **Observation:** The specification mandates auto-calculation of unit conversions and scaling when tasks are combined, but the conversion logic and handling of incompatible units are not detailed.
-- **Architectural Impact:** This affects data integrity, user trust in combined tasks, and the complexity of the domain logic layer.
-  - **Path A (Basic Conversions):** Support common kitchen units with static conversion tables.
-  - **Path B (Advanced Parsing):** Integrate a library for natural language processing of quantities and units.
-- **Default Assumption & Required Action:** The architecture will assume **Path A (Basic Conversions)** for standard units. **The specification must be updated** to specify supported units, conversion rules, and error handling for incompatible combinations.
+- **Observation:** The specification describes rule-based heuristic matching for task similarity using keyword and phrase matching, ingredient normalization, and unit-aware quantity matching, but lacks precise algorithmic details and thresholds.
+- **Architectural Impact:** This decision affects the core data processing logic, computational complexity, and user experience reliability, potentially requiring specialized libraries or custom implementations for natural language processing and pattern matching.
+  - **Path A (Rule-Based Heuristics):** Implement configurable similarity thresholds with predefined equivalence mappings and basic workflow logic, as outlined.
+  - **Path B (ML-Enhanced Matching):** Integrate machine learning models for semantic similarity detection, increasing accuracy but adding dependencies on ML frameworks and training data.
+- **Default Assumption & Required Action:** To maintain simplicity and reduce initial complexity, the system will assume **Path A (Rule-Based Heuristics)** with static thresholds. **The specification must be updated** to define exact matching rules, threshold values, and edge cases for false positives.
 
 ---
 
-#### **Assertion 3: Real-Time Synchronization Strategy**
+#### **Assertion 2: Real-Time Synchronization Mechanism**
 
-- **Observation:** The specification outlines Supabase Realtime for live updates, but the channel naming, subscription scoping, and handling of high-frequency updates are not fully defined.
-- **Architectural Impact:** This influences scalability, performance, and the real-time user experience across devices.
-  - **Path A (Simple Channels):** Use basic company-scoped channels without sub-contexts.
-  - **Path B (Granular Channels):** Implement app-specific and entity-specific channels for targeted updates.
-- **Default Assumption & Required Action:** To ensure tenant isolation, the system will assume **Path A (Simple Channels)** with company-scoped subscriptions. **The specification must be updated** to detail channel structure, update frequency limits, and fallback mechanisms.
-
----
-
-#### **Assertion 4: Role-Based Permissions Details**
-
-- **Observation:** The specification defines roles (Staff, Manager, Event Lead, Owner) but lacks granular details on what actions each role can perform and access levels.
-- **Architectural Impact:** This determines the RLS policies, UI rendering logic, and security model implementation.
-  - **Path A (Minimal Roles):** Basic read/write permissions per role without fine-grained controls.
-  - **Path B (Attribute-Based):** Implement attribute-based access control for more flexible permissions.
-- **Default Assumption & Required Action:** The system will assume **Path A (Minimal Roles)** mapped to JWT claims. **The specification must be updated** to enumerate specific permissions for each role across tasks, events, recipes, and users.
+- **Observation:** The specification requires live updates across devices with minimal latency via Supabase Realtime, but does not detail the channel naming, subscription limits, or fallback strategies for high-concurrency scenarios.
+- **Architectural Impact:** This impacts the real-time architecture's scalability, reliability, and infrastructure costs, influencing choices between WebSocket optimizations, polling fallbacks, and distributed caching.
+  - **Path A (Supabase-Native):** Rely solely on Supabase Realtime with company-scoped channels and enforced limits, degrading to polling if needed.
+  - **Path B (Hybrid Real-Time):** Supplement with custom WebSocket servers or edge functions for advanced handling, improving performance but increasing operational complexity.
+- **Default Assumption & Required Action:** The architecture will assume **Path A (Supabase-Native)** for cost-effectiveness and simplicity. **The specification must be updated** to specify channel limits, latency targets, and degradation behaviors.
 
 ---
 
-#### **Assertion 5: Media Upload and Processing Pipeline**
+#### **Assertion 3: Scalability and Performance Targets**
 
-- **Observation:** The specification requires media uploads for recipes and methods with managed transcoding, but the processing workflow, storage quotas, and validation rules are undefined.
-- **Architectural Impact:** This affects storage costs, user experience for uploads, and integration with Supabase Storage.
-  - **Path A (Basic Upload):** Direct uploads with minimal processing and loose standards.
-  - **Path B (Enhanced Processing):** Include thumbnail generation, format conversion, and content validation.
-- **Default Assumption & Required Action:** To align with MVP scope, the system will assume **Path A (Basic Upload)** with optional thumbnails. **The specification must be updated** to define media types, file size limits, and processing requirements.
+- **Observation:** The specification indicates Tier 2 production scale with support for multiple simultaneous events and concurrent user loads, but lacks quantitative metrics for throughput, latency, and data volume.
+- **Architectural Impact:** This dictates database selection, caching strategies, and infrastructure provisioning, directly affecting costs and the need for distributed systems.
+  - **Tier 1 (Prototype Scale):** Support <1,000 concurrent users, low-write volume, suitable for single-node database.
+  - **Tier 2 (Production Scale):** 10,000+ concurrent users, high-throughput, requiring managed scalable database and caching.
+- **Default Assumption & Required Action:** The system will assume **Tier 2 (Production Scale)** to align with stated goals. **The specification must be updated** to define target metrics such as concurrent users, p95 latency, and expected data growth.
 
 ---
 
-#### **Assertion 6: Conflict Resolution for Concurrent Edits**
+#### **Assertion 4: Recipe and Ingredient Data Model Structure**
 
-- **Observation:** The specification adopts last-write-wins for task state mutations, but UI handling of conflicts and user notification are not specified.
-- **Architectural Impact:** This impacts data consistency, user experience during high concurrency, and potential data loss scenarios.
-  - **Path A (Silent Resolution):** No UI feedback, rely on realtime updates.
-  - **Path B (User Notification):** Implement conflict alerts and manual resolution options.
-- **Default Assumption & Required Action:** The system will assume **Path A (Silent Resolution)** for simplicity. **The specification must be updated** to address conflict scenarios, notification preferences, and any manual override mechanisms.
+- **Observation:** Recipes use JSONB for ingredients and steps, but the schema for nested structures, versioning, and media integration is not fully defined.
+- **Architectural Impact:** This affects data integrity, query performance, and extensibility, influencing whether to use relational normalization or document-based storage.
+  - **Path A (JSONB Document):** Store recipes as flexible JSONB objects with embedded media URLs, prioritizing simplicity.
+  - **Path B (Normalized Schema):** Separate tables for ingredients, steps, and media with foreign keys for better relational integrity and querying.
+- **Default Assumption & Required Action:** To leverage Supabase's JSONB capabilities and reduce schema complexity, assume **Path A (JSONB Document)**. **The specification must be updated** to detail the JSON structure, validation rules, and versioning strategy.
+
+---
+
+#### **Assertion 5: Conflict Resolution for Concurrent Edits**
+
+- **Observation:** The specification adopts last-write-wins with server timestamps for task state mutations, but does not address conflict detection UI or manual resolution for complex edits.
+- **Architectural Impact:** This influences user experience in high-collaboration environments, potentially requiring additional UI components or event-sourcing for audit trails.
+  - **Path A (Last-Write-Wins):** Simple deterministic behavior with server timestamps, minimal risk for task states.
+  - **Path B (Manual Resolution):** Implement UI for conflict detection and user-mediated resolution, increasing complexity but improving data accuracy.
+- **Default Assumption & Required Action:** The system will assume **Path A (Last-Write-Wins)** for initial simplicity. **The specification must be updated** to define scenarios requiring manual resolution and UI behaviors.
+
+---
+
+#### **Assertion 6: Media Upload and Storage Strategy**
+
+- **Observation:** Media supports JPEG, PNG, MP4, WebM with size limits and direct upload to Supabase Storage, but lacks details on thumbnail generation, transcoding, and access controls.
+- **Architectural Impact:** This affects storage costs, user experience for large files, and security, potentially requiring additional processing pipelines.
+  - **Path A (Basic Upload):** Direct upload with minimal processing, signed URLs scoped by company.
+  - **Path B (Processed Media):** Include thumbnail generation and optional transcoding, enhancing usability but adding compute overhead.
+- **Default Assumption & Required Action:** To align with MVP constraints, assume **Path A (Basic Upload)**. **The specification must be updated** to specify processing requirements, access patterns, and cost implications.
 
 ---
 

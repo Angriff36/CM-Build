@@ -17,6 +17,24 @@ export default function Home() {
           >
             Task Combinations
           </a>
+          <a
+            href="/events"
+            className="block px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition"
+          >
+            Events
+          </a>
+          <a
+            href="/staff"
+            className="block px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition"
+          >
+            Staff
+          </a>
+          <a
+            href="/recipes"
+            className="block px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition"
+          >
+            Recipes
+          </a>
         </div>
       </div>
     </div>

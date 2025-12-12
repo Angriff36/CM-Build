@@ -1,96 +1,83 @@
-<!-- anchor: iteration-1-plan -->
-
-### Iteration 1: Foundation & Core Infrastructure
+### Iteration 1: Setup & Core Infrastructure
 
 - **Iteration ID:** `I1`
-- **Goal:** Establish the foundational architecture, database schema, shared libraries, and basic application structure
+- **Goal:** Establish project structure, database schema, and basic components.
 - **Prerequisites:** None
 - **Tasks:**
   - **Task 1.1:**
     - **Task ID:** `I1.T1`
-    - **Description:** Initialize Turbo monorepo structure with pnpm workspace and configure shared libraries
-    - **Agent Type Hint:** `SetupAgent`
-    - **Inputs:** Project requirements, Turbo monorepo guidelines
-    - **Input Files**: `package.json`, `pnpm-workspace.yaml`, `turbo.json`
-    - **Target Files:** `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `libs/ui/package.json`, `libs/shared/package.json`, `libs/supabase/package.json`
-    - **Deliverables:** Configured monorepo with shared library packages, build scripts, and development tooling
-    - **Acceptance Criteria:** Turbo build succeeds for all packages, shared libraries can be imported via path aliases
+    - **Description:** Initialize Turbo monorepo with apps and libs.
+    - **Agent Type Hint:** SetupAgent
+    - **Inputs:** Project specs
+    - **Input Files**: specifications.md
+    - **Target Files:** package.json, turbo.json, pnpm-workspace.yaml
+    - **Deliverables:** Monorepo setup
+    - **Acceptance Criteria:** turbo build succeeds
     - **Dependencies:** None
     - **Parallelizable:** No
   - **Task 1.2:**
     - **Task ID:** `I1.T2`
-    - **Description:** Create Supabase database schema with multi-tenant tables and RLS policies
-    - **Agent Type Hint:** `DatabaseAgent`
-    - **Inputs:** Database design requirements, multi-tenant architecture specifications
-    - **Input Files**: `supabase/migrations/` directory
-    - **Target Files:** `supabase/migrations/0001_base_schema.sql`, `supabase/migrations/0002_rls_policies.sql`
-    - **Deliverables:** Complete database schema with companies, users, events, tasks, recipes tables and RLS policies
-    - **Acceptance Criteria:** All tables created with company_id scoping, RLS policies enforce tenant isolation, Supabase types generated
-    - **Dependencies:** `I1.T1`
-    - **Parallelizable:** No
+    - **Description:** Generate Component Diagram (PlantUML)
+    - **Agent Type Hint:** DiagrammingAgent
+    - **Inputs:** Section 2
+    - **Input Files**: None
+    - **Target Files:** docs/diagrams/component_overview.puml
+    - **Deliverables:** PlantUML file
+    - **Acceptance Criteria:** File renders without syntax errors
+    - **Dependencies:** I1.T1
+    - **Parallelizable:** Yes
   - **Task 1.3:**
     - **Task ID:** `I1.T3`
-    - **Description:** Generate PlantUML Component Diagram showing system architecture
-    - **Agent Type Hint:** `DocumentationAgent`
-    - **Inputs:** Architecture specifications, component relationships
-    - **Input Files**: Project requirements document
-    - **Target Files:** `docs/diagrams/component_overview.puml`
-    - **Deliverables:** PlantUML component diagram file
-    - **Acceptance Criteria:** Diagram renders correctly showing all major components and their relationships
-    - **Dependencies:** `I1.T2`
+    - **Description:** Create ERD (PlantUML)
+    - **Agent Type Hint:** DatabaseAgent
+    - **Inputs:** Section 2.1
+    - **Input Files**: None
+    - **Target Files:** docs/diagrams/erd.puml
+    - **Deliverables:** PlantUML ERD
+    - **Acceptance Criteria:** Accurate schema representation
+    - **Dependencies:** None
     - **Parallelizable:** Yes
   - **Task 1.4:**
     - **Task ID:** `I1.T4`
-    - **Description:** Create PlantUML ERD diagram for database schema
-    - **Agent Type Hint:** `DocumentationAgent`
-    - **Inputs:** Database schema, table relationships
-    - **Input Files**: `supabase/migrations/0001_base_schema.sql`
-    - **Target Files:** `docs/diagrams/supabase_erd.mmd`
-    - **Deliverables:** PlantUML ERD diagram file
-    - **Acceptance Criteria:** Diagram accurately represents all tables, relationships, and constraints
-    - **Dependencies:** `I1.T2`
-    - **Parallelizable:** Yes
+    - **Description:** Set up Supabase migrations for core tables.
+    - **Agent Type Hint:** DatabaseAgent
+    - **Inputs:** ERD
+    - **Input Files**: docs/diagrams/erd.puml
+    - **Target Files:** supabase/migrations/0001_base_schema.sql
+    - **Deliverables:** SQL migration file
+    - **Acceptance Criteria:** Migration applies without errors
+    - **Dependencies:** I1.T3
+    - **Parallelizable:** No
   - **Task 1.5:**
     - **Task ID:** `I1.T5`
-    - **Description:** Generate PlantUML Context Diagram showing system boundaries
-    - **Agent Type Hint:** `DocumentationAgent`
-    - **Inputs:** System context, external integrations
-    - **Input Files**: Project requirements document
-    - **Target Files:** `docs/diagrams/deployment_view.puml`
-    - **Deliverables:** PlantUML context diagram file
-    - **Acceptance Criteria:** Diagram shows system boundaries, users, and external services
-    - **Dependencies:** `I1.T2`
-    - **Parallelizable:** Yes
+    - **Description:** Implement RLS policies for multi-tenancy.
+    - **Agent Type Hint:** DatabaseAgent
+    - **Inputs:** Schema
+    - **Input Files**: supabase/migrations/0001_base_schema.sql
+    - **Target Files:** supabase/migrations/0002_rls_policies.sql
+    - **Deliverables:** RLS policy SQL
+    - **Acceptance Criteria:** Policies enforce company_id scoping
+    - **Dependencies:** I1.T4
+    - **Parallelizable:** No
   - **Task 1.6:**
     - **Task ID:** `I1.T6`
-    - **Description:** Set up shared UI library with design system tokens and base components
-    - **Agent Type Hint:** `FrontendAgent`
-    - **Inputs:** UI design specifications, component requirements
-    - **Input Files**: `libs/ui/` directory structure
-    - **Target Files:** `libs/ui/src/tokens/index.ts`, `libs/ui/src/components/Button.tsx`, `libs/ui/src/index.ts`
-    - **Deliverables:** Design system tokens, base UI components, library exports
-    - **Acceptance Criteria:** Components can be imported and used in applications, design tokens are consistent
-    - **Dependencies:** `I1.T1`
+    - **Description:** Create libs/shared with domain models and Zod schemas.
+    - **Agent Type Hint:** BackendAgent
+    - **Inputs:** Data model
+    - **Input Files**: None
+    - **Target Files:** libs/shared/src/models.ts, libs/shared/src/schemas.ts
+    - **Deliverables:** TypeScript domain files
+    - **Acceptance Criteria:** Schemas validate sample data
+    - **Dependencies:** I1.T3
     - **Parallelizable:** Yes
   - **Task 1.7:**
     - **Task ID:** `I1.T7`
-    - **Description:** Create shared domain models and validators
-    - **Agent Type Hint:** `BackendAgent`
-    - **Inputs:** Data model specifications, validation requirements
-    - **Input Files**: `libs/shared/` directory structure
-    - **Target Files:** `libs/shared/src/models/index.ts`, `libs/shared/src/validators/index.ts`, `libs/shared/src/index.ts`
-    - **Deliverables:** TypeScript domain models, Zod validators, shared utilities
-    - **Acceptance Criteria:** Models match database schema, validators enforce data integrity
-    - **Dependencies:** `I1.T2`
-    - **Parallelizable:** Yes
-  - **Task 1.8:**
-    - **Task ID:** `I1.T8`
-    - **Description:** Configure Supabase client library with typed queries and RPC helpers
-    - **Agent Type Hint:** `BackendAgent`
-    - **Inputs:** Supabase configuration, database schema
-    - **Input Files**: `libs/supabase/` directory structure
-    - **Target Files:** `libs/supabase/src/client.ts`, `libs/supabase/src/rpc/index.ts`, `libs/supabase/src/types.ts`
-    - **Deliverables:** Typed Supabase client, RPC wrappers, generated types
-    - **Acceptance Criteria:** Client can connect to Supabase, types match schema, RPC functions are callable
-    - **Dependencies:** `I1.T2`
+    - **Description:** Set up libs/ui with ShadCN components and tokens.
+    - **Agent Type Hint:** FrontendAgent
+    - **Inputs:** Design system
+    - **Input Files**: None
+    - **Target Files:** libs/ui/src/components/, libs/ui/src/tokens.ts
+    - **Deliverables:** UI library
+    - **Acceptance Criteria:** Components export correctly
+    - **Dependencies:** None
     - **Parallelizable:** Yes

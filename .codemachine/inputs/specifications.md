@@ -192,17 +192,19 @@ Role-based access control
 
 Secure media upload storage
 
-Scalability (Tier 1 - Single Location)
+Scalability (Tier 2 - Production Scale)
 
-Architecture targets typical kitchen operations with:
+Architecture designed for higher throughput operations with:
 
-Approximately 10 events per week
+Support for multiple simultaneous events and concurrent user loads
 
-Under 200 tasks total across all concurrent events
+Managed database infrastructure with distributed caching capabilities
 
-Fewer than five simultaneous events at peak
+Advanced real-time features with optimized WebSocket handling
 
-Designed for single-location kitchens as primary use case
+Support for multi-location kitchen operations at scale
+
+Increased complexity and infrastructure provisioning requirements
 
 7. Out-of-Scope (MVP)
 

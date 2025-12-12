@@ -1,63 +1,72 @@
-<!-- anchor: iteration-5-plan -->
-
-### Iteration 5: Polish, Testing & Optimization
+### Iteration 5: Kiosk Display & Finalization
 
 - **Iteration ID:** `I5`
-- **Goal:** Complete testing suite, optimize performance, implement final UI polish, and prepare for production deployment
-- **Prerequisites:** `I4`
+- **Goal:** Implement kiosk display and integrate all features.
+- **Prerequisites:** I4
 - **Tasks:**
   - **Task 5.1:**
     - **Task ID:** `I5.T1`
-    - **Description:** Implement comprehensive testing suite
-    - **Agent Type Hint:** `TestingAgent`
-    - **Inputs:** Application features, testing requirements
-    - **Input Files**: All application code
-    - **Target Files:** `tests/e2e/task-management.spec.ts`, `tests/integration/realtime.spec.ts`, `tests/unit/taskModels.test.ts`
-    - **Deliverables:** Complete test coverage for all major features
-    - **Acceptance Criteria:** Unit tests cover domain logic, integration tests cover API endpoints, E2E tests cover critical user journeys
-    - **Dependencies:** All previous tasks
-    - **Parallelizable:** Yes
+    - **Description:** Build apps/display with summary views.
+    - **Agent Type Hint:** FrontendAgent
+    - **Inputs:** UI components
+    - **Input Files:** libs/ui/src/
+    - **Target Files:** apps/display/src/pages/index.tsx
+    - **Deliverables:** Kiosk app
+    - **Acceptance Criteria:** Shows real-time summaries
+    - **Dependencies:** I2.T5
+    - **Parallelizable:** No
   - **Task 5.2:**
     - **Task ID:** `I5.T2`
-    - **Description:** Optimize performance and implement caching strategies
-    - **Agent Type Hint:** `PerformanceAgent`
-    - **Inputs:** Performance requirements, application metrics
-    - **Input Files**: React Query configuration, API routes
-    - **Target Files:** `libs/shared/src/cache/cacheConfig.ts`, `apps/prepchef/app/cache.tsx`, performance monitoring setup
-    - **Deliverables:** Optimized application with effective caching
-    - **Acceptance Criteria:** Page load times under 3 seconds, API responses under 200ms, effective cache invalidation
-    - **Dependencies:** `I5.T1`
+    - **Description:** Add display summary API endpoint.
+    - **Agent Type Hint:** BackendAgent
+    - **Inputs:** Task data
+    - **Input Files:** libs/supabase/src/
+    - **Target Files:** apps/prepchef/src/api/display.ts
+    - **Deliverables:** Summary endpoint
+    - **Acceptance Criteria:** Returns aggregated data
+    - **Dependencies:** I4.T3
     - **Parallelizable:** Yes
   - **Task 5.3:**
     - **Task ID:** `I5.T3`
-    - **Description:** Implement final UI polish and accessibility improvements
-    - **Agent Type Hint:** `FrontendAgent`
-    - **Inputs:** UI requirements, accessibility guidelines
-    - **Input Files**: All UI components
-    - **Target Files:** Updated UI components with polish, accessibility improvements, responsive design fixes
-    - **Deliverables:** Polished user interface with full accessibility support
-    - **Acceptance Criteria:** WCAG 2.1 AA compliance, responsive design works across all devices, micro-interactions are smooth
-    - **Dependencies:** `I5.T2`
+    - **Description:** Implement presence tracking.
+    - **Agent Type Hint:** BackendAgent
+    - **Inputs:** User model
+    - **Input Files:** libs/shared/src/models.ts
+    - **Target Files:** supabase/functions/presence.sql
+    - **Deliverables:** Presence RPC
+    - **Acceptance Criteria:** Tracks device heartbeats
+    - **Dependencies:** I2.T2
     - **Parallelizable:** Yes
   - **Task 5.4:**
     - **Task ID:** `I5.T4`
-    - **Description:** Set up production deployment pipeline and monitoring
-    - **Agent Type Hint:** `DevOpsAgent`
-    - **Inputs:** Deployment requirements, monitoring needs
-    - **Input Files**: Application code, infrastructure configuration
-    - **Target Files:** `.github/workflows/deploy.yml`, monitoring dashboard configuration, production environment setup
-    - **Deliverables:** Production-ready deployment pipeline with monitoring
-    - **Acceptance Criteria:** Automated deployment to Vercel, monitoring alerts configured, rollback procedures documented
-    - **Dependencies:** `I5.T3`
+    - **Description:** Add unit conversion utilities.
+    - **Agent Type Hint:** FrontendAgent
+    - **Inputs:** Task model
+    - **Input Files:** libs/shared/src/models.ts
+    - **Target Files:** libs/shared/src/conversions.ts
+    - **Deliverables:** Conversion functions
+    - **Acceptance Criteria:** Units convert
+    - **Dependencies:** I1.T6
     - **Parallelizable:** Yes
   - **Task 5.5:**
     - **Task ID:** `I5.T5`
-    - **Description:** Create final documentation and user guides
-    - **Agent Type Hint:** `DocumentationAgent`
-    - **Inputs:** Complete application features, user requirements
-    - **Input Files**: All application code and documentation
-    - **Target Files:** `README.md`, `docs/user-guide.md`, `docs/admin-guide.md`, `docs/api/README.md`
-    - **Deliverables:** Comprehensive documentation for users and developers
-    - **Acceptance Criteria:** Documentation covers all features, API reference is complete, user guides are clear and helpful
-    - **Dependencies:** `I5.T4`
+    - **Description:** Integrate audit logging across RPCs.
+    - **Agent Type Hint:** DatabaseAgent
+    - **Inputs:** Audit model
+    - **Input Files:** libs/shared/src/models.ts
+    - **Target Files:** supabase/functions/log_audit.sql
+    - **Deliverables:** Audit RPC
+    - **Acceptance Criteria:** Logs all mutations
+    - **Dependencies:** I1.T5
     - **Parallelizable:** Yes
+  - **Task 5.6:**
+    - **Task ID:** `I5.T6`
+    - **Description:** Set up testing and CI pipelines.
+    - **Agent Type Hint:** SetupAgent
+    - **Inputs:** Project structure
+    - **Input Files:** turbo.json
+    - **Target Files:** .github/workflows/ci.yml
+    - **Deliverables:** CI config
+    - **Acceptance Criteria:** Runs lint, test, build
+    - **Dependencies:** I1.T1
+    - **Parallelizable:** No

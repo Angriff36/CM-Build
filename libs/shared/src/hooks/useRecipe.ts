@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import { createClient } from '@caterkingapp/supabase';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { createClient } from '@caterkingapp/supabase/client';
 import { Recipe, RecipeSchema } from '../dto/recipes';
 
 // Export both interfaces to support both usage patterns
@@ -12,6 +12,8 @@ export function useRecipe(
   recipeIdOrOptions?: string | UseRecipeOptions,
   options: UseRecipeOptions = {},
 ) {
+  const queryClient = useQueryClient();
+
   // Handle both usage patterns: useRecipe(recipeId) and useRecipe({ recipeId })
   let recipeId: string | null;
   let enabled = true;
@@ -27,7 +29,7 @@ export function useRecipe(
     enabled = false;
   }
 
-  return useQuery({
+  const recipeQuery = useQuery({
     queryKey: ['recipe', recipeId],
     queryFn: async (): Promise<Recipe | null> => {
       if (!recipeId) return null;
@@ -55,4 +57,35 @@ export function useRecipe(
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
+
+  const updateRecipeMutation = useMutation({
+    mutationFn: async (recipeData: Recipe) => {
+      const supabase = createClient();
+
+      const { data, error } = await supabase
+        .from('recipes')
+        .update({
+          name: recipeData.name,
+          ingredients: recipeData.ingredients,
+          steps: recipeData.steps,
+          media_urls: recipeData.media_urls,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', recipeData.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recipe'] });
+    },
+  });
+
+  return {
+    ...recipeQuery,
+    updateRecipe: updateRecipeMutation.mutateAsync,
+    isUpdating: updateRecipeMutation.isPending,
+  };
 }

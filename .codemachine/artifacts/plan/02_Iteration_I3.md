@@ -1,74 +1,72 @@
-<!-- anchor: iteration-3-plan -->
-
-### Iteration 3: Recipe Management & Admin Dashboard
+### Iteration 3: Recipe & Media System
 
 - **Iteration ID:** `I3`
-- **Goal:** Implement recipe and methods knowledge base, admin CRM dashboard, and wall display functionality
-- **Prerequisites:** `I2`
+- **Goal:** Add recipe storage, media uploads, and viewer components.
+- **Prerequisites:** I2
 - **Tasks:**
   - **Task 3.1:**
     - **Task ID:** `I3.T1`
-    - **Description:** Create recipe and methods data models and API endpoints
-    - **Agent Type Hint:** `BackendAgent`
-    - **Inputs:** Recipe requirements, media upload specifications
-    - **Input Files**: Database schema, shared models
-    - **Target Files:** `apps/admin-crm/app/api/recipes/route.ts`, `apps/admin-crm/app/api/recipes/[id]/route.ts`, `libs/shared/src/models/recipe.ts`
-    - **Deliverables:** Recipe CRUD API endpoints with media support
-    - **Acceptance Criteria:** Recipes can be created, updated, retrieved with media attachments
-    - **Dependencies:** `I2.T2`
+    - **Description:** Generate OpenAPI spec for API contracts.
+    - **Agent Type Hint:** DocumentationAgent
+    - **Inputs:** API design
+    - **Input Files:** None
+    - **Target Files:** api/openapi.yaml
+    - **Deliverables:** OpenAPI YAML
+    - **Acceptance Criteria:** Spec validates against schema
+    - **Dependencies:** I2.T1
     - **Parallelizable:** Yes
   - **Task 3.2:**
     - **Task ID:** `I3.T2`
-    - **Description:** Implement media upload functionality with Supabase Storage
-    - **Agent Type Hint:** `BackendAgent`
-    - **Inputs:** Media upload requirements, Supabase Storage configuration
-    - **Input Files**: Supabase Storage settings
-    - **Target Files:** `apps/admin-crm/app/api/media/sign/route.ts`, `libs/supabase/src/storage.ts`
-    - **Deliverables:** Signed URL generation and media upload handling
-    - **Acceptance Criteria:** Users can upload images and videos, files are stored securely, URLs are generated
-    - **Dependencies:** `I1.T8`
+    - **Description:** Create JSON Schema for recipe JSONB.
+    - **Agent Type Hint:** DocumentationAgent
+    - **Inputs:** Recipe model
+    - **Input Files:** libs/shared/src/models.ts
+    - **Target Files:** docs/schemas/recipe.schema.json
+    - **Deliverables:** JSON Schema
+    - **Acceptance Criteria:** Validates recipe data
+    - **Dependencies:** I1.T6
     - **Parallelizable:** Yes
   - **Task 3.3:**
     - **Task ID:** `I3.T3`
-    - **Description:** Create admin CRM dashboard layout and navigation
-    - **Agent Type Hint:** `FrontendAgent`
-    - **Inputs:** Admin UI requirements, dashboard specifications
-    - **Input Files**: `apps/admin-crm/` directory structure
-    - **Target Files:** `apps/admin-crm/app/layout.tsx`, `apps/admin-crm/components/Sidebar.tsx`, `apps/admin-crm/components/Header.tsx`
-    - **Deliverables:** Admin dashboard shell with navigation and layout
-    - **Acceptance Criteria:** Dashboard renders correctly, navigation works, responsive design implemented
-    - **Dependencies:** `I1.T6`
-    - **Parallelizable:** Yes
+    - **Description:** Implement recipe CRUD in Supabase.
+    - **Agent Type Hint:** DatabaseAgent
+    - **Inputs:** Recipe schema
+    - **Input Files:** docs/schemas/recipe.schema.json
+    - **Target Files:** supabase/functions/create_recipe.sql
+    - **Deliverables:** Recipe RPCs
+    - **Acceptance Criteria:** Stores JSONB correctly
+    - **Dependencies:** I3.T2
+    - **Parallelizable:** No
   - **Task 3.4:**
     - **Task ID:** `I3.T4`
-    - **Description:** Implement recipe editor and management interface
-    - **Agent Type Hint:** `FrontendAgent`
-    - **Inputs:** Recipe data models, media upload API
-    - **Input Files**: Recipe API endpoints, UI components
-    - **Target Files:** `apps/admin-crm/app/recipes/page.tsx`, `apps/admin-crm/components/RecipeEditor.tsx`, `apps/admin-crm/components/MediaUploader.tsx`
-    - **Deliverables:** Recipe creation and editing interface
-    - **Acceptance Criteria:** Admins can create, edit, and manage recipes with media attachments
-    - **Dependencies:** `I3.T1`, `I3.T2`, `I3.T3`
-    - **Parallelizable:** No
+    - **Description:** Add media upload with signed URLs.
+    - **Agent Type Hint:** BackendAgent
+    - **Inputs:** Supabase Storage
+    - **Input Files:** None
+    - **Target Files:** supabase/functions/sign_upload.sql
+    - **Deliverables:** Upload RPC
+    - **Acceptance Criteria:** Issues valid signed URLs
+    - **Dependencies:** I2.T2
+    - **Parallelizable:** Yes
   - **Task 3.5:**
     - **Task ID:** `I3.T5`
-    - **Description:** Create wall-mounted display application
-    - **Agent Type Hint:** `FrontendAgent`
-    - **Inputs:** Display requirements, real-time data needs
-    - **Input Files**: `apps/display/` directory structure
-    - **Target Files:** `apps/display/app/layout.tsx`, `apps/display/components/StatusBoard.tsx`, `apps/display/components/UrgentTicker.tsx`
-    - **Deliverables:** Passive display interface for wall-mounted screens
-    - **Acceptance Criteria:** Display shows real-time task status, updates automatically, optimized for distance viewing
-    - **Dependencies:** `I2.T4`, `I1.T6`
+    - **Description:** Build recipe drawer component in prepchef.
+    - **Agent Type Hint:** FrontendAgent
+    - **Inputs:** UI library
+    - **Input Files:** libs/ui/src/
+    - **Target Files:** apps/prepchef/src/components/RecipeDrawer.tsx
+    - **Deliverables:** Recipe viewer
+    - **Acceptance Criteria:** Displays media and steps
+    - **Dependencies:** I3.T3, I1.T7
     - **Parallelizable:** Yes
   - **Task 3.6:**
     - **Task ID:** `I3.T6`
-    - **Description:** Generate deployment diagram and documentation
-    - **Agent Type Hint:** `DocumentationAgent`
-    - **Inputs:** Infrastructure requirements, deployment strategy
-    - **Input Files**: Project architecture, hosting specifications
-    - **Target Files:** `docs/diagrams/deployment_diagram.puml`, `docs/operations/deployment_guide.md`
-    - **Deliverables:** Deployment architecture diagram and operational documentation
-    - **Acceptance Criteria:** Diagram shows complete deployment architecture, documentation is comprehensive
-    - **Dependencies:** `I1.T5`
+    - **Description:** Integrate media viewer with transcoding.
+    - **Agent Type Hint:** FrontendAgent
+    - **Inputs:** Upload flow
+    - **Input Files:** supabase/functions/sign_upload.sql
+    - **Target Files:** apps/prepchef/src/components/MediaViewer.tsx
+    - **Deliverables:** Media component
+    - **Acceptance Criteria:** Handles processing states
+    - **Dependencies:** I3.T4
     - **Parallelizable:** Yes

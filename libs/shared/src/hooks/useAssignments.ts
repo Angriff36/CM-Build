@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { assignTask } from '@caterkingapp/supabase/rpc/tasks';
 import type { AssignTaskRequest } from '../dto/tasks';
 import { createClient } from '@caterkingapp/supabase/client';
 
@@ -8,31 +7,44 @@ export function useAssignments() {
 
   const assignMutation = useMutation({
     mutationFn: async (variables: AssignTaskRequest) => {
-      // Call the assignment RPC
-      const result = await assignTask(variables);
+      const supabase = createClient();
+
+      // Update the task assignment
+      const { error } = await supabase
+        .from('tasks')
+        .update({ assigned_user_id: variables.user_id })
+        .eq('id', variables.task_id);
+
+      if (error) throw error;
 
       // Log the assignment for audit purposes
-      const supabase = createClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
       if (user) {
-        await supabase.from('audit_logs').insert({
-          company_id: (await supabase.from('users').select('company_id').eq('id', user.id).single())
-            .data?.company_id,
-          actor_id: user.id,
-          entity_type: 'task',
-          entity_id: variables.task_id,
-          action: 'UPDATE',
-          diff: {
-            assigned_user_id: variables.user_id,
-            action: 'assignment',
-          },
-        });
+        const { data: userData } = await supabase
+          .from('users')
+          .select('company_id')
+          .eq('id', user.id)
+          .single();
+
+        if (userData?.company_id) {
+          await supabase.from('audit_logs').insert({
+            company_id: userData.company_id,
+            actor_id: user.id,
+            entity_type: 'task',
+            entity_id: variables.task_id,
+            action: 'UPDATE',
+            diff: {
+              assigned_user_id: variables.user_id,
+              action: 'assignment',
+            },
+          });
+        }
       }
 
-      return result;
+      return { success: true };
     },
     onMutate: async (variables: AssignTaskRequest) => {
       // Optimistic update

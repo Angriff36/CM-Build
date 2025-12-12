@@ -48,7 +48,7 @@ export type UndoTaskResponse = z.infer<typeof UndoTaskResponseSchema>;
 // Assign Task
 export const AssignTaskRequestSchema = z.object({
   task_id: z.string().uuid(),
-  user_id: z.string().uuid(),
+  user_id: z.string().uuid().nullable(),
 });
 
 export type AssignTaskRequest = z.infer<typeof AssignTaskRequestSchema>;

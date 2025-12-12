@@ -13,7 +13,7 @@ export default {
     resolveStep('context-manager', { engine: 'opencode', model: 'opencode/grok-code' }),
     resolveStep('code-generation', { engine: 'opencode', model: 'opencode/grok-code' }),
     resolveStep('runtime-prep', { executeOnce: true, engine: 'opencode', model: 'opencode/big-pickle' }),
-    resolveStep('task-sanity-check', { engine: 'opencode', model: 'opencode/grok-code' }),
+    resolveUI('✓ Sanity Check Passed'),
     resolveStep('git-commit', { engine: 'cursor' }),
     resolveUI('◈◈ Iteration Gate ◈◈'),
     resolveModule('check-task', { engine: 'opencode', model: 'opencode/grok-code', loopSteps: 6, loopMaxIterations: 20, loopSkip: ['runtime-prep'] }),

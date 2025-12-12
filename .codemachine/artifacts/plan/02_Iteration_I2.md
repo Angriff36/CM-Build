@@ -1,85 +1,72 @@
-<!-- anchor: iteration-2-plan -->
-
-### Iteration 2: Core Task Management & Real-time Features
+### Iteration 2: Task Management & Real-time
 
 - **Iteration ID:** `I2`
-- **Goal:** Implement core task management functionality, real-time updates, and basic user interfaces
-- **Prerequisites:** `I1`
+- **Goal:** Implement core task claiming, completion, and real-time sync.
+- **Prerequisites:** I1
 - **Tasks:**
   - **Task 2.1:**
     - **Task ID:** `I2.T1`
-    - **Description:** Create OpenAPI specification for task management APIs
-    - **Agent Type Hint:** `DocumentationAgent`
-    - **Inputs:** API requirements, data models
-    - **Input Files**: `libs/shared/src/models/index.ts`
-    - **Target Files:** `api/openapi/tasks.yaml`, `docs/api/tasks.md`
-    - **Deliverables:** Complete OpenAPI specification for task CRUD operations
-    - **Acceptance Criteria:** Specification validates against OpenAPI 3.0, includes all required endpoints
-    - **Dependencies:** `I1.T7`
+    - **Description:** Generate Sequence Diagram for task claim flow (PlantUML)
+    - **Agent Type Hint:** DiagrammingAgent
+    - **Inputs:** Task lifecycle
+    - **Input Files**: None
+    - **Target Files:** docs/diagrams/task_claim_sequence.puml
+    - **Deliverables:** PlantUML sequence diagram
+    - **Acceptance Criteria:** Diagram accurately depicts flow
+    - **Dependencies:** I1.T2
     - **Parallelizable:** Yes
   - **Task 2.2:**
     - **Task ID:** `I2.T2`
-    - **Description:** Implement Next.js API routes for task management
-    - **Agent Type Hint:** `BackendAgent`
-    - **Inputs:** OpenAPI specification, RPC functions
-    - **Input Files**: `api/openapi/tasks.yaml`
-    - **Target Files:** `apps/prepchef/app/api/tasks/route.ts`, `apps/prepchef/app/api/tasks/[id]/claim/route.ts`, `apps/prepchef/app/api/tasks/[id]/complete/route.ts`
-    - **Deliverables:** REST API endpoints for task operations
-    - **Acceptance Criteria:** All endpoints respond correctly, integrate with Supabase RPC, handle errors appropriately
-    - **Dependencies:** `I1.T8`, `I2.T1`
+    - **Description:** Implement libs/supabase with typed client and RPC helpers.
+    - **Agent Type Hint:** BackendAgent
+    - **Inputs:** Supabase schema
+    - **Input Files:** supabase/migrations/
+    - **Target Files:** libs/supabase/src/client.ts, libs/supabase/src/rpc.ts
+    - **Deliverables:** Data access layer
+    - **Acceptance Criteria:** Queries return typed data
+    - **Dependencies:** I1.T5, I1.T6
     - **Parallelizable:** No
   - **Task 2.3:**
     - **Task ID:** `I2.T3`
-    - **Description:** Create task list UI components for PrepChef app
-    - **Agent Type Hint:** `FrontendAgent`
-    - **Inputs:** UI design specifications, task data models
-    - **Input Files**: `libs/ui/src/components/`, `libs/shared/src/models/`
-    - **Target Files:** `apps/prepchef/components/TaskList.tsx`, `apps/prepchef/components/TaskRow.tsx`, `apps/prepchef/components/StatusButton.tsx`
-    - **Deliverables:** React components for task display and interaction
-    - **Acceptance Criteria:** Components render task data correctly, handle user interactions, are responsive
-    - **Dependencies:** `I1.T6`, `I1.T7`
+    - **Description:** Create Supabase RPC for claim_task and complete_task.
+    - **Agent Type Hint:** DatabaseAgent
+    - **Inputs:** Task model
+    - **Input Files:** libs/shared/src/models.ts
+    - **Target Files:** supabase/functions/claim_task.sql, supabase/functions/complete_task.sql
+    - **Deliverables:** Stored procedures
+    - **Acceptance Criteria:** RPCs handle idempotency and audit
+    - **Dependencies:** I2.T2
     - **Parallelizable:** Yes
   - **Task 2.4:**
     - **Task ID:** `I2.T4`
-    - **Description:** Implement real-time task updates using Supabase Realtime
-    - **Agent Type Hint:** `BackendAgent`
-    - **Inputs:** Realtime requirements, Supabase configuration
-    - **Input Files**: `libs/supabase/src/client.ts`
-    - **Target Files:** `libs/shared/src/hooks/useRealtimeTasks.ts`, `apps/prepchef/app/tasks/page.tsx`
-    - **Deliverables:** Real-time subscription hooks and task list integration
-    - **Acceptance Criteria:** Task updates appear instantly across all connected clients
-    - **Dependencies:** `I1.T8`, `I2.T3`
+    - **Description:** Build apps/prepchef with task list and claim UI.
+    - **Agent Type Hint:** FrontendAgent
+    - **Inputs:** UI components
+    - **Input Files:** libs/ui/src/
+    - **Target Files:** apps/prepchef/src/pages/tasks.tsx, apps/prepchef/src/components/TaskList.tsx
+    - **Deliverables:** Task dashboard
+    - **Acceptance Criteria:** Claims update in real-time
+    - **Dependencies:** I2.T2, I1.T7
     - **Parallelizable:** No
   - **Task 2.5:**
     - **Task ID:** `I2.T5`
-    - **Description:** Create sequence diagrams for critical user flows
-    - **Agent Type Hint:** `DocumentationAgent`
-    - **Inputs:** User story requirements, API specifications
-    - **Input Files**: Project requirements, API specifications
-    - **Target Files:** `docs/diagrams/task_claim_sequence.puml`, `docs/diagrams/recipe_view_sequence.puml`, `docs/diagrams/manager_assign_sequence.puml`
-    - **Deliverables:** PlantUML sequence diagrams for key workflows
-    - **Acceptance Criteria:** Diagrams accurately represent user interaction flows and system responses
-    - **Dependencies:** `I2.T1`, `I2.T2`
+    - **Description:** Add React Query and Supabase Realtime to prepchef.
+    - **Agent Type Hint:** FrontendAgent
+    - **Inputs:** Data layer
+    - **Input Files:** libs/supabase/src/
+    - **Target Files:** apps/prepchef/src/hooks/useTasks.ts
+    - **Deliverables:** Real-time hooks
+    - **Acceptance Criteria:** State syncs across devices
+    - **Dependencies:** I2.T4
     - **Parallelizable:** Yes
   - **Task 2.6:**
     - **Task ID:** `I2.T6`
-    - **Description:** Implement task claiming and completion functionality
-    - **Agent Type Hint:** `FrontendAgent`
-    - **Inputs:** Task components, API endpoints
-    - **Input Files**: `apps/prepchef/components/`, API routes
-    - **Target Files:** `apps/prepchef/components/ClaimButton.tsx`, `apps/prepchef/components/CompleteButton.tsx`, `apps/prepchef/hooks/useTaskActions.ts`
-    - **Deliverables:** Interactive task management UI with optimistic updates
-    - **Acceptance Criteria:** Users can claim and complete tasks, UI updates optimistically, changes sync via realtime
-    - **Dependencies:** `I2.T2`, `I2.T3`, `I2.T4`
-    - **Parallelizable:** No
-  - **Task 2.7:**
-    - **Task ID:** `I2.T7`
-    - **Description:** Add basic authentication and role-based access control
-    - **Agent Type Hint:** `BackendAgent`
-    - **Inputs:** Supabase Auth configuration, role requirements
-    - **Input Files**: Supabase Auth settings
-    - **Target Files:** `apps/prepchef/middleware.ts`, `libs/shared/src/access/roles.ts`, `libs/supabase/src/auth.ts`
-    - **Deliverables:** Authentication middleware and role-based access controls
-    - **Acceptance Criteria:** Users must authenticate to access features, role permissions are enforced
-    - **Dependencies:** `I1.T2`, `I1.T8`
+    - **Description:** Implement undo functionality with tokens.
+    - **Agent Type Hint:** BackendAgent
+    - **Inputs:** Task RPCs
+    - **Input Files:** supabase/functions/
+    - **Target Files:** supabase/functions/undo_task.sql
+    - **Deliverables:** Undo RPC
+    - **Acceptance Criteria:** Tokens expire correctly
+    - **Dependencies:** I2.T3
     - **Parallelizable:** Yes

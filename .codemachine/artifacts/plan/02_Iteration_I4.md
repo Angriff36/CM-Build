@@ -1,63 +1,72 @@
-<!-- anchor: iteration-4-plan -->
-
-### Iteration 4: Task Consolidation & Advanced Features
+### Iteration 4: Admin & Multi-Event Coordination
 
 - **Iteration ID:** `I4`
-- **Goal:** Implement task consolidation heuristics, advanced filtering, and enhanced user experience
-- **Prerequisites:** `I3`
+- **Goal:** Develop admin dashboard, event management, and heuristics.
+- **Prerequisites:** I3
 - **Tasks:**
   - **Task 4.1:**
     - **Task ID:** `I4.T1`
-    - **Description:** Implement task similarity heuristic matching engine
-    - **Agent Type Hint:** `BackendAgent`
-    - **Inputs:** Heuristic requirements, task consolidation specifications
-    - **Input Files**: Task data models, similarity algorithms
-    - **Target Files:** `supabase/functions/task_heuristics/index.ts`, `libs/shared/src/heuristics/taskMatcher.ts`
-    - **Deliverables:** Heuristic engine for detecting similar tasks
-    - **Acceptance Criteria:** Engine identifies similar tasks based on ingredients, units, and methods with configurable thresholds
-    - **Dependencies:** `I2.T2`
-    - **Parallelizable:** Yes
+    - **Description:** Build apps/admin-crm with event and task boards.
+    - **Agent Type Hint:** FrontendAgent
+    - **Inputs:** UI components
+    - **Input Files:** libs/ui/src/
+    - **Target Files:** apps/admin-crm/src/pages/events.tsx
+    - **Deliverables:** Admin dashboard
+    - **Acceptance Criteria:** Assigns tasks via drag
+    - **Dependencies:** I2.T4
+    - **Parallelizable:** No
   - **Task 4.2:**
     - **Task ID:** `I4.T2`
-    - **Description:** Create task combination suggestion UI
-    - **Agent Type Hint:** `FrontendAgent`
-    - **Inputs:** Heuristic engine results, UI requirements
-    - **Input Files**: Heuristic engine API, UI components
-    - **Target Files:** `apps/prepchef/components/CombineSuggestions.tsx`, `apps/prepchef/components/SuggestionCard.tsx`
-    - **Deliverables:** UI for displaying and acting on task combination suggestions
-    - **Acceptance Criteria:** Users can view suggested combinations, accept or reject suggestions, see breakdown of combined tasks
-    - **Dependencies:** `I4.T1`, `I2.T3`
-    - **Parallelizable:** No
+    - **Description:** Implement task assignment RPC.
+    - **Agent Type Hint:** DatabaseAgent
+    - **Inputs:** Task model
+    - **Input Files:** libs/shared/src/models.ts
+    - **Target Files:** supabase/functions/assign_task.sql
+    - **Deliverables:** Assignment RPC
+    - **Acceptance Criteria:** Updates assigned_user_id
+    - **Dependencies:** I2.T3
+    - **Parallelizable:** Yes
   - **Task 4.3:**
     - **Task ID:** `I4.T3`
-    - **Description:** Implement advanced filtering and search functionality
-    - **Agent Type Hint:** `FrontendAgent`
-    - **Inputs:** Filtering requirements, task data
-    - **Input Files**: Task components, data models
-    - **Target Files:** `apps/prepchef/components/FilterPanel.tsx`, `apps/prepchef/components/SearchBar.tsx`, `libs/shared/src/hooks/useTaskFilters.ts`
-    - **Deliverables:** Advanced filtering system with multiple criteria
-    - **Acceptance Criteria:** Users can filter by event, station, status, user, priority; search functionality works across task attributes
-    - **Dependencies:** `I2.T3`
+    - **Description:** Add multi-event support with filters.
+    - **Agent Type Hint:** FrontendAgent
+    - **Inputs:** Event model
+    - **Input Files:** libs/shared/src/models.ts
+    - **Target Files:** apps/prepchef/src/hooks/useEvents.ts
+    - **Deliverables:** Event hooks
+    - **Acceptance Criteria:** Filters tasks by event
+    - **Dependencies:** I4.T1
     - **Parallelizable:** Yes
   - **Task 4.4:**
     - **Task ID:** `I4.T4`
-    - **Description:** Add undo functionality for task operations
-    - **Agent Type Hint:** `BackendAgent`
-    - **Inputs:** Undo requirements, task state management
-    - **Input Files**: Task API endpoints, state models
-    - **Target Files:** `apps/prepchef/app/api/tasks/[id]/undo/route.ts`, `libs/shared/src/undo/undoManager.ts`, `apps/prepchef/components/UndoToast.tsx`
-    - **Deliverables:** Undo system with token-based reversal
-    - **Acceptance Criteria:** Users can undo claim/complete operations within time window, state is properly restored
-    - **Dependencies:** `I2.T2`, `I2.T6`
+    - **Description:** Develop task consolidation heuristics.
+    - **Agent Type Hint:** BackendAgent
+    - **Inputs:** Task data
+    - **Input Files:** libs/shared/src/models.ts
+    - **Target Files:** supabase/functions/combine_tasks.sql
+    - **Deliverables:** Heuristics RPC
+    - **Acceptance Criteria:** Suggests valid combinations
+    - **Dependencies:** I2.T3
     - **Parallelizable:** Yes
   - **Task 4.5:**
     - **Task ID:** `I4.T5`
-    - **Description:** Implement presence tracking and device health monitoring
-    - **Agent Type Hint:** `BackendAgent`
-    - **Inputs:** Presence requirements, device monitoring needs
-    - **Input Files**: Realtime configuration, user models
-    - **Target Files:** `libs/shared/src/presence/presenceTracker.ts`, `supabase/functions/presence_heartbeat/index.ts`
-    - **Deliverables:** Presence tracking system for devices and users
-    - **Acceptance Criteria:** Device presence is tracked, offline devices are detected, health metrics are collected
-    - **Dependencies:** `I2.T4`
+    - **Description:** Integrate feature flags for heuristics.
+    - **Agent Type Hint:** BackendAgent
+    - **Inputs:** Flagsmith
+    - **Input Files:** None
+    - **Target Files:** libs/shared/src/flags.ts
+    - **Deliverables:** Flag helpers
+    - **Acceptance Criteria:** Gates combine UI
+    - **Dependencies:** I4.T4
+    - **Parallelizable:** Yes
+  - **Task 4.6:**
+    - **Task ID:** `I4.T6`
+    - **Description:** Add role-based access controls.
+    - **Agent Type Hint:** BackendAgent
+    - **Inputs:** User model
+    - **Input Files:** libs/shared/src/models.ts
+    - **Target Files:** libs/shared/src/access.ts
+    - **Deliverables:** RBAC helpers
+    - **Acceptance Criteria:** Guards UI actions
+    - **Dependencies:** I1.T6
     - **Parallelizable:** Yes

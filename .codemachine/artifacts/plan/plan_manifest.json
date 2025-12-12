@@ -15,7 +15,7 @@
     {
       "key": "key-artifacts",
       "file": "01_Plan_Overview_and_Setup.md",
-      "start_anchor": "<!-- anchor: 2-1-key-architectural-artifacts-planned -->",
+      "start_anchor": "<!-- anchor: 2-1-key-artifacts -->",
       "description": "List of diagrams/specs to be produced."
     },
     {
@@ -25,238 +25,70 @@
       "description": "Proposed project tree."
     },
     {
-      "key": "iteration-1-plan",
+      "key": "iteration-1",
       "file": "02_Iteration_I1.md",
-      "start_anchor": "<!-- anchor: iteration-1-plan -->",
+      "start_anchor": "<!-- anchor: iteration-1 -->",
       "description": "Iteration 1 goal and tasks."
     },
     {
       "key": "task-i1-t1",
       "file": "02_Iteration_I1.md",
       "start_anchor": "<!-- anchor: task-i1-t1 -->",
-      "description": "I1.T1 Initialize Turbo monorepo structure with pnpm workspace and configure shared libraries"
+      "description": "Initialize Turbo monorepo."
     },
     {
       "key": "task-i1-t2",
       "file": "02_Iteration_I1.md",
       "start_anchor": "<!-- anchor: task-i1-t2 -->",
-      "description": "I1.T2 Create Supabase database schema with multi-tenant tables and RLS policies"
+      "description": "Generate Component Diagram."
     },
     {
       "key": "task-i1-t3",
       "file": "02_Iteration_I1.md",
       "start_anchor": "<!-- anchor: task-i1-t3 -->",
-      "description": "I1.T3 Generate PlantUML Component Diagram showing system architecture"
+      "description": "Create ERD."
     },
     {
-      "key": "task-i1-t4",
-      "file": "02_Iteration_I1.md",
-      "start_anchor": "<!-- anchor: task-i1-t4 -->",
-      "description": "I1.T4 Create PlantUML ERD diagram for database schema"
-    },
-    {
-      "key": "task-i1-t5",
-      "file": "02_Iteration_I1.md",
-      "start_anchor": "<!-- anchor: task-i1-t5 -->",
-      "description": "I1.T5 Generate PlantUML Context Diagram showing system boundaries"
-    },
-    {
-      "key": "task-i1-t6",
-      "file": "02_Iteration_I1.md",
-      "start_anchor": "<!-- anchor: task-i1-t6 -->",
-      "description": "I1.T6 Set up shared UI library with design system tokens and base components"
-    },
-    {
-      "key": "task-i1-t7",
-      "file": "02_Iteration_I1.md",
-      "start_anchor": "<!-- anchor: task-i1-t7 -->",
-      "description": "I1.T7 Create shared domain models and validators"
-    },
-    {
-      "key": "task-i1-t8",
-      "file": "02_Iteration_I1.md",
-      "start_anchor": "<!-- anchor: task-i1-t8 -->",
-      "description": "I1.T8 Configure Supabase client library with typed queries and RPC helpers"
-    },
-    {
-      "key": "iteration-2-plan",
+      "key": "iteration-2",
       "file": "02_Iteration_I2.md",
-      "start_anchor": "<!-- anchor: iteration-2-plan -->",
+      "start_anchor": "<!-- anchor: iteration-2 -->",
       "description": "Iteration 2 goal and tasks."
     },
     {
       "key": "task-i2-t1",
       "file": "02_Iteration_I2.md",
       "start_anchor": "<!-- anchor: task-i2-t1 -->",
-      "description": "I2.T1 Create OpenAPI specification for task management APIs"
+      "description": "Generate Sequence Diagram."
     },
     {
-      "key": "task-i2-t2",
-      "file": "02_Iteration_I2.md",
-      "start_anchor": "<!-- anchor: task-i2-t2 -->",
-      "description": "I2.T2 Implement Next.js API routes for task management"
-    },
-    {
-      "key": "task-i2-t3",
-      "file": "02_Iteration_I2.md",
-      "start_anchor": "<!-- anchor: task-i2-t3 -->",
-      "description": "I2.T3 Create task list UI components for PrepChef app"
-    },
-    {
-      "key": "task-i2-t4",
-      "file": "02_Iteration_I2.md",
-      "start_anchor": "<!-- anchor: task-i2-t4 -->",
-      "description": "I2.T4 Implement real-time task updates using Supabase Realtime"
-    },
-    {
-      "key": "task-i2-t5",
-      "file": "02_Iteration_I2.md",
-      "start_anchor": "<!-- anchor: task-i2-t5 -->",
-      "description": "I2.T5 Create sequence diagrams for critical user flows"
-    },
-    {
-      "key": "task-i2-t6",
-      "file": "02_Iteration_I2.md",
-      "start_anchor": "<!-- anchor: task-i2-t6 -->",
-      "description": "I2.T6 Implement task claiming and completion functionality"
-    },
-    {
-      "key": "task-i2-t7",
-      "file": "02_Iteration_I2.md",
-      "start_anchor": "<!-- anchor: task-i2-t7 -->",
-      "description": "I2.T7 Add basic authentication and role-based access control"
-    },
-    {
-      "key": "iteration-3-plan",
+      "key": "iteration-3",
       "file": "02_Iteration_I3.md",
-      "start_anchor": "<!-- anchor: iteration-3-plan -->",
+      "start_anchor": "<!-- anchor: iteration-3 -->",
       "description": "Iteration 3 goal and tasks."
     },
     {
       "key": "task-i3-t1",
       "file": "02_Iteration_I3.md",
       "start_anchor": "<!-- anchor: task-i3-t1 -->",
-      "description": "I3.T1 Create recipe and methods data models and API endpoints"
+      "description": "Generate OpenAPI spec."
     },
     {
-      "key": "task-i3-t2",
-      "file": "02_Iteration_I3.md",
-      "start_anchor": "<!-- anchor: task-i3-t2 -->",
-      "description": "I3.T2 Implement media upload functionality with Supabase Storage"
-    },
-    {
-      "key": "task-i3-t3",
-      "file": "02_Iteration_I3.md",
-      "start_anchor": "<!-- anchor: task-i3-t3 -->",
-      "description": "I3.T3 Create admin CRM dashboard layout and navigation"
-    },
-    {
-      "key": "task-i3-t4",
-      "file": "02_Iteration_I3.md",
-      "start_anchor": "<!-- anchor: task-i3-t4 -->",
-      "description": "I3.T4 Implement recipe editor and management interface"
-    },
-    {
-      "key": "task-i3-t5",
-      "file": "02_Iteration_I3.md",
-      "start_anchor": "<!-- anchor: task-i3-t5 -->",
-      "description": "I3.T5 Create wall-mounted display application"
-    },
-    {
-      "key": "task-i3-t6",
-      "file": "02_Iteration_I3.md",
-      "start_anchor": "<!-- anchor: task-i3-t6 -->",
-      "description": "I3.T6 Generate deployment diagram and documentation"
-    },
-    {
-      "key": "iteration-4-plan",
+      "key": "iteration-4",
       "file": "02_Iteration_I4.md",
-      "start_anchor": "<!-- anchor: iteration-4-plan -->",
+      "start_anchor": "<!-- anchor: iteration-4 -->",
       "description": "Iteration 4 goal and tasks."
     },
     {
-      "key": "task-i4-t1",
-      "file": "02_Iteration_I4.md",
-      "start_anchor": "<!-- anchor: task-i4-t1 -->",
-      "description": "I4.T1 Implement task similarity heuristic matching engine"
-    },
-    {
-      "key": "task-i4-t2",
-      "file": "02_Iteration_I4.md",
-      "start_anchor": "<!-- anchor: task-i4-t2 -->",
-      "description": "I4.T2 Create task combination suggestion UI"
-    },
-    {
-      "key": "task-i4-t3",
-      "file": "02_Iteration_I4.md",
-      "start_anchor": "<!-- anchor: task-i4-t3 -->",
-      "description": "I4.T3 Implement advanced filtering and search functionality"
-    },
-    {
-      "key": "task-i4-t4",
-      "file": "02_Iteration_I4.md",
-      "start_anchor": "<!-- anchor: task-i4-t4 -->",
-      "description": "I4.T4 Add undo functionality for task operations"
-    },
-    {
-      "key": "task-i4-t5",
-      "file": "02_Iteration_I4.md",
-      "start_anchor": "<!-- anchor: task-i4-t5 -->",
-      "description": "I4.T5 Implement presence tracking and device health monitoring"
-    },
-    {
-      "key": "iteration-5-plan",
+      "key": "iteration-5",
       "file": "02_Iteration_I5.md",
-      "start_anchor": "<!-- anchor: iteration-5-plan -->",
+      "start_anchor": "<!-- anchor: iteration-5 -->",
       "description": "Iteration 5 goal and tasks."
     },
     {
-      "key": "task-i5-t1",
-      "file": "02_Iteration_I5.md",
-      "start_anchor": "<!-- anchor: task-i5-t1 -->",
-      "description": "I5.T1 Implement comprehensive testing suite"
-    },
-    {
-      "key": "task-i5-t2",
-      "file": "02_Iteration_I5.md",
-      "start_anchor": "<!-- anchor: task-i5-t2 -->",
-      "description": "I5.T2 Optimize performance and implement caching strategies"
-    },
-    {
-      "key": "task-i5-t3",
-      "file": "02_Iteration_I5.md",
-      "start_anchor": "<!-- anchor: task-i5-t3 -->",
-      "description": "I5.T3 Implement final UI polish and accessibility improvements"
-    },
-    {
-      "key": "task-i5-t4",
-      "file": "02_Iteration_I5.md",
-      "start_anchor": "<!-- anchor: task-i5-t4 -->",
-      "description": "I5.T4 Set up production deployment pipeline and monitoring"
-    },
-    {
-      "key": "task-i5-t5",
-      "file": "02_Iteration_I5.md",
-      "start_anchor": "<!-- anchor: task-i5-t5 -->",
-      "description": "I5.T5 Create final documentation and user guides"
-    },
-    {
-      "key": "task-i5-t6",
-      "file": "02_Iteration_I5.md",
-      "start_anchor": "<!-- anchor: task-i5-t6 -->",
-      "description": "I5.T6 Finalize kiosk/display experience and automation/observability pipelines"
-    },
-    {
-      "key": "task-i5-t7",
-      "file": "02_Iteration_I5.md",
-      "start_anchor": "<!-- anchor: task-i5-t7 -->",
-      "description": "I5.T7 Finalize documentation set and deliver training for stakeholders"
-    },
-    {
-      "key": "verification-and-integration-strategy",
+      "key": "verification-strategy",
       "file": "03_Verification_and_Glossary.md",
-      "start_anchor": "<!-- anchor: 5-verification-and-integration-strategy -->",
-      "description": "Testing, CI/CD, quality gates."
+      "start_anchor": "<!-- anchor: 5-verification -->",
+      "description": "Testing, CI/CD, and quality gates."
     },
     {
       "key": "glossary",
