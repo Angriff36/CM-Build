@@ -76,7 +76,7 @@ function SortableItem({ id, children }: { id: string; children: React.ReactNode 
 }
 
 export default function StaffPage() {
-  const { staff, isLoading, createStaff, updateStaff, deleteStaff } = useStaff();
+  const { data: staff, isLoading, createStaff, updateStaff, deleteStaff } = useStaff();
   const { addToast } = useToast();
   const { data: tasks } = useTasks();
   const { assignTask } = useAssignments();

@@ -15,7 +15,7 @@ interface RecipeEditorProps {
 }
 
 export function RecipeEditor({ recipeId }: RecipeEditorProps) {
-  const { recipe, isLoading, updateRecipe } = useRecipe(recipeId);
+  const { data: recipe, isLoading, updateRecipe } = useRecipe(recipeId);
   const { addToast } = useToast();
   const [formData, setFormData] = useState<Partial<Recipe>>({
     name: '',

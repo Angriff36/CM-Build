@@ -16,7 +16,7 @@ interface Event {
 }
 
 export default function EventsPage() {
-  const { events, isLoading, createEvent, updateEvent, deleteEvent } = useEvents();
+  const { data: events, isLoading, createEvent, updateEvent, deleteEvent } = useEvents();
   const { addToast } = useToast();
   const { data: user } = useUser();
   const [isFormOpen, setIsFormOpen] = useState(false);

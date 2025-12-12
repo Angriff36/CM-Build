@@ -3,66 +3,30 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-vi.mock('@caterkingapp/shared/hooks/useEvents', () => ({
-  useEvents: vi.fn(),
-}));
+vi.mock('@caterkingapp/shared/hooks/useEvents');
+vi.mock('@caterkingapp/shared/hooks/useStaff');
+vi.mock('@caterkingapp/shared/hooks/useTasks');
+vi.mock('@caterkingapp/shared/hooks/useAssignments');
+vi.mock('@caterkingapp/shared/hooks/useRecipe');
+vi.mock('@caterkingapp/shared/hooks/useToast');
+vi.mock('@caterkingapp/shared/hooks/useUser');
 
-vi.mock('@caterkingapp/shared/hooks/useStaff', () => ({
-  useStaff: vi.fn(),
-}));
-
-vi.mock('@caterkingapp/shared/hooks/useTasks', () => ({
-  useTasks: vi.fn(),
-}));
-
-vi.mock('@caterkingapp/shared/hooks/useAssignments', () => ({
-  useAssignments: vi.fn(),
-}));
-
-vi.mock('@caterkingapp/shared/hooks/useRecipe', () => ({
-  useRecipe: vi.fn(),
-}));
-
-vi.mock('@caterkingapp/shared/hooks/useToast', () => ({
-  useToast: vi.fn(),
-}));
-
-vi.mock('@caterkingapp/shared/hooks/useUser', () => ({
-  useUser: vi.fn(),
-}));
-
-vi.mock('@caterkingapp/supabase/client', () => ({
-  createClient: vi.fn(() => ({
-    auth: {
-      getUser: vi.fn(() => Promise.resolve({ data: { user: { id: 'user1' } } })),
-    },
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn(() => Promise.resolve({ data: { company_id: 'comp1' } })),
-        })),
-      })),
-      insert: vi.fn(() => ({
-        select: vi.fn(() => ({
-          single: vi.fn(() => Promise.resolve({ data: { id: 'media1' } })),
-        })),
-      })),
-    })),
-    storage: {
-      from: vi.fn(() => ({
-        upload: vi.fn(() => Promise.resolve({})),
-        getPublicUrl: vi.fn(() => ({ data: { publicUrl: 'http://example.com/image.jpg' } })),
-      })),
-    },
-  })),
-}));
-
+import { useEvents } from '@caterkingapp/shared/hooks/useEvents';
+import { useStaff } from '@caterkingapp/shared/hooks/useStaff';
+import { useTasks } from '@caterkingapp/shared/hooks/useTasks';
+import { useAssignments } from '@caterkingapp/shared/hooks/useAssignments';
 import { useRecipe } from '@caterkingapp/shared/hooks/useRecipe';
 import { useToast } from '@caterkingapp/shared/hooks/useToast';
 import { useUser } from '@caterkingapp/shared/hooks/useUser';
 import { EventForm } from '../apps/admin-crm/components/EventForm';
 import { RecipeEditor } from '../apps/admin-crm/components/RecipeEditor';
+import EventsPage from '../apps/admin-crm/app/events/page';
+import StaffPage from '../apps/admin-crm/app/staff/page';
 
+const mockUseEvents = vi.mocked(useEvents);
+const mockUseStaff = vi.mocked(useStaff);
+const mockUseTasks = vi.mocked(useTasks);
+const mockUseAssignments = vi.mocked(useAssignments);
 const mockUseRecipe = vi.mocked(useRecipe);
 const mockUseToast = vi.mocked(useToast);
 const mockUseUser = vi.mocked(useUser);
@@ -81,12 +45,293 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => {
 describe('AdminCRM Components', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseToast.mockReturnValue({
-      addToast: vi.fn(),
+  });
+
+  describe('EventsPage', () => {
+    beforeEach(() => {
+      mockUseEvents.mockReturnValue({
+        data: [],
+        isLoading: false,
+        createEvent: vi.fn(),
+        updateEvent: vi.fn(),
+        deleteEvent: vi.fn(),
+        isCreating: false,
+        isUpdating: false,
+        isDeleting: false,
+      } as any);
+      mockUseToast.mockReturnValue({
+        addToast: vi.fn(),
+      });
+      mockUseUser.mockReturnValue({
+        data: { id: 'user1', role: 'owner', company_id: 'comp1' },
+        isLoading: false,
+      } as any);
     });
+
+    it('renders loading state', () => {
+      mockUseEvents.mockReturnValue({
+        data: [],
+        isLoading: true,
+        createEvent: vi.fn(),
+        updateEvent: vi.fn(),
+        deleteEvent: vi.fn(),
+        isCreating: false,
+        isUpdating: false,
+        isDeleting: false,
+      } as any);
+
+      render(
+        <TestWrapper>
+          <EventsPage />
+        </TestWrapper>,
+      );
+
+      expect(screen.getByText('Loading events...')).toBeInTheDocument();
+    });
+
+    it('renders events list', () => {
+      mockUseEvents.mockReturnValue({
+        data: [
+          { id: '1', name: 'Event 1', date: '2025-12-11', location: 'Location 1', status: 'planned' },
+        ],
+        isLoading: false,
+        createEvent: vi.fn(),
+        updateEvent: vi.fn(),
+        deleteEvent: vi.fn(),
+        isCreating: false,
+        isUpdating: false,
+        isDeleting: false,
+      } as any);
+
+      render(
+        <TestWrapper>
+          <EventsPage />
+        </TestWrapper>,
+      );
+
+      expect(screen.getByText('Events')).toBeInTheDocument();
+      expect(screen.getByText('Event 1')).toBeInTheDocument();
+      expect(screen.getByText('Location 1')).toBeInTheDocument();
+    });
+
+    it('opens create form when button clicked', () => {
+      render(
+        <TestWrapper>
+          <EventsPage />
+        </TestWrapper>,
+      );
+
+      const createButton = screen.getByText('Create Event');
+      fireEvent.click(createButton);
+
+      expect(screen.getByText('Create Event')).toBeInTheDocument();
+    });
+  });
+
+  describe('StaffPage', () => {
+    beforeEach(() => {
+      mockUseStaff.mockReturnValue({
+        data: [],
+        isLoading: false,
+        createStaff: vi.fn(),
+        updateStaff: vi.fn(),
+        deleteStaff: vi.fn(),
+        isCreating: false,
+        isUpdating: false,
+        isDeleting: false,
+      } as any);
+      mockUseTasks.mockReturnValue({
+        data: [],
+        isLoading: false,
+      } as any);
+      mockUseAssignments.mockReturnValue({
+        assignTask: vi.fn(),
+      } as any);
+      mockUseToast.mockReturnValue({
+        addToast: vi.fn(),
+      });
+      mockUseUser.mockReturnValue({
+        data: { id: 'user1', role: 'owner', company_id: 'comp1' },
+        isLoading: false,
+      } as any);
+    });
+
+    it('renders staff list', () => {
+      mockUseStaff.mockReturnValue({
+        data: [
+          { id: '1', display_name: 'Staff 1', role: 'staff', status: 'active', presence: 'online' },
+        ],
+        isLoading: false,
+        createStaff: vi.fn(),
+        updateStaff: vi.fn(),
+        deleteStaff: vi.fn(),
+        isCreating: false,
+        isUpdating: false,
+        isDeleting: false,
+      } as any);
+
+      render(
+        <TestWrapper>
+          <StaffPage />
+        </TestWrapper>,
+      );
+
+      expect(screen.getByText('Staff Management')).toBeInTheDocument();
+      expect(screen.getByText('Staff 1')).toBeInTheDocument();
+    });
+
+    it('renders task assignment interface', () => {
+      render(
+        <TestWrapper>
+          <StaffPage />
+        </TestWrapper>,
+      );
+
+      expect(screen.getByText('Task Assignment')).toBeInTheDocument();
+    });
+  });
     mockUseUser.mockReturnValue({
       data: { id: 'user1', role: 'owner', company_id: 'comp1' },
       isLoading: false,
+    });
+  });
+
+  describe('EventsPage', () => {
+    it('renders loading state', () => {
+      mockUseEvents.mockReturnValue({
+        events: [],
+        isLoading: true,
+        createEvent: vi.fn(),
+        updateEvent: vi.fn(),
+        deleteEvent: vi.fn(),
+        isCreating: false,
+        isUpdating: false,
+        isDeleting: false,
+      });
+
+      render(
+        <TestWrapper>
+          <EventsPage />
+        </TestWrapper>,
+      );
+
+      expect(screen.getByText('Loading events...')).toBeInTheDocument();
+    });
+
+    it('renders events list', () => {
+      mockUseEvents.mockReturnValue({
+        events: [
+          {
+            id: '1',
+            name: 'Event 1',
+            date: '2025-12-11',
+            location: 'Location 1',
+            status: 'planned',
+          },
+        ],
+        isLoading: false,
+        createEvent: vi.fn(),
+        updateEvent: vi.fn(),
+        deleteEvent: vi.fn(),
+        isCreating: false,
+        isUpdating: false,
+        isDeleting: false,
+      });
+
+      render(
+        <TestWrapper>
+          <EventsPage />
+        </TestWrapper>,
+      );
+
+      expect(screen.getByText('Events')).toBeInTheDocument();
+      expect(screen.getByText('Event 1')).toBeInTheDocument();
+      expect(screen.getByText('Location 1')).toBeInTheDocument();
+    });
+
+    it('opens create form when button clicked', () => {
+      mockUseEvents.mockReturnValue({
+        events: [],
+        isLoading: false,
+        createEvent: vi.fn(),
+        updateEvent: vi.fn(),
+        deleteEvent: vi.fn(),
+        isCreating: false,
+        isUpdating: false,
+        isDeleting: false,
+      });
+
+      render(
+        <TestWrapper>
+          <EventsPage />
+        </TestWrapper>,
+      );
+
+      const createButton = screen.getByText('Create Event');
+      fireEvent.click(createButton);
+
+      expect(screen.getByText('Create Event')).toBeInTheDocument();
+    });
+  });
+
+  describe('StaffPage', () => {
+    it('renders staff list', () => {
+      mockUseStaff.mockReturnValue({
+        staff: [
+          { id: '1', display_name: 'Staff 1', role: 'staff', status: 'active', presence: 'online' },
+        ],
+        isLoading: false,
+        createStaff: vi.fn(),
+        updateStaff: vi.fn(),
+        deleteStaff: vi.fn(),
+        isCreating: false,
+        isUpdating: false,
+        isDeleting: false,
+      });
+      mockUseTasks.mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+      mockUseAssignments.mockReturnValue({
+        assignTask: vi.fn(),
+      });
+
+      render(
+        <TestWrapper>
+          <StaffPage />
+        </TestWrapper>,
+      );
+
+      expect(screen.getByText('Staff Management')).toBeInTheDocument();
+      expect(screen.getByText('Staff 1')).toBeInTheDocument();
+    });
+
+    it('renders task assignment interface', () => {
+      mockUseStaff.mockReturnValue({
+        staff: [],
+        isLoading: false,
+        createStaff: vi.fn(),
+        updateStaff: vi.fn(),
+        deleteStaff: vi.fn(),
+        isCreating: false,
+        isUpdating: false,
+        isDeleting: false,
+      });
+      mockUseTasks.mockReturnValue({
+        data: [],
+        isLoading: false,
+      });
+      mockUseAssignments.mockReturnValue({
+        assignTask: vi.fn(),
+      });
+
+      render(
+        <TestWrapper>
+          <StaffPage />
+        </TestWrapper>,
+      );
+
+      expect(screen.getByText('Task Assignment')).toBeInTheDocument();
     });
   });
 
@@ -98,6 +343,14 @@ describe('AdminCRM Components', () => {
       onSubmit: mockOnSubmit,
       onCancel: mockOnCancel,
     };
+
+    beforeEach(() => {
+      mockOnSubmit.mockClear();
+      mockOnCancel.mockClear();
+      mockUseToast.mockReturnValue({
+        addToast: vi.fn(),
+      });
+    });
 
     it('renders create form correctly', () => {
       render(
@@ -200,9 +453,13 @@ describe('AdminCRM Components', () => {
 
     beforeEach(() => {
       mockUseRecipe.mockReturnValue({
-        recipe: mockRecipe,
+        data: mockRecipe,
         isLoading: false,
         updateRecipe: vi.fn(),
+        isUpdating: false,
+      } as any);
+      mockUseToast.mockReturnValue({
+        addToast: vi.fn(),
       });
     });
 
