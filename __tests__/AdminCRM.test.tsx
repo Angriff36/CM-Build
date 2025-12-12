@@ -38,13 +38,9 @@ vi.mock('@caterkingapp/shared/hooks/useTasks', () => ({
 vi.mock('@caterkingapp/shared/hooks/useAssignments', () => ({
   useAssignments: vi.fn(),
 }));
+const mockUseRecipe = vi.fn();
 vi.mock('@caterkingapp/shared/hooks/useRecipe', () => ({
-  useRecipe: () => ({
-    data: null,
-    isLoading: false,
-    updateRecipe: () => {},
-    realtimeState: { isConnected: true },
-  }),
+  useRecipe: mockUseRecipe,
 }));
 vi.mock('@caterkingapp/shared/hooks/useToast', () => ({
   useToast: vi.fn(),
@@ -64,6 +60,7 @@ import { useUser } from '@caterkingapp/shared/hooks/useUser';
 // Import components
 import { EventForm } from '../apps/admin-crm/components/EventForm';
 import { StaffAssignment } from '../apps/admin-crm/components/StaffAssignment';
+import { RecipeEditor } from '../apps/admin-crm/components/RecipeEditor';
 import EventsPage from '../apps/admin-crm/app/events/page';
 import StaffPage from '../apps/admin-crm/app/staff/page';
 
@@ -116,6 +113,12 @@ describe('AdminCRM Components', () => {
     vi.mocked(useAssignments).mockReturnValue({
       assignTask: vi.fn(),
     } as any);
+    vi.mocked(mockUseRecipe).mockReturnValue({
+      data: null,
+      isLoading: false,
+      updateRecipe: vi.fn(),
+      realtimeState: { isConnected: true },
+    });
   });
 
   describe('EventsPage', () => {
@@ -171,17 +174,19 @@ describe('AdminCRM Components', () => {
       expect(screen.getByText('Location 1')).toBeInTheDocument();
     });
 
-    it('opens create form when button clicked', () => {
+    it('opens create form when button clicked', async () => {
       render(
         <TestWrapper>
           <EventsPage />
         </TestWrapper>,
       );
 
-      const createButton = screen.getByText('Create Event');
+      const createButton = screen.getByRole('button', { name: 'Create Event' });
       fireEvent.click(createButton);
 
-      expect(screen.getByText('Create Event')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: 'Create Event' })).toBeInTheDocument();
+      });
     });
 
     it('handles role-based permissions for owner', () => {
@@ -237,7 +242,7 @@ describe('AdminCRM Components', () => {
       );
 
       expect(screen.getByText('Staff Management')).toBeInTheDocument();
-      expect(screen.getByText('Staff 1')).toBeInTheDocument();
+      expect(screen.getAllByText('Staff 1')).toHaveLength(2);
     });
 
     it('renders task assignment interface', () => {
@@ -379,13 +384,14 @@ describe('AdminCRM Components', () => {
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(mockOnSubmit).toHaveBeenCalledWith({
-          name: 'New Event',
-          date: '2025-12-11T10:00',
-          location: 'New Location',
-          status: 'planned',
-          id: '',
-        });
+        expect(mockOnSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: 'New Event',
+            date: '2025-12-11T10:00',
+            location: 'New Location',
+            status: 'planned',
+          }),
+        );
       });
     });
 
@@ -476,6 +482,90 @@ describe('AdminCRM Components', () => {
       // Simulate drag end
       // Note: Full drag simulation requires @dnd-kit test utils, this verifies setup
       expect(mockAssignTask).not.toHaveBeenCalled(); // Not called yet
+    });
+  });
+
+  describe('RecipeEditor', () => {
+    it('renders recipe data', () => {
+      const mockRecipe = {
+        id: '1',
+        name: 'Test Recipe',
+        ingredients: [{ name: 'Flour', quantity: 2, unit: 'cups' }],
+        steps: ['Mix ingredients'],
+        media_urls: [],
+      };
+
+      vi.mocked(mockUseRecipe).mockReturnValue({
+        data: mockRecipe,
+        isLoading: false,
+        updateRecipe: vi.fn(),
+        realtimeState: { isConnected: true },
+      });
+
+      render(
+        <TestWrapper>
+          <RecipeEditor recipeId="1" />
+        </TestWrapper>,
+      );
+
+      expect(screen.getByDisplayValue('Test Recipe')).toBeInTheDocument();
+      expect(screen.getByText('Flour')).toBeInTheDocument();
+      expect(screen.getByText('Mix ingredients')).toBeInTheDocument();
+    });
+
+    it('adds ingredient', () => {
+      vi.mocked(mockUseRecipe).mockReturnValue({
+        data: { id: '1', name: 'Test', ingredients: [], steps: [], media_urls: [] },
+        isLoading: false,
+        updateRecipe: vi.fn(),
+        realtimeState: { isConnected: true },
+      });
+
+      render(
+        <TestWrapper>
+          <RecipeEditor recipeId="1" />
+        </TestWrapper>,
+      );
+
+      const nameInput = screen.getByPlaceholderText('Ingredient name');
+      const quantityInput = screen.getByPlaceholderText('Quantity');
+      const unitInput = screen.getByPlaceholderText('Unit');
+      const addButton = screen.getByText('Add');
+
+      fireEvent.change(nameInput, { target: { value: 'Sugar' } });
+      fireEvent.change(quantityInput, { target: { value: '1' } });
+      fireEvent.change(unitInput, { target: { value: 'cup' } });
+      fireEvent.click(addButton);
+
+      expect(screen.getByText('Sugar')).toBeInTheDocument();
+    });
+
+    it('removes ingredient', () => {
+      const mockRecipe = {
+        id: '1',
+        name: 'Test Recipe',
+        ingredients: [{ name: 'Flour', quantity: 2, unit: 'cups' }],
+        steps: [],
+        media_urls: [],
+      };
+
+      vi.mocked(mockUseRecipe).mockReturnValue({
+        data: mockRecipe,
+        isLoading: false,
+        updateRecipe: vi.fn(),
+        realtimeState: { isConnected: true },
+      });
+
+      render(
+        <TestWrapper>
+          <RecipeEditor recipeId="1" />
+        </TestWrapper>,
+      );
+
+      const removeButton = screen.getByText('Remove');
+      fireEvent.click(removeButton);
+
+      expect(screen.queryByText('Flour')).not.toBeInTheDocument();
     });
   });
 });

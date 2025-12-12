@@ -33,6 +33,9 @@ export function RecipeEditor({ recipeId }: RecipeEditorProps) {
   const [newStep, setNewStep] = useState('');
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isOnline, setIsOnline] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [lastSavedData, setLastSavedData] = useState<string>('');
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -67,10 +70,6 @@ export function RecipeEditor({ recipeId }: RecipeEditorProps) {
 
     return () => clearInterval(interval);
   }, [formData, lastSavedData, isOnline, isSaving]);
-
-  const [isSaving, setIsSaving] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [lastSavedData, setLastSavedData] = useState<string>('');
 
   const handleAutoSave = async () => {
     try {
