@@ -14,7 +14,12 @@ export const getSupabaseEnv = () => {
   return { url, key };
 };
 
+let supabaseClient: ReturnType<typeof createSupabaseClient<Database>> | null = null;
+
 export const createClient = () => {
+  if (supabaseClient) return supabaseClient;
+  
   const { url, key } = getSupabaseEnv();
-  return createSupabaseClient<Database>(url, key);
+  supabaseClient = createSupabaseClient<Database>(url, key);
+  return supabaseClient;
 };

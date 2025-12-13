@@ -47,7 +47,7 @@ VALUES
         'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 
         'Corporate Lunch', 
         now() + interval '2 days', 
-        'published'
+        'scheduled'
     );
 
 -- 5. Create Tasks
@@ -62,7 +62,7 @@ VALUES
         'Prep Lasagna Sheets', 
         12, 
         'sheets', 
-        'pending', 
+        'available', 
         'high'
     ),
     (
@@ -74,6 +74,6 @@ VALUES
         'Chop Vegetables', 
         5, 
         'kg', 
-        'pending', 
+        'available', 
         'normal'
     );

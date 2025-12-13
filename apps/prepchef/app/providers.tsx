@@ -2,7 +2,7 @@
 
 import { ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ToastProvider } from '@caterkingapp/shared/hooks/useToast';
+import { ToastProvider } from '@caterkingapp/shared';
 
 const queryClient = new QueryClient();
 

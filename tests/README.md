@@ -1,5 +1,49 @@
 # Testing
 
+## Quick Start
+
+**Before committing** - Run smoke tests (catches 90% of runtime errors in <1 min):
+```bash
+pnpm test:smoke
+```
+
+**Full validation**:
+```bash
+pnpm test
+```
+
+## Test Types
+
+### 1. Smoke Tests (`tests/smoke/`)
+Quick runtime validation - first line of defense.
+
+**What they catch:**
+- Missing providers (QueryClient, Context, etc.)
+- Hook errors (useQuery outside provider)
+- Component crashes on mount
+- Import errors
+- Critical runtime failures
+
+**Run:**
+```bash
+pnpm test:smoke
+```
+
+### 2. E2E Tests (`tests/e2e/`)
+Full user flow validation.
+
+**What they catch:**
+- All smoke test errors
+- Navigation issues
+- State management problems
+- User interaction failures
+- Integration problems
+
+**Run:**
+```bash
+pnpm test:e2e
+```
+
 ## Playwright Tests
 
 Run the Playwright test suites:

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { undoTask } from '../../../../../libs/supabase/src/rpc/tasks';
-import { UndoTaskRequestSchema } from '../../../../../libs/shared/src/dto/tasks';
-import { mapSupabaseError } from '../../../../../libs/shared/src/utils/errors';
+import { undoTask } from '@caterkingapp/supabase/rpc/tasks';
+import { UndoTaskRequestSchema } from '@caterkingapp/shared/dto/tasks';
+import { mapSupabaseError } from '@caterkingapp/shared/utils/errors';
 
 const SCHEMA_VERSION = '1.0';
 

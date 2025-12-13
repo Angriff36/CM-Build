@@ -6,7 +6,7 @@ import { useEvents } from '@caterkingapp/shared/hooks/useEvents';
 
 export default function TasksPage() {
   const [selectedEventId, setSelectedEventId] = useState<string>('');
-  const { events } = useEvents();
+  const { data: events = [] } = useEvents();
 
   return (
     <div className="h-screen flex flex-col">

@@ -35,19 +35,24 @@ export function useCombinationSuggestions({ companyId }: UseCombinationSuggestio
   const query = useQuery({
     queryKey: ['combinationSuggestions', companyId],
     queryFn: async () => {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from('task_similarity_suggestions')
-        .select(
-          `
-          *,
-          task:tasks!task_id(id, name, quantity, unit, status, priority),
-          suggested_task:tasks!suggested_task_id(id, name, quantity, unit, status, priority)
-        `,
-        )
-        .eq('company_id', companyId);
-      if (error) throw error;
-      return data as Suggestion[];
+      // TODO: Implement task similarity suggestions when table is available
+      // For now, return empty array to prevent runtime errors
+      return [] as Suggestion[];
+
+      // Original implementation (commented out until table exists):
+      // const supabase = createClient();
+      // const { data, error } = await supabase
+      //   .from('task_similarity_suggestions')
+      //   .select(
+      //     `
+      //     *,
+      //     task:tasks!task_id(id, name, quantity, unit, status, priority),
+      //     suggested_task:tasks!suggested_task_id(id, name, quantity, unit, status, priority)
+      //   `,
+      //   )
+      //   .eq('company_id', companyId);
+      // if (error) throw error;
+      // return data as Suggestion[];
     },
   });
 

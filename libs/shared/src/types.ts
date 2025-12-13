@@ -19,7 +19,7 @@ export interface TaskDTO extends BaseEntity {
   quantity: number;
   unit: string;
   status: TaskStatus;
-  priority: TaskPriority;
+  priority: TaskPriority | null;
   assigned_user_id?: string;
   combined_group_id?: string;
   instructions_ref?: string;

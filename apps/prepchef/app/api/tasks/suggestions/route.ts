@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '../../../../libs/supabase/src/client';
-import { mapSupabaseError } from '../../../../libs/shared/src/utils/errors';
+import { createClient } from '@caterkingapp/supabase';
+import { mapSupabaseError } from '@caterkingapp/shared/utils/errors';
 
 const SCHEMA_VERSION = '1.2';
 
@@ -9,33 +9,14 @@ export async function GET(request: NextRequest) {
   const supabase = createClient();
 
   try {
-    // Retrieve suggestions from task_similarity_suggestions table
-    const { data, error } = await supabase
-      .from('task_similarity_suggestions')
-      .select('*')
-      .limit(10);
-
-    if (error) {
-      throw error;
-    }
-
-    // Telemetry
-    console.log('OTEL span:', {
-      trace_id: 'generated-trace-id',
-      actor_id: 'current-user-id',
-      company_id: 'current-company-id',
-      feature_flag_state: {},
-      endpoint: '/api/tasks/suggestions',
-      method: 'GET',
-    });
+    // TODO: Implement task suggestions when table is available
+    // For now, return empty array
+    const data: any[] = [];
 
     return NextResponse.json({
-      data: {
-        suggestions: data,
-      },
+      data,
       meta: {
         schema_version: SCHEMA_VERSION,
-        heuristic_version: 'combine.v3',
       },
     });
   } catch (error) {
@@ -44,43 +25,14 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST: Request task suggestions based on filters
+// POST: Generate task suggestions
 export async function POST(request: NextRequest) {
-  const supabase = createClient();
-
   try {
     const body = await request.json();
     const { filters } = body;
 
-    // Call Supabase function to generate suggestions
-    const { data, error } = await supabase.rpc('generate_task_suggestions', {
-      filters,
-    });
-
-    if (error) {
-      throw error;
-    }
-
-    // Telemetry
-    console.log('OTEL span:', {
-      trace_id: 'generated-trace-id',
-      actor_id: 'current-user-id',
-      company_id: 'current-company-id',
-      feature_flag_state: {},
-      endpoint: '/api/tasks/suggestions',
-      method: 'POST',
-    });
-
-    return NextResponse.json({
-      data: {
-        suggestions: data,
-      },
-      meta: {
-        schema_version: SCHEMA_VERSION,
-        heuristic_version: 'combine.v3',
-        sla: 1000, // example
-      },
-    });
+    // TODO: Implement generate_task_suggestions RPC function
+    throw new Error('generate_task_suggestions RPC function not implemented yet');
   } catch (error) {
     const { status, error: apiError } = mapSupabaseError(error);
     return NextResponse.json({ error: apiError }, { status });

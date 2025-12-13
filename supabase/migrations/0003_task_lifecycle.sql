@@ -11,7 +11,8 @@ CREATE TYPE public.task_priority AS ENUM (
 );
 
 -- Alter tasks table to use enum for priority
-ALTER TABLE public.tasks ALTER COLUMN priority TYPE public.task_priority USING priority::public.task_priority;
+ALTER TABLE public.tasks ALTER COLUMN priority TYPE public.task_priority USING COALESCE(priority, 'normal')::public.task_priority;
+ALTER TABLE public.tasks ALTER COLUMN priority SET DEFAULT 'normal'::public.task_priority;
 
 -- Add last_heartbeat_at to realtime_subscriptions for presence heartbeats
 ALTER TABLE public.realtime_subscriptions ADD COLUMN last_heartbeat_at timestamp with time zone DEFAULT now();

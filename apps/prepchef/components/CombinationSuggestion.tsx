@@ -49,17 +49,20 @@ export function CombinationSuggestion({ companyId }: CombinationSuggestionProps)
 
   const acceptMutation = useMutation({
     mutationFn: async (suggestion: Suggestion) => {
-      const { error } = await supabase.rpc('combine_tasks', {
-        task_ids: [suggestion.task_id, suggestion.suggested_task_id],
-      });
-      if (error) throw error;
-      // Log telemetry
-      await supabase.from('audit_logs').insert({
-        action: 'task_combination_accepted',
-        entity_type: 'task_similarity_suggestion',
-        entity_id: suggestion.id,
-        details: { similarity_score: suggestion.similarity_score },
-      });
+      // TODO: Implement combine_tasks RPC function
+      throw new Error('combine_tasks RPC function not implemented yet');
+
+      // const { error } = await supabase.rpc('combine_tasks', {
+      //   task_ids: [suggestion.task_id, suggestion.suggested_task_id],
+      // });
+      // if (error) throw error;
+      // TODO: Log telemetry when audit_logs table is available
+      // await supabase.from('audit_logs').insert({
+      //   action: 'task_combination_accepted',
+      //   entity_type: 'task_similarity_suggestion',
+      //   entity_id: suggestion.id,
+      //   details: { similarity_score: suggestion.similarity_score },
+      // });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
@@ -73,17 +76,20 @@ export function CombinationSuggestion({ companyId }: CombinationSuggestionProps)
 
   const rejectMutation = useMutation({
     mutationFn: async (suggestionId: string) => {
-      const { error } = await supabase
-        .from('task_similarity_suggestions')
-        .delete()
-        .eq('id', suggestionId);
-      if (error) throw error;
-      // Log telemetry
-      await supabase.from('audit_logs').insert({
-        action: 'task_combination_rejected',
-        entity_type: 'task_similarity_suggestion',
-        entity_id: suggestionId,
-      });
+      // TODO: Implement when task_similarity_suggestions table exists
+      throw new Error('task_similarity_suggestions table not implemented yet');
+
+      // const { error } = await supabase
+      //   .from('task_similarity_suggestions')
+      //   .delete()
+      //   .eq('id', suggestionId);
+      // if (error) throw error;
+      // // Log telemetry
+      // await supabase.from('audit_logs').insert({
+      //   action: 'task_combination_rejected',
+      //   entity_type: 'task_similarity_suggestion',
+      //   entity_id: suggestionId,
+      // });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['combinationSuggestions'] });

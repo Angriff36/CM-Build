@@ -1,5 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 
+declare global {
+  interface Window {
+    AudioContext: typeof AudioContext;
+    webkitAudioContext: typeof AudioContext;
+  }
+}
+
 interface AssignmentSummary {
   task_id: string;
   user_display_name: string;
@@ -38,7 +45,9 @@ export function UrgentTicker({ assignments }: UrgentTickerProps) {
         window.speechSynthesis.speak(utterance);
       } else {
         // Fallback beep sound using Web Audio API
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const audioContext = new (
+          (window as any).AudioContext || (window as any).webkitAudioContext
+        )();
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
 

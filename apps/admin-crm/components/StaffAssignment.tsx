@@ -5,6 +5,7 @@ import { useTasks } from '@caterkingapp/shared/hooks/useTasks';
 import { useAssignments } from '@caterkingapp/shared/hooks/useAssignments';
 import { useToast } from '@caterkingapp/shared/hooks/useToast';
 import { useStaff } from '@caterkingapp/shared/hooks/useStaff';
+import type { Database } from '@caterkingapp/supabase';
 import { OfflineBanner } from './offline-banner';
 import {
   DndContext,
@@ -24,28 +25,17 @@ import { useDroppable } from '@dnd-kit/core';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-interface Staff {
-  id: string;
-  display_name: string;
-  role: string;
-  status: string;
+type Staff = Database['public']['Tables']['users']['Row'] & {
   presence: 'online' | 'idle' | 'offline';
-  shift_start?: string;
-  shift_end?: string;
-}
+};
 
-interface Task {
-  id: string;
-  name: string;
-  station?: string;
-  assigned_user_id?: string;
-}
+type Task = Database['public']['Tables']['tasks']['Row'];
 
 function TaskCard({ task }: { task: Task }) {
   return (
     <div className="bg-gray-100 p-2 rounded mb-2 border border-gray-200 cursor-move hover:shadow-md transition-shadow">
       <h4 className="font-medium text-sm">{task.name}</h4>
-      {task.station && <p className="text-xs text-gray-600">Station: {task.station}</p>}
+      {task.status && <p className="text-xs text-gray-600">Status: {task.status}</p>}
     </div>
   );
 }
@@ -76,8 +66,16 @@ function SortableItem({ id, children }: { id: string; children: React.ReactNode 
 }
 
 export function StaffAssignment() {
-  const { data: staff, isLoading: staffLoading, realtimeState: staffRealtimeState } = useStaff();
-  const { data: tasks, isLoading: tasksLoading, realtimeState: tasksRealtimeState } = useTasks();
+  const {
+    data: staff = [],
+    isLoading: staffLoading,
+    realtimeState: staffRealtimeState,
+  } = useStaff();
+  const {
+    data: tasks = [],
+    isLoading: tasksLoading,
+    realtimeState: tasksRealtimeState,
+  } = useTasks();
   const { assignTask } = useAssignments();
   const { addToast } = useToast();
 
@@ -102,7 +100,7 @@ export function StaffAssignment() {
 
   if (staffLoading || tasksLoading) return <div className="p-4">Loading...</div>;
 
-  const unassignedTasks = tasks.filter((task: Task) => !task.assigned_user_id);
+  const unassignedTasks = tasks.filter((task) => !task.assigned_user_id);
 
   return (
     <div className="mb-8">
@@ -115,11 +113,11 @@ export function StaffAssignment() {
             <h3 className="font-semibold mb-2">Unassigned Tasks</h3>
             <Droppable id="unassigned">
               <SortableContext
-                items={unassignedTasks.map((t: Task) => t.id)}
+                items={unassignedTasks.map((t) => t.id)}
                 strategy={verticalListSortingStrategy}
               >
                 {unassignedTasks.length > 0 ? (
-                  unassignedTasks.map((task: Task) => (
+                  unassignedTasks.map((task) => (
                     <SortableItem key={task.id} id={task.id}>
                       <TaskCard task={task} />
                     </SortableItem>
@@ -132,7 +130,7 @@ export function StaffAssignment() {
           </div>
 
           {/* Staff Members as Drop Zones */}
-          {staff.map((staffMember: Staff) => (
+          {staff.map((staffMember) => (
             <div key={staffMember.id} className="bg-white p-4 rounded-lg shadow">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-semibold">{staffMember.display_name}</h3>
@@ -149,17 +147,16 @@ export function StaffAssignment() {
               </div>
               <Droppable id={staffMember.id}>
                 <div className="min-h-32">
-                  {tasks.filter((task: Task) => task.assigned_user_id === staffMember.id).length >
-                  0 ? (
+                  {tasks.filter((task) => task.assigned_user_id === staffMember.id).length > 0 ? (
                     <SortableContext
                       items={tasks
-                        .filter((task: Task) => task.assigned_user_id === staffMember.id)
-                        .map((t: Task) => t.id)}
+                        .filter((task) => task.assigned_user_id === staffMember.id)
+                        .map((t) => t.id)}
                       strategy={verticalListSortingStrategy}
                     >
                       {tasks
-                        .filter((task: Task) => task.assigned_user_id === staffMember.id)
-                        .map((task: Task) => (
+                        .filter((task) => task.assigned_user_id === staffMember.id)
+                        .map((task) => (
                           <SortableItem key={task.id} id={task.id}>
                             <TaskCard task={task} />
                           </SortableItem>

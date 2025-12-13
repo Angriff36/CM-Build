@@ -25,7 +25,7 @@ export function createPostgresChangeSubscription(
 ): RealtimeChannel {
   return supabase
     .channel(`postgres_${config.table}_${config.event}`)
-    .on('postgres_changes', config, onChange);
+    .on('postgres_changes' as any, config, onChange);
 }
 
 export function createBroadcastSubscription(
@@ -35,7 +35,7 @@ export function createBroadcastSubscription(
 ): RealtimeChannel {
   return supabase
     .channel(`broadcast_${config.event}`)
-    .on('broadcast', { event: config.event, self: config.self ?? false }, onBroadcast);
+    .on('broadcast' as any, { event: config.event, self: config.self ?? false }, onBroadcast);
 }
 
 export function createRealtimeChannel(
@@ -48,14 +48,14 @@ export function createRealtimeChannel(
 
   if (config.postgresChanges && onPostgresChange) {
     config.postgresChanges.forEach((changeConfig) => {
-      channel = channel.on('postgres_changes', changeConfig, onPostgresChange);
+      channel = channel.on('postgres_changes' as any, changeConfig, onPostgresChange);
     });
   }
 
   if (config.broadcasts && onBroadcast) {
     config.broadcasts.forEach((broadcastConfig) => {
       channel = channel.on(
-        'broadcast',
+        'broadcast' as any,
         { event: broadcastConfig.event, self: broadcastConfig.self ?? false },
         onBroadcast,
       );

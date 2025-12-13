@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { createClient } from '@caterkingapp/supabase/client';
+import { createClient } from '@caterkingapp/supabase';
 import { useToast } from '@caterkingapp/shared/hooks/useToast';
 import { useUser } from '@caterkingapp/shared/hooks/useUser';
 import Link from 'next/link';
@@ -12,9 +12,10 @@ interface Recipe {
   name: string;
   ingredients: Array<{ name: string; quantity: number; unit?: string }>;
   steps: string[];
-  media_urls: string[];
+  media_urls?: string[];
   created_at: string;
   updated_at: string;
+  version?: string | null;
 }
 
 export default function RecipesPage() {
@@ -50,7 +51,10 @@ export default function RecipesPage() {
         .order('updated_at', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return (data || []).map((recipe: any) => ({
+        ...recipe,
+        media_urls: recipe.media_urls || [],
+      }));
     },
   });
 
@@ -97,7 +101,7 @@ export default function RecipesPage() {
               key={recipe.id}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
             >
-              {recipe.media_urls.length > 0 && (
+              {recipe.media_urls && recipe.media_urls.length > 0 && (
                 <div className="h-48 bg-gray-200">
                   <img
                     src={recipe.media_urls[0]}
@@ -111,7 +115,7 @@ export default function RecipesPage() {
                 <div className="text-sm text-gray-600 mb-4">
                   <div>{recipe.ingredients.length} ingredients</div>
                   <div>{recipe.steps.length} steps</div>
-                  {recipe.media_urls.length > 0 && (
+                  {recipe.media_urls && recipe.media_urls.length > 0 && (
                     <div>{recipe.media_urls.length} media items</div>
                   )}
                 </div>

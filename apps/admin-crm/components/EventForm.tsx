@@ -18,8 +18,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
   const [formData, setFormData] = useState<EventFormData>({
     name: event?.name || '',
     date: event?.scheduled_at || event?.date || '',
-    location: event?.location || '',
-    status: event?.status || 'planned',
+    status: (event?.status as any) || 'draft',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [shakeFields, setShakeFields] = useState<Set<string>>(new Set());
@@ -83,19 +82,7 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
             />
             {errors.date && <p className="text-red-500 text-sm">{errors.date}</p>}
           </div>
-          <div>
-            <label htmlFor="event-location" className="block text-sm font-medium mb-1">
-              Location
-            </label>
-            <input
-              id="event-location"
-              type="text"
-              value={formData.location}
-              onChange={(e) => handleChange('location', e.target.value)}
-              className={`w-full p-2 border rounded transition-transform ${shakeFields.has('location') ? 'animate-shake' : ''}`}
-            />
-            {errors.location && <p className="text-red-500 text-sm">{errors.location}</p>}
-          </div>
+
           <div>
             <label htmlFor="event-status" className="block text-sm font-medium mb-1">
               Status
@@ -106,10 +93,10 @@ export function EventForm({ event, onSubmit, onCancel }: EventFormProps) {
               onChange={(e) => handleChange('status', e.target.value)}
               className="w-full p-2 border rounded"
             >
-              <option value="planned">Planned</option>
-              <option value="active">Active</option>
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
               <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="archived">Archived</option>
             </select>
           </div>
           <div className="flex gap-2">

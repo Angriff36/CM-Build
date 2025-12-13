@@ -1,3 +1,5 @@
+'use client';
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface Toast {
@@ -46,15 +48,15 @@ export function ToastProvider({ children }: { children: ReactNode }): JSX.Elemen
   return (
     <ToastContext.Provider value={{ toasts, addToast, removeToast }}>
       {children}
-      <ToastContainer />
+      <ToastContainer toasts={toasts} />
     </ToastContext.Provider>
   );
 }
 
-function ToastContainer(): JSX.Element {
-  const { toasts, removeToast } = useToast();
-
-  if (toasts.length === 0) return <></>;
+function ToastContainer({ toasts }: { toasts: Toast[] }): JSX.Element {
+  if (!toasts || toasts.length === 0) {
+    return null as any;
+  }
 
   return (
     <div className="fixed top-4 right-4 z-50 space-y-2">
@@ -69,13 +71,6 @@ function ToastContainer(): JSX.Element {
         >
           <div className="flex justify-between items-center">
             <span>{toast.message}</span>
-            <button
-              onClick={() => removeToast(toast.id)}
-              className="ml-4 text-white hover:text-gray-200"
-              aria-label="Close notification"
-            >
-              ×
-            </button>
           </div>
         </div>
       ))}

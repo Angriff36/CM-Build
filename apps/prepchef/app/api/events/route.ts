@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '../../../../libs/supabase/src/client';
-import { mapSupabaseError } from '../../../../libs/shared/src/utils/errors';
+import { createClient } from '@caterkingapp/supabase';
+import { mapSupabaseError } from '@caterkingapp/shared/utils/errors';
 
 const SCHEMA_VERSION = '1.0';
 
@@ -11,43 +11,54 @@ export async function GET(request: NextRequest) {
   const endDate = searchParams.get('end_date');
 
   try {
-    let query = supabase.from('events').select(`
+    // First get events
+    let eventsQuery = supabase.from('events').select(`
       id,
       name,
       scheduled_at,
-      location,
-      notes,
-      status,
-      tasks (
-        status,
-        count: id
-      )
+      description,
+      status
     `);
 
     if (startDate) {
-      query = query.gte('scheduled_at', startDate);
+      eventsQuery = eventsQuery.gte('scheduled_at', startDate);
     }
 
     if (endDate) {
-      query = query.lte('scheduled_at', endDate);
+      eventsQuery = eventsQuery.lte('scheduled_at', endDate);
     }
 
-    const { data, error } = await query;
+    const { data: events, error: eventsError } = await eventsQuery;
 
-    if (error) {
-      throw error;
+    if (eventsError) {
+      throw eventsError;
     }
+
+    // Then get tasks for each event
+    const { data: tasks, error: tasksError } = await supabase
+      .from('tasks')
+      .select('event_id, status, id')
+      .in(
+        'event_id',
+        events.map((e) => e.id),
+      );
+
+    if (tasksError) {
+      throw tasksError;
+    }
+
+    const data = events;
 
     // Aggregate status counts
-    const eventsWithCounts = data.map((event) => {
-      const statusCounts = event.tasks.reduce((acc: Record<string, number>, task: any) => {
+    const eventsWithCounts = events.map((event) => {
+      const eventTasks = tasks.filter((task) => task.event_id === event.id);
+      const statusCounts = eventTasks.reduce((acc: Record<string, number>, task: any) => {
         acc[task.status] = (acc[task.status] || 0) + 1;
         return acc;
       }, {});
       return {
         ...event,
         status_counts: statusCounts,
-        tasks: undefined, // remove raw tasks
       };
     });
 

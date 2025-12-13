@@ -4,7 +4,7 @@
   "private": true,
   "description": "Display app for kiosks with summary cards and urgent ticker",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 9003",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx",
@@ -15,19 +15,23 @@
     "@caterkingapp/shared": "workspace:*",
     "@caterkingapp/ui": "workspace:*",
     "@caterkingapp/supabase": "workspace:*",
-    "@tanstack/react-query": "^5.17.15",
-    "next": "15.0.0-canary.123",
-    "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "@tanstack/react-query": "^5.90.12",
+    "next": "^14.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@testing-library/react": "^14.1.2",
-    "@testing-library/jest-dom": "^6.1.5",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/jest-dom": "^6.9.1",
     "@types/node": "^20.14.2",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
+    "@vitejs/plugin-react": "^4.7.0",
+    "autoprefixer": "^10.4.22",
     "eslint": "^9.3.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.17",
     "typescript": "^5.4.5",
     "vitest": "^1.6.0"
   }

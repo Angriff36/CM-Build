@@ -144,7 +144,7 @@ describe('AdminCRM Components', () => {
             name: 'Event 1',
             date: '2025-12-11',
             location: 'Location 1',
-            status: 'planned',
+        status: 'draft' as any,
           },
         ],
         isLoading: false,
@@ -521,7 +521,12 @@ describe('AdminCRM Components', () => {
         name: 'Test Event',
         date: '2025-12-11T10:00',
         location: 'Test Location',
-        status: 'planned',
+        status: 'draft' as any,
+        scheduled_at: '2025-12-11T10:00',
+        company_id: 'test-company',
+        created_at: '2025-12-11T10:00',
+        updated_at: '2025-12-11T10:00',
+        description: null,
       };
 
       render(

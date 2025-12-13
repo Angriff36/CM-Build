@@ -74,8 +74,10 @@ export function RecipeEditor({ recipeId }: RecipeEditorProps) {
   const handleAutoSave = async () => {
     try {
       // For autosave, save without full validation to avoid interrupting workflow
-      await updateRecipe(formData);
-      setLastSavedData(JSON.stringify(formData));
+      if (formData.id) {
+        await updateRecipe(formData as Recipe);
+        setLastSavedData(JSON.stringify(formData));
+      }
     } catch (error) {
       // Silent fail for autosave
       console.warn('Autosave failed:', error);
@@ -151,7 +153,7 @@ export function RecipeEditor({ recipeId }: RecipeEditorProps) {
 
     try {
       // Import Supabase client
-      const { createClient } = await import('@caterkingapp/supabase/client');
+      const { createClient } = await import('@caterkingapp/supabase');
       const supabase = createClient();
 
       setUploadProgress(20);

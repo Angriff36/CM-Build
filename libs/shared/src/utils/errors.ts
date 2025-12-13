@@ -5,7 +5,10 @@ export interface ApiError {
 }
 
 export function mapSupabaseError(error: unknown): { status: number; error: ApiError } {
-  const message = error.message || 'Unknown error';
+  const message =
+    error && typeof error === 'object' && 'message' in error
+      ? (error as any).message
+      : 'Unknown error';
 
   if (message.includes('Task not found')) {
     return {

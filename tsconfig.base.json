@@ -3,7 +3,7 @@
     "target": "ES2022",
     "lib": ["dom", "dom.iterable", "es2022"],
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "allowJs": false,
     "strict": true,
     "forceConsistentCasingInFileNames": true,

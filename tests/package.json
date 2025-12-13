@@ -7,7 +7,8 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
-    "test:e2e:chaos": "playwright test --grep \"chaos\""
+    "test:e2e:chaos": "playwright test --grep \"chaos\"",
+    "test:smoke": "playwright test smoke --reporter=list"
   },
   "devDependencies": {
     "vitest": "^1.6.1",

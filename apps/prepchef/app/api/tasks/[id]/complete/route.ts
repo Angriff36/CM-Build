@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { completeTask } from '../../../../../libs/supabase/src/rpc/tasks';
-import { CompleteTaskRequestSchema } from '../../../../../libs/shared/src/dto/tasks';
-import { mapSupabaseError } from '../../../../../libs/shared/src/utils/errors';
+import { completeTask } from '@caterkingapp/supabase/rpc/tasks';
+import { CompleteTaskRequestSchema } from '@caterkingapp/shared/dto/tasks';
+import { mapSupabaseError } from '@caterkingapp/shared/utils/errors';
 
 const SCHEMA_VERSION = '1.0';
 

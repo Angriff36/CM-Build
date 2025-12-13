@@ -13,7 +13,11 @@
     "dev:prepchef": "turbo run dev --filter=@caterkingapp/prepchef",
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "test": "turbo run test",
+    "test": "pnpm -C tests test:e2e",
+    "test:smoke": "pnpm -C tests exec playwright test smoke --reporter=list",
+    "test:e2e": "pnpm -C tests test:e2e",
+    "test:ui": "pnpm -C tests test:e2e:ui",
+    "test:watch": "pnpm -C tests test:e2e:ui",
     "typecheck": "turbo run typecheck",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
@@ -27,6 +31,7 @@
     "eslint-config-turbo": "^2.0.6",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.7",
+    "next": "^14.2.35",
     "prettier": "^3.3.2",
     "turbo": "^2.0.6",
     "typescript": "^5.4.5"
@@ -38,5 +43,9 @@
     "*.{json,css,md,ts,tsx,js,jsx}": [
       "prettier --write"
     ]
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { claimTask } from '../../../../../libs/supabase/src/rpc/tasks';
-import { ClaimTaskRequestSchema } from '../../../../../libs/shared/src/dto/tasks';
-import { mapSupabaseError } from '../../../../../libs/shared/src/utils/errors';
+import { claimTask } from '@caterkingapp/supabase/rpc/tasks';
+import { ClaimTaskRequestSchema } from '@caterkingapp/shared/dto/tasks';
+import { mapSupabaseError } from '@caterkingapp/shared/utils/errors';
 
 const SCHEMA_VERSION = '1.0';
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '../../../../libs/supabase/src/client';
-import { mapSupabaseError } from '../../../../libs/shared/src/utils/errors';
+import { createClient } from '@caterkingapp/supabase';
+import { mapSupabaseError } from '@caterkingapp/shared/utils/errors';
 
 const SCHEMA_VERSION = '1.2';
 
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (status) {
-      query = query.eq('status', status);
+      query = query.eq('status', status as any);
     }
 
     const { data, error } = await query;

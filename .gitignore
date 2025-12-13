@@ -1,10 +1,12 @@
-.codemachine/memory
-.codemachine/logs
-.codemachine/prompts
-.codemachine/agents
-.codemachine/template.json
-.codemachine/artifacts
-.codemachine/.env
+# CodeMachine - local scaffolding only
+.codemachine/
+.roo/
+.roomodes
+templates/
+tools/
+__tests__/
+configs/
+scripts/
 node_modules
 .pnpm
 .turbo

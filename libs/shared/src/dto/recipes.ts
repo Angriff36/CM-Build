@@ -15,7 +15,7 @@ export const RecipeSchema = z.object({
   media_urls: z.array(z.string()),
   version: z.number().optional(),
   tags: z.array(z.string()).optional(),
-  allergen_flags: z.record(z.boolean()).default({}),
+  allergen_flags: z.record(z.string(), z.boolean()).default({}),
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
 });

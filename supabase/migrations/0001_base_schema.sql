@@ -78,31 +78,38 @@ CREATE TABLE public.events (
     CONSTRAINT events_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id) ON DELETE CASCADE
 );
 
--- 4. Tasks
+-- 3a. Recipes
 -- Reference: 5-0-the-contract
-CREATE TABLE public.tasks (
+CREATE TABLE public.recipes (
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
     company_id uuid NOT NULL,
-    event_id uuid,
     name text NOT NULL,
-    quantity numeric NOT NULL DEFAULT 1,
-    unit text,
-    status public.task_status NOT NULL DEFAULT 'available'::public.task_status,
-    priority text DEFAULT 'normal',
-    assigned_user_id uuid,
-    combined_group_id uuid,
-    instructions_ref text,
-    undo_token text,
+    ingredients jsonb NOT NULL DEFAULT '[]'::jsonb,
+    steps jsonb NOT NULL DEFAULT '[]'::jsonb,
+    version text DEFAULT '1.0',
     created_at timestamp with time zone NOT NULL DEFAULT now(),
     updated_at timestamp with time zone NOT NULL DEFAULT now(),
-    CONSTRAINT tasks_pkey PRIMARY KEY (id),
-    CONSTRAINT tasks_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id) ON DELETE CASCADE,
-    CONSTRAINT tasks_event_id_fkey FOREIGN KEY (event_id) REFERENCES public.events(id) ON DELETE CASCADE,
-    CONSTRAINT tasks_assigned_user_id_fkey FOREIGN KEY (assigned_user_id) REFERENCES public.users(id) ON DELETE SET NULL,
-    CONSTRAINT tasks_combined_group_id_fkey FOREIGN KEY (combined_group_id) REFERENCES public.combined_task_groups(id) ON DELETE SET NULL
+    CONSTRAINT recipes_pkey PRIMARY KEY (id),
+    CONSTRAINT recipes_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id) ON DELETE CASCADE
 );
 
--- 5. CombinedTaskGroups
+-- 3b. MethodDocuments
+-- Reference: 5-0-the-contract
+CREATE TABLE public.method_documents (
+    id uuid NOT NULL DEFAULT uuid_generate_v4(),
+    company_id uuid NOT NULL,
+    title text NOT NULL,
+    steps jsonb NOT NULL DEFAULT '[]'::jsonb,
+    video_refs jsonb NOT NULL DEFAULT '[]'::jsonb,
+    skill_level text,
+    last_reviewed_by uuid,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    CONSTRAINT method_documents_pkey PRIMARY KEY (id),
+    CONSTRAINT method_documents_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id) ON DELETE CASCADE,
+    CONSTRAINT method_documents_last_reviewed_by_fkey FOREIGN KEY (last_reviewed_by) REFERENCES public.users(id) ON DELETE SET NULL
+);
+
+-- 4. CombinedTaskGroups (Created before Tasks due to FK dependency)
 -- Reference: 5-0-the-contract
 CREATE TABLE public.combined_task_groups (
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
@@ -116,6 +123,32 @@ CREATE TABLE public.combined_task_groups (
     CONSTRAINT combined_task_groups_pkey PRIMARY KEY (id),
     CONSTRAINT combined_task_groups_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id) ON DELETE CASCADE,
     CONSTRAINT combined_task_groups_approved_by_user_id_fkey FOREIGN KEY (approved_by_user_id) REFERENCES public.users(id) ON DELETE SET NULL
+);
+
+-- 5. Tasks
+-- Reference: 5-0-the-contract
+CREATE TABLE public.tasks (
+    id uuid NOT NULL DEFAULT uuid_generate_v4(),
+    company_id uuid NOT NULL,
+    event_id uuid,
+    recipe_id uuid,
+    name text NOT NULL,
+    quantity numeric NOT NULL DEFAULT 1,
+    unit text,
+    status public.task_status NOT NULL DEFAULT 'available'::public.task_status,
+    priority text,
+    assigned_user_id uuid,
+    combined_group_id uuid,
+    instructions_ref text,
+    undo_token text,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    updated_at timestamp with time zone NOT NULL DEFAULT now(),
+    CONSTRAINT tasks_pkey PRIMARY KEY (id),
+    CONSTRAINT tasks_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id) ON DELETE CASCADE,
+    CONSTRAINT tasks_event_id_fkey FOREIGN KEY (event_id) REFERENCES public.events(id) ON DELETE CASCADE,
+    CONSTRAINT tasks_recipe_id_fkey FOREIGN KEY (recipe_id) REFERENCES public.recipes(id) ON DELETE SET NULL,
+    CONSTRAINT tasks_assigned_user_id_fkey FOREIGN KEY (assigned_user_id) REFERENCES public.users(id) ON DELETE SET NULL,
+    CONSTRAINT tasks_combined_group_id_fkey FOREIGN KEY (combined_group_id) REFERENCES public.combined_task_groups(id) ON DELETE SET NULL
 );
 
 
@@ -205,6 +238,40 @@ CREATE TABLE public.staff_schedules (
     CONSTRAINT staff_schedules_event_id_fkey FOREIGN KEY (event_id) REFERENCES public.events(id) ON DELETE CASCADE
 );
 
+-- 15a. MediaAssets
+-- Reference: 5-0-the-contract
+CREATE TABLE public.media_assets (
+    id uuid NOT NULL DEFAULT uuid_generate_v4(),
+    company_id uuid NOT NULL,
+    url text NOT NULL,
+    type text NOT NULL,
+    thumbnail_url text,
+    duration numeric,
+    status text NOT NULL DEFAULT 'pending',
+    storage_path text NOT NULL,
+    checksum text,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    updated_at timestamp with time zone NOT NULL DEFAULT now(),
+    CONSTRAINT media_assets_pkey PRIMARY KEY (id),
+    CONSTRAINT media_assets_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id) ON DELETE CASCADE
+);
+
+-- 15b. RoleAssignments
+-- Reference: 5-0-the-contract
+CREATE TABLE public.role_assignments (
+    id uuid NOT NULL DEFAULT uuid_generate_v4(),
+    company_id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    role public.user_role NOT NULL,
+    granted_by uuid NOT NULL,
+    granted_at timestamp with time zone NOT NULL DEFAULT now(),
+    revoked_at timestamp with time zone,
+    CONSTRAINT role_assignments_pkey PRIMARY KEY (id),
+    CONSTRAINT role_assignments_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id) ON DELETE CASCADE,
+    CONSTRAINT role_assignments_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE,
+    CONSTRAINT role_assignments_granted_by_fkey FOREIGN KEY (granted_by) REFERENCES public.users(id) ON DELETE RESTRICT
+);
+
 -- 16. DisplaySnapshots
 -- Reference: 5-0-the-contract
 CREATE TABLE public.display_snapshots (
@@ -222,8 +289,12 @@ CREATE TABLE public.display_snapshots (
 
 CREATE INDEX idx_users_company_id ON public.users(company_id);
 CREATE INDEX idx_events_company_id_scheduled ON public.events(company_id, scheduled_at);
+CREATE INDEX idx_recipes_company_id ON public.recipes(company_id);
+CREATE INDEX idx_method_documents_company_id ON public.method_documents(company_id);
 CREATE INDEX idx_tasks_company_event_status ON public.tasks(company_id, event_id, status);
 CREATE INDEX idx_tasks_assigned_user ON public.tasks(assigned_user_id);
+CREATE INDEX idx_media_assets_company_id ON public.media_assets(company_id);
+CREATE INDEX idx_role_assignments_company_user ON public.role_assignments(company_id, user_id);
 
 CREATE INDEX idx_combined_task_groups_company ON public.combined_task_groups(company_id);
 CREATE INDEX idx_audit_logs_company_created ON public.audit_logs(company_id, created_at DESC);
@@ -265,4 +336,6 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER on_company_updated BEFORE UPDATE ON public.companies FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 CREATE TRIGGER on_user_updated BEFORE UPDATE ON public.users FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 CREATE TRIGGER on_event_updated BEFORE UPDATE ON public.events FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
+CREATE TRIGGER on_recipe_updated BEFORE UPDATE ON public.recipes FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 CREATE TRIGGER on_task_updated BEFORE UPDATE ON public.tasks FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
+CREATE TRIGGER on_media_updated BEFORE UPDATE ON public.media_assets FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();

@@ -72,28 +72,44 @@ export function useRealtimeSync({
   const handleConnectionStatus = useCallback(
     (status: string, err?: unknown) => {
       const isConnected = status === 'SUBSCRIBED';
-      setState((prev) => ({
-        ...prev,
-        isConnected,
-        connectionAttempts: isConnected ? 0 : prev.connectionAttempts + 1,
-        lastSuccessfulConnection: isConnected ? new Date() : prev.lastSuccessfulConnection,
-      }));
-      onConnectionStatusChange?.(isConnected);
+      setState((prev) => {
+        const newConnectionAttempts = isConnected ? 0 : prev.connectionAttempts + 1;
 
-      // Track telemetry
-      if (typeof window !== 'undefined' && window.analytics) {
-        window.analytics.track('realtime_connection_status', {
-          channel: channelConfig.name,
-          status,
-          error: err?.message,
-          attempts: state.connectionAttempts + 1,
-        });
-      }
+        // Track telemetry
+        if (typeof window !== 'undefined' && window.analytics) {
+          window.analytics.track('realtime_connection_status', {
+            channel: channelConfig.name,
+            status,
+            error:
+              err && typeof err === 'object' && 'message' in err
+                ? (err as any).message
+                : String(err),
+            attempts: newConnectionAttempts,
+          });
+        }
+
+        return {
+          ...prev,
+          isConnected,
+          connectionAttempts: newConnectionAttempts,
+          lastSuccessfulConnection: isConnected ? new Date() : prev.lastSuccessfulConnection,
+        };
+      });
+      onConnectionStatusChange?.(isConnected);
     },
-    [channelConfig.name, onConnectionStatusChange, state.connectionAttempts],
+    [channelConfig.name, onConnectionStatusChange],
   );
 
   useEffect(() => {
+    // Skip realtime connection if channel config is empty
+    const hasRealtimeFeatures =
+      channelConfig.postgresChanges && channelConfig.postgresChanges.length > 0;
+
+    if (!hasRealtimeFeatures) {
+      console.warn('Skipping realtime connection: no features');
+      return;
+    }
+
     const channel = createRealtimeChannel(
       supabase,
       channelConfig,
@@ -115,7 +131,7 @@ export function useRealtimeSync({
     return () => {
       unsubscribeFromChannel(supabase, channel);
     };
-  }, [supabase, channelConfig, handlePostgresChange, handleBroadcast, handleConnectionStatus]);
+  }, []); // Empty dependency array - only run once
 
   // Fallback polling when disconnected
   useEffect(() => {
