@@ -12,9 +12,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@caterkingapp/shared": "workspace:*",
-    "@caterkingapp/supabase": "workspace:*",
-    "@caterkingapp/ui": "workspace:*",
+    "@caterkingapp/shared": "*",
+    "@caterkingapp/supabase": "*",
+    "@caterkingapp/ui": "*",
     "@tailwindcss/postcss": "^4.1.18",
     "@tanstack/react-query": "^5.90.12",
     "focus-trap-react": "^11.0.4",

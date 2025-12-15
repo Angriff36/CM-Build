@@ -12,9 +12,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@caterkingapp/ui": "workspace:*",
-    "@caterkingapp/shared": "workspace:*",
-    "@caterkingapp/supabase": "workspace:*",
+    "@caterkingapp/ui": "*",
+    "@caterkingapp/shared": "*",
+    "@caterkingapp/supabase": "*",
     "@dnd-kit/core": "^6.1.0",
     "@dnd-kit/sortable": "^8.0.0",
     "@dnd-kit/utilities": "^3.2.2",
