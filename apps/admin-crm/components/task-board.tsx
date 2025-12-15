@@ -209,7 +209,7 @@ export function TaskBoard({ eventId }: TaskBoardProps) {
       {/* Staffing Sidebar */}
       <div className="w-64 bg-gray-50 p-4">
         <h3 className="font-semibold mb-4">Staff Presence</h3>
-        {staff.map((staffMember: Staff) => (
+        {staff.map((staffMember) => (
           <div
             key={staffMember.id}
             className="flex items-center justify-between mb-3 p-2 bg-white rounded"
@@ -228,7 +228,7 @@ export function TaskBoard({ eventId }: TaskBoardProps) {
               <span className="text-sm font-medium">{(staffMember as any).display_name}</span>
             </div>
             <div className="text-xs text-gray-500">
-              {staffMember.shift_start} - {staffMember.shift_end}
+              {(staffMember as any).shift_start} - {(staffMember as any).shift_end}
             </div>
           </div>
         ))}

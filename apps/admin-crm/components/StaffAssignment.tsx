@@ -31,7 +31,7 @@ type Staff = Database['public']['Tables']['users']['Row'] & {
 
 type Task = Database['public']['Tables']['tasks']['Row'];
 
-function TaskCard({ task }: { task: Task }) {
+function TaskCard({ task }: { task: any }) {
   return (
     <div className="bg-gray-100 p-2 rounded mb-2 border border-gray-200 cursor-move hover:shadow-md transition-shadow">
       <h4 className="font-medium text-sm">{task.name}</h4>

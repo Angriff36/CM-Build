@@ -151,7 +151,7 @@ export default function CombinePage() {
                 event_id
               )
             `);
-            setSuggestions(suggestionsData || []);
+            setSuggestions((suggestionsData as any) || []);
 
             // @ts-ignore - Table doesn't exist yet
             const { data: logs } = await supabase
