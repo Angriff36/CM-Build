@@ -122,7 +122,7 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
   const activeTasks = tasks.filter((t: any) => t.status === 'in-progress' && t.assigned_user_id === userId);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6" role="main">
+    <main className="min-h-screen bg-gradient-to-br from-cloud-100 via-paper-50 to-slate-300 p-6" role="main">
       <div className="max-w-4xl mx-auto">
         {(!realtimeState.isConnected || !tasksRealtimeState.isConnected) && (
           <OfflineBanner
@@ -141,38 +141,38 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
           />
         )}
 
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <header className="mb-6">
-            <p className="text-gray-600 mb-6">Mobile Kitchen Operations</p>
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Task Summary</h1>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="bg-green-50 rounded-lg p-4 text-center">
-                <div className="text-3xl font-bold text-green-600">{availableTasks.length}</div>
-                <div className="text-sm text-green-800 font-medium mt-1">Available</div>
+        <div className="bg-paper-0 rounded-xl shadow-xl p-8 mb-6 border border-foam-200">
+          <header className="mb-8">
+            <p className="text-ink-600 text-sm mb-6 tracking-wide">Mobile Kitchen Operations</p>
+            <h1 className="text-3xl font-bold text-carbon-900 mb-6">Task Summary</h1>
+            <div className="grid grid-cols-3 gap-6">
+              <div className="bg-cloud-100 border border-azure-500/20 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
+                <div className="text-4xl font-bold text-emerald-600 mb-2">{availableTasks.length}</div>
+                <div className="text-sm text-emerald-600 font-semibold uppercase tracking-wider">Available</div>
               </div>
-              <div className="bg-orange-50 rounded-lg p-4 text-center">
-                <div className="text-3xl font-bold text-orange-600">{activeTasks.length}</div>
-                <div className="text-sm text-orange-800 font-medium mt-1">Active</div>
+              <div className="bg-sun-400/10 border border-sun-400/30 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
+                <div className="text-4xl font-bold text-amber-600 mb-2">{activeTasks.length}</div>
+                <div className="text-sm text-amber-600 font-semibold uppercase tracking-wider">Active</div>
               </div>
-              <div className="bg-purple-50 rounded-lg p-4 text-center">
-                <div className="text-3xl font-bold text-purple-600">{myTasks.length}</div>
-                <div className="text-sm text-purple-800 font-medium mt-1">Mine</div>
+              <div className="bg-plum-500/10 border border-plum-500/30 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
+                <div className="text-4xl font-bold text-plum-500 mb-2">{myTasks.length}</div>
+                <div className="text-sm text-plum-500 font-semibold uppercase tracking-wider">Mine</div>
               </div>
             </div>
           </header>
 
-          <div className="relative mb-6">
+          <div className="relative mb-8">
             <input
               type="text"
               placeholder="🔍 Search tasks..."
-              className="w-full px-4 py-3 pl-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 pl-10 border-2 border-foam-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-azure-500 focus:border-azure-500 transition-all bg-paper-50"
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
             />
           </div>
 
-          <div className="mb-6">
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Status</h3>
-            <div className="flex flex-wrap gap-2">
+          <div className="mb-8">
+            <h3 className="text-xs font-bold text-steel-400 uppercase tracking-wider mb-4">STATUS</h3>
+            <div className="flex flex-wrap gap-3">
               {['available', 'claimed', 'in progress', 'completed'].map((status) => (
                 <button
                   key={status}
@@ -183,10 +183,10 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
                       : [...currentStatuses, status];
                     setFilters({ ...filters, status: newStatuses.length > 0 ? newStatuses : undefined });
                   }}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                     filters.status?.includes(status)
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'bg-carbon-900 text-paper-0 shadow-lg'
+                      : 'bg-paper-100 text-ink-600 hover:bg-foam-200 hover:shadow-md'
                   }`}
                 >
                   {status}
@@ -195,13 +195,13 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
             </div>
           </div>
 
-          <div className="mb-6">
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Priority</h3>
-            <div className="flex flex-wrap gap-2">
+          <div className="mb-8">
+            <h3 className="text-xs font-bold text-steel-400 uppercase tracking-wider mb-4">PRIORITY</h3>
+            <div className="flex flex-wrap gap-3">
               {['urgent', 'high', 'normal', 'low'].map((priority) => (
                 <button
                   key={priority}
-                  className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all"
+                  className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-paper-100 text-ink-600 hover:bg-foam-200 hover:shadow-md transition-all"
                 >
                   {priority}
                 </button>
@@ -212,66 +212,66 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
           {companyId && <CombinationSuggestion companyId={companyId} />}
 
           {isLoading ? (
-            <div className="text-center py-12" role="status" aria-live="polite">
-              <p className="text-gray-500">Loading tasks...</p>
+            <div className="text-center py-16" role="status" aria-live="polite">
+              <p className="text-steel-400 text-lg">Loading tasks...</p>
             </div>
           ) : (
             <section aria-label="Task list" className="space-y-4">
               {tasks.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
-                  <p className="text-lg">No tasks found.</p>
+                <div className="text-center py-16 text-ink-600">
+                  <p className="text-xl font-semibold">No tasks found.</p>
                   <p className="text-sm mt-2">Try adjusting your filters.</p>
                 </div>
               ) : (
-                <div role="list" aria-label={`Found ${tasks.length} tasks`} className="space-y-3">
+                <div role="list" aria-label={`Found ${tasks.length} tasks`} className="space-y-4">
                   {tasks.map((task: any) => (
                     <div
                       key={task.id}
-                      className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                      className="bg-paper-0 border-2 border-foam-200 rounded-xl p-6 hover:shadow-xl hover:border-azure-500/30 transition-all"
                     >
-                      <div className="flex justify-between items-start mb-3">
+                      <div className="flex justify-between items-start mb-4">
                         <div>
-                          <h3 className="font-semibold text-gray-900 text-lg">{task.name}</h3>
-                          <p className="text-sm text-gray-600 mt-1">
+                          <h3 className="font-bold text-carbon-900 text-xl mb-2">{task.name}</h3>
+                          <p className="text-sm text-ink-600 font-medium">
                             {task.quantity} {task.unit || 'servings'} • {task.recipe?.name || 'No recipe'}
                           </p>
                         </div>
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${
                             task.status === 'available'
-                              ? 'bg-green-100 text-green-800'
+                              ? 'bg-emerald-500 text-paper-0'
                               : task.status === 'in-progress'
-                                ? 'bg-orange-100 text-orange-800'
+                                ? 'bg-sun-400 text-carbon-900'
                                 : task.status === 'completed'
-                                  ? 'bg-gray-100 text-gray-800'
-                                  : 'bg-blue-100 text-blue-800'
+                                  ? 'bg-steel-400 text-paper-0'
+                                  : 'bg-azure-500 text-paper-0'
                           }`}
                         >
                           {task.status}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <div className="text-sm text-gray-600">
-                          <span className="font-medium">Priority:</span>{' '}
+                        <div className="text-sm text-ink-600">
+                          <span className="font-semibold">Priority:</span>{' '}
                           <span
-                            className={`font-semibold ${
+                            className={`font-bold ${
                               task.priority === 'urgent'
-                                ? 'text-red-600'
+                                ? 'text-rose-500'
                                 : task.priority === 'high'
-                                  ? 'text-orange-600'
-                                  : 'text-gray-600'
+                                  ? 'text-amber-600'
+                                  : 'text-ink-600'
                             }`}
                           >
                             {task.priority}
                           </span>
                           {' | '}
-                          <span className="font-medium">Status:</span> {task.status}
+                          <span className="font-semibold">Status:</span> {task.status}
                         </div>
                         {task.assigned_user_id !== userId && task.status === 'available' && (
                           <button
                             onClick={() => handleClaim(task.id)}
                             disabled={claimMutation.isPending}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="bg-azure-500 hover:bg-azure-600 text-paper-0 px-8 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Claim Task
                           </button>
@@ -280,15 +280,15 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
                           <button
                             onClick={() => handleComplete(task.id)}
                             disabled={completeMutation.isPending}
-                            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="bg-emerald-500 hover:bg-emerald-600 text-paper-0 px-8 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Complete
                           </button>
                         )}
                       </div>
                       {task.assigned_user_id === userId && (
-                        <div className="mt-3 text-sm text-gray-600">
-                          <span className="font-medium">Assigned to: You</span>
+                        <div className="mt-4 pt-4 border-t border-foam-200 text-sm text-ink-600">
+                          <span className="font-semibold">Assigned to: You</span>
                         </div>
                       )}
                     </div>
