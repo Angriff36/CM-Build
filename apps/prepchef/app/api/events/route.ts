@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@caterkingapp/supabase';
 import { mapSupabaseError } from '@caterkingapp/shared/utils/errors';
 
+export const dynamic = 'force-dynamic';
+
 const SCHEMA_VERSION = '1.0';
 
 export async function GET(request: NextRequest) {

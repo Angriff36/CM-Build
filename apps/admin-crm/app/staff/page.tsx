@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+export const dynamic = 'force-dynamic';
+
+import React, { useState} from 'react';
 import { useStaff } from '@caterkingapp/shared/hooks/useStaff';
 import { useToast } from '@caterkingapp/shared/hooks/useToast';
 import { useUser } from '@caterkingapp/shared/hooks/useUser';

@@ -4,5 +4,13 @@
   "compilerOptions": {
     "noEmit": true
   },
-  "include": []
+  "include": [],
+  "references": [
+    { "path": "./libs/supabase" },
+    { "path": "./libs/shared" },
+    { "path": "./libs/ui" },
+    { "path": "./apps/admin-crm" },
+    { "path": "./apps/display" },
+    { "path": "./apps/prepchef" }
+  ]
 }
