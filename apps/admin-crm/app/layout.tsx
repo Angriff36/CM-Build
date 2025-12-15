@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Providers } from './providers';
-import '@caterkingapp/ui/src/styles/globals.css';
+import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Admin CRM | CaterKing Platform',

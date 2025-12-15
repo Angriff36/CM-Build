@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Providers } from './providers';
 import { LayoutClient } from './layout-client';
-import '@caterkingapp/ui/src/styles/globals.css';
+import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Display | CaterKing Platform',
