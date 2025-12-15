@@ -13,7 +13,7 @@ const config: Partial<Config> = {
           800: 'var(--ck-color-graphite-800)',
         },
         paper: {
-          0: 'var(--ck-color-paper-0)',
+          DEFAULT: 'var(--ck-color-paper-0)',
           50: 'var(--ck-color-paper-50)',
           100: 'var(--ck-color-paper-100)',
         },

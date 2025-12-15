@@ -185,7 +185,7 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
                   }}
                   className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                     filters.status?.includes(status)
-                      ? 'bg-carbon-900 text-paper-0 shadow-lg'
+                      ? 'bg-carbon-900 text-paper shadow-lg'
                       : 'bg-paper-100 text-ink-600 hover:bg-foam-200 hover:shadow-md'
                   }`}
                 >
@@ -227,7 +227,7 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
                   {tasks.map((task: any) => (
                     <div
                       key={task.id}
-                      className="bg-paper-0 border-2 border-foam-200 rounded-xl p-6 hover:shadow-xl hover:border-azure-500/30 transition-all"
+                      className="bg-paper border-2 border-foam-200 rounded-xl p-6 hover:shadow-xl hover:border-azure-500/30 transition-all"
                     >
                       <div className="flex justify-between items-start mb-4">
                         <div>
@@ -239,12 +239,12 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
                         <span
                           className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${
                             task.status === 'available'
-                              ? 'bg-emerald-500 text-paper-0'
+                              ? 'bg-emerald-500 text-paper'
                               : task.status === 'in-progress'
                                 ? 'bg-sun-400 text-carbon-900'
                                 : task.status === 'completed'
-                                  ? 'bg-steel-400 text-paper-0'
-                                  : 'bg-azure-500 text-paper-0'
+                                  ? 'bg-steel-400 text-paper'
+                                  : 'bg-azure-500 text-paper'
                           }`}
                         >
                           {task.status}
@@ -271,7 +271,7 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
                           <button
                             onClick={() => handleClaim(task.id)}
                             disabled={claimMutation.isPending}
-                            className="bg-azure-500 hover:bg-azure-600 text-paper-0 px-8 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="bg-azure-500 hover:bg-azure-600 text-paper px-8 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Claim Task
                           </button>
@@ -280,7 +280,7 @@ export function TaskDashboard({ eventId }: TaskDashboardProps) {
                           <button
                             onClick={() => handleComplete(task.id)}
                             disabled={completeMutation.isPending}
-                            className="bg-emerald-500 hover:bg-emerald-600 text-paper-0 px-8 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="bg-emerald-500 hover:bg-emerald-600 text-paper px-8 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Complete
                           </button>

@@ -8,7 +8,7 @@ export const PALETTE = {
     800: '#1C1F26',
   },
   paper: {
-    0: '#FFFFFF',
+    DEFAULT: '#FFFFFF',
     50: '#F8FAFC',
     100: '#F1F5F9',
   },
