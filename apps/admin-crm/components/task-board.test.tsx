@@ -4,7 +4,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { TaskBoard } from '../components/task-board';
 
 // Mock Supabase client - must be first
-vi.mock('@caterkingapp/supabase', () => ({
+vi.mock('@codemachine/supabase', () => ({
   createClient: vi.fn(() => ({
     channel: () => ({
       on: () => ({ subscribe: () => {} }),
@@ -17,7 +17,7 @@ vi.mock('@caterkingapp/supabase', () => ({
 }));
 
 // Mock the shared hooks
-vi.mock('@caterkingapp/shared/hooks/useRealtimeSync', () => ({
+vi.mock('@codemachine/shared/hooks/useRealtimeSync', () => ({
   useRealtimeSync: () => ({
     isConnected: true,
     subscribe: vi.fn(),
@@ -25,14 +25,14 @@ vi.mock('@caterkingapp/shared/hooks/useRealtimeSync', () => ({
   }),
 }));
 
-vi.mock('@caterkingapp/shared/hooks/useTasks', () => ({
+vi.mock('@codemachine/shared/hooks/useTasks', () => ({
   useTasks: () => ({
     tasks: [{ id: '1', name: 'Test Task', status: 'pending', assigned_user_id: null }],
     isLoading: false,
   }),
 }));
 
-vi.mock('@caterkingapp/shared/hooks/useStaff', () => ({
+vi.mock('@codemachine/shared/hooks/useStaff', () => ({
   useStaff: () => ({
     staff: [
       {
@@ -47,7 +47,7 @@ vi.mock('@caterkingapp/shared/hooks/useStaff', () => ({
   }),
 }));
 
-vi.mock('@caterkingapp/shared/hooks/useAssignments', () => ({
+vi.mock('@codemachine/shared/hooks/useAssignments', () => ({
   useAssignments: () => ({
     assignTask: vi.fn(),
     isAssigning: false,

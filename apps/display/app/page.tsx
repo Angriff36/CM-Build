@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useDisplayData } from '../hooks/useDisplayData';
 import { SummaryGrid } from '../components/summary-grid';
-import { RealtimeUpdater } from '../components/RealtimeUpdater';
 import { UrgentTicker } from '../components/urgent-ticker';
 import { DeviceStatus } from '../components/device-status';
 
@@ -14,20 +13,29 @@ export default function DisplayPage() {
   const { data, isLoading, error } = queryResult;
   const [currentView, setCurrentView] = useState<View>('summary');
   const [cachedData, setCachedData] = useState<any>(null);
-  const [realtimeData, setRealtimeData] = useState<any>(null);
 
   useEffect(() => {
     // Load cached data on mount
-    const cached = localStorage.getItem('displayData');
-    if (cached) {
-      setCachedData(JSON.parse(cached));
+    try {
+      const cached = localStorage.getItem('displayData');
+      if (cached) {
+        setCachedData(JSON.parse(cached));
+      }
+    } catch (error) {
+      // Ignore localStorage errors (e.g., in test environment)
+      console.warn('localStorage access failed:', error);
     }
   }, []);
 
   useEffect(() => {
     // Cache data when fetched
     if (data) {
-      localStorage.setItem('displayData', JSON.stringify(data));
+      try {
+        localStorage.setItem('displayData', JSON.stringify(data));
+      } catch (error) {
+        // Ignore localStorage errors (e.g., in test environment)
+        console.warn('localStorage access failed:', error);
+      }
       setCachedData(data);
     }
   }, [data]);
@@ -52,7 +60,7 @@ export default function DisplayPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const displayData = realtimeData || data || cachedData;
+  const displayData = data || cachedData;
 
   if (isLoading && !cachedData) return <div className="text-2xl p-8">Loading...</div>;
   if (error && !cachedData)

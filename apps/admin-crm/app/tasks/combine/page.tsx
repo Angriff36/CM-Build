@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { createClient } from '@caterkingapp/supabase';
-import { isFeatureEnabled } from '@caterkingapp/shared';
+import { createClient } from '@codemachine/supabase';
+import { isFeatureEnabled } from '@codemachine/shared';
 import CombineReview from '../../../components/combine-review';
 
 interface Suggestion {
@@ -151,7 +151,13 @@ export default function CombinePage() {
                 event_id
               )
             `);
-            setSuggestions(suggestionsData || []);
+
+            // Filter out errors and cast to proper type
+            const validSuggestions = (suggestionsData || []).filter(
+              (item): item is any =>
+                item && typeof item === 'object' && 'id' in item && !('error' in item),
+            ) as Suggestion[];
+            setSuggestions(validSuggestions);
 
             // @ts-ignore - Table doesn't exist yet
             const { data: logs } = await supabase

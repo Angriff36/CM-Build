@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 // @ts-ignore - Module resolution issue
-import { createClient } from '@caterkingapp/supabase';
-import { mapSupabaseError } from '@caterkingapp/shared/utils/errors';
+import { createClient } from '@codemachine/supabase';
+import { mapSupabaseError } from '@codemachine/shared/utils/errors';
 
 const SCHEMA_VERSION = '1.0';
 const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
@@ -16,6 +16,17 @@ const ALLOWED_MIME_TYPES = [
   'image/webp',
 ];
 
+export async function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
+}
+
 export async function POST(request: NextRequest) {
   const supabase = createClient();
 
@@ -25,15 +36,27 @@ export async function POST(request: NextRequest) {
 
     // Validate inputs
     if (!fileName || !fileSize || !mimeType || !companyId) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      const response = NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      response.headers.set('Access-Control-Allow-Origin', '*');
+      response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      return response;
     }
 
     if (fileSize > MAX_FILE_SIZE) {
-      return NextResponse.json({ error: 'File size exceeds limit' }, { status: 400 });
+      const response = NextResponse.json({ error: 'File size exceeds limit' }, { status: 400 });
+      response.headers.set('Access-Control-Allow-Origin', '*');
+      response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      return response;
     }
 
     if (!ALLOWED_MIME_TYPES.includes(mimeType)) {
-      return NextResponse.json({ error: 'Unsupported file type' }, { status: 400 });
+      const response = NextResponse.json({ error: 'Unsupported file type' }, { status: 400 });
+      response.headers.set('Access-Control-Allow-Origin', '*');
+      response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      return response;
     }
 
     // Get authenticated user
@@ -42,7 +65,11 @@ export async function POST(request: NextRequest) {
       error: authError,
     } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      const response = NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      response.headers.set('Access-Control-Allow-Origin', '*');
+      response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      return response;
     }
 
     // Verify user belongs to company and has permission (assume manager+ can upload)
@@ -54,7 +81,11 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (userError || !['manager', 'event_lead', 'owner'].includes(userData.role)) {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      const response = NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      response.headers.set('Access-Control-Allow-Origin', '*');
+      response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      return response;
     }
 
     // Generate storage path: companyId/filename
@@ -99,7 +130,7 @@ export async function POST(request: NextRequest) {
       media_asset_id: mediaAsset.id,
     });
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       data: {
         signedUrl: signedUrlData.signedUrl,
         path: signedUrlData.path,
@@ -109,8 +140,19 @@ export async function POST(request: NextRequest) {
         schema_version: SCHEMA_VERSION,
       },
     });
+
+    // Add CORS headers
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+    return response;
   } catch (error) {
     const { status, error: apiError } = mapSupabaseError(error);
-    return NextResponse.json({ error: apiError }, { status });
+    const response = NextResponse.json({ error: apiError }, { status });
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    return response;
   }
 }

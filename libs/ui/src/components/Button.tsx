@@ -19,11 +19,16 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', fullWidth = false, minTouch = false, ...props }, ref) => {
     const sizeClasses =
-      size === 'sm' ? 'h-9 px-3' : size === 'md' ? 'h-10 px-4' : 'h-12 px-5'; // lg => h-12 (48px)
+      size === 'sm'
+        ? 'h-9 px-3'
+        : size === 'md'
+        ? 'h-10 px-4'
+        : 'h-12 min-h-[48px] px-5'; // lg => h-12 (48px) with explicit min-height for touch
 
     const widthClass = fullWidth ? 'w-full sm:w-auto' : 'inline-flex';
 
-    const touchClasses = minTouch ? 'min-w-[44px] min-h-[44px] p-2' : '';
+    // Ensure minimum touch target meets 44-48px recommendations. For larger buttons we prefer 48px min height.
+    const touchClasses = minTouch ? 'min-w-[44px] min-h-[48px] p-2' : '';
 
     return (
       <button

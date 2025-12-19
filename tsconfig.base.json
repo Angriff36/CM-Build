@@ -15,12 +15,12 @@
     "types": [],
     "baseUrl": ".",
     "paths": {
-      "@caterkingapp/ui": ["libs/ui/src"],
-      "@caterkingapp/ui/*": ["libs/ui/src/*"],
-      "@caterkingapp/shared": ["libs/shared/src"],
-      "@caterkingapp/shared/*": ["libs/shared/src/*"],
-      "@caterkingapp/supabase": ["libs/supabase/src"],
-      "@caterkingapp/supabase/*": ["libs/supabase/src/*"]
+      "@codemachine/ui": ["libs/ui/src"],
+      "@codemachine/ui/*": ["libs/ui/src/*"],
+      "@codemachine/shared": ["libs/shared/src"],
+      "@codemachine/shared/*": ["libs/shared/src/*"],
+      "@codemachine/supabase": ["libs/supabase/src"],
+      "@codemachine/supabase/*": ["libs/supabase/src/*"]
     }
   },
   "include": ["apps", "libs", "tooling", "tests"],

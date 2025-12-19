@@ -3,14 +3,14 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { CombinationSuggestion } from '../CombinationSuggestion';
-import { createClient } from '@caterkingapp/supabase/client';
-import { useToast } from '@caterkingapp/shared/hooks/useToast';
+import { createClient } from '@codemachine/supabase/client';
+import { useToast } from '@codemachine/shared/hooks/useToast';
 
 // Mock dependencies
-vi.mock('@caterkingapp/supabase/client');
-vi.mock('@caterkingapp/shared/hooks/useCombinationSuggestions');
-vi.mock('@caterkingapp/shared/hooks/useToast');
-vi.mock('@caterkingapp/ui', () => ({
+vi.mock('@codemachine/supabase/client');
+vi.mock('@codemachine/shared/hooks/useCombinationSuggestions');
+vi.mock('@codemachine/shared/hooks/useToast');
+vi.mock('@codemachine/ui', () => ({
   Button: ({ children, onClick, disabled, variant }: any) => (
     <button onClick={onClick} disabled={disabled} data-variant={variant}>
       {children}
@@ -65,7 +65,7 @@ describe('CombinationSuggestion', () => {
 
   it('renders loading state', () => {
     (
-      require('@caterkingapp/shared/hooks/useCombinationSuggestions') as any
+      require('@codemachine/shared/hooks/useCombinationSuggestions') as any
     ).useCombinationSuggestions.mockReturnValue({
       data: [],
       isLoading: true,
@@ -82,7 +82,7 @@ describe('CombinationSuggestion', () => {
 
   it('renders nothing when no suggestions', () => {
     (
-      require('@caterkingapp/shared/hooks/useCombinationSuggestions') as any
+      require('@codemachine/shared/hooks/useCombinationSuggestions') as any
     ).useCombinationSuggestions.mockReturnValue({
       data: [],
       isLoading: false,
@@ -99,7 +99,7 @@ describe('CombinationSuggestion', () => {
 
   it('renders suggestion with side-by-side comparison', () => {
     (
-      require('@caterkingapp/shared/hooks/useCombinationSuggestions') as any
+      require('@codemachine/shared/hooks/useCombinationSuggestions') as any
     ).useCombinationSuggestions.mockReturnValue({
       data: [mockSuggestion],
       isLoading: false,
@@ -128,7 +128,7 @@ describe('CombinationSuggestion', () => {
     });
 
     (
-      require('@caterkingapp/shared/hooks/useCombinationSuggestions') as any
+      require('@codemachine/shared/hooks/useCombinationSuggestions') as any
     ).useCombinationSuggestions.mockReturnValue({
       data: [mockSuggestion],
       isLoading: false,
@@ -160,7 +160,7 @@ describe('CombinationSuggestion', () => {
     });
 
     (
-      require('@caterkingapp/shared/hooks/useCombinationSuggestions') as any
+      require('@codemachine/shared/hooks/useCombinationSuggestions') as any
     ).useCombinationSuggestions.mockReturnValue({
       data: [mockSuggestion],
       isLoading: false,
@@ -184,7 +184,7 @@ describe('CombinationSuggestion', () => {
     mockSupabase.rpc.mockResolvedValue({ error: { message: 'RPC error' } });
 
     (
-      require('@caterkingapp/shared/hooks/useCombinationSuggestions') as any
+      require('@codemachine/shared/hooks/useCombinationSuggestions') as any
     ).useCombinationSuggestions.mockReturnValue({
       data: [mockSuggestion],
       isLoading: false,
@@ -211,7 +211,7 @@ describe('CombinationSuggestion', () => {
     });
 
     (
-      require('@caterkingapp/shared/hooks/useCombinationSuggestions') as any
+      require('@codemachine/shared/hooks/useCombinationSuggestions') as any
     ).useCombinationSuggestions.mockReturnValue({
       data: [mockSuggestion],
       isLoading: false,
@@ -235,7 +235,7 @@ describe('CombinationSuggestion', () => {
 
   it('has proper accessibility attributes', () => {
     (
-      require('@caterkingapp/shared/hooks/useCombinationSuggestions') as any
+      require('@codemachine/shared/hooks/useCombinationSuggestions') as any
     ).useCombinationSuggestions.mockReturnValue({
       data: [mockSuggestion],
       isLoading: false,
@@ -256,7 +256,7 @@ describe('CombinationSuggestion', () => {
     mockSupabase.rpc.mockImplementation(() => new Promise(() => {}));
 
     (
-      require('@caterkingapp/shared/hooks/useCombinationSuggestions') as any
+      require('@codemachine/shared/hooks/useCombinationSuggestions') as any
     ).useCombinationSuggestions.mockReturnValue({
       data: [mockSuggestion],
       isLoading: false,

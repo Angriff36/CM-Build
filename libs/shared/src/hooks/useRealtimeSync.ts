@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { createClient } from '@caterkingapp/supabase/client';
+import { createClient } from '@codemachine/supabase/client';
 import {
   createRealtimeChannel,
   subscribeToChannel,

@@ -112,4 +112,4 @@ npm run build
 - `@dnd-kit/core`: Drag-and-drop functionality
 - `@tanstack/react-query`: Data fetching and caching
 - `zod`: Schema validation
-- `@caterkingapp/shared`: Shared utilities and hooks
+- `@codemachine/shared`: Shared utilities and hooks

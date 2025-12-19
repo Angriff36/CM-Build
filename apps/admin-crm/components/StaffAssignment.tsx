@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { useTasks } from '@caterkingapp/shared/hooks/useTasks';
-import { useAssignments } from '@caterkingapp/shared/hooks/useAssignments';
-import { useToast } from '@caterkingapp/shared/hooks/useToast';
-import { useStaff } from '@caterkingapp/shared/hooks/useStaff';
-import type { Database } from '@caterkingapp/supabase';
+import { useTasks } from '@codemachine/shared/hooks/useTasks';
+import { useAssignments } from '@codemachine/shared/hooks/useAssignments';
+import { useToast } from '@codemachine/shared/hooks/useToast';
+import { useStaff } from '@codemachine/shared/hooks/useStaff';
+import type { Database } from '@codemachine/supabase';
 import { OfflineBanner } from './offline-banner';
 import {
   DndContext,
@@ -119,7 +119,7 @@ export function StaffAssignment() {
                 {unassignedTasks.length > 0 ? (
                   unassignedTasks.map((task) => (
                     <SortableItem key={task.id} id={task.id}>
-                      <TaskCard task={task} />
+                      <TaskCard task={task as any} />
                     </SortableItem>
                   ))
                 ) : (
@@ -158,7 +158,7 @@ export function StaffAssignment() {
                         .filter((task) => task.assigned_user_id === staffMember.id)
                         .map((task) => (
                           <SortableItem key={task.id} id={task.id}>
-                            <TaskCard task={task} />
+                            <TaskCard task={task as any} />
                           </SortableItem>
                         ))}
                     </SortableContext>

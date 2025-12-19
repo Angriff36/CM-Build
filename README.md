@@ -64,7 +64,7 @@ Ensure you have Supabase, Doppler, and Flagsmith project access before attemptin
 ### Development Workflow
 
 - Use `turbo run lint --dry` to validate script wiring without executing linters.
-- Filter commands to specific packages: `pnpm build --filter=@caterkingapp/prepchef`
+- Filter commands to specific packages: `pnpm build --filter=@codemachine/prepchef`
 - Access Storybook for component development: `pnpm storybook`
 - Run E2E tests: `pnpm test:e2e`
 
@@ -82,7 +82,7 @@ Ensure you have Supabase, Doppler, and Flagsmith project access before attemptin
 Turbo stores cache artifacts in `.turbo/` and respects remote caching when configured. While features are stubbed, you can still validate the pipeline:
 
 1. Run `turbo run lint --dry` after editing any package scripts to ensure Turbo can walk the dependency graph without executing heavyweight tasks.
-2. Run `turbo run lint test build --filter=@caterkingapp/prepchef` (or a library package) to warm caches; reruns pull from `.turbo` so only changed files re-execute.
+2. Run `turbo run lint test build --filter=@codemachine/prepchef` (or a library package) to warm caches; reruns pull from `.turbo` so only changed files re-execute.
 3. If caches drift, nuke `.turbo` and rerun the commands--never commit `.turbo` artifacts.
 
 ## Workspace Layout

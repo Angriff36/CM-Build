@@ -17,7 +17,7 @@
 - **Architectural Style:** Modular monolithic Turbo repo with Next.js App Router, Supabase backend, and shared libraries for domain logic.
 
 - **Technology Stack:**
-  - Frontend: Next.js 15 (App Router, React 18 Server Components), Tailwind + ShadCN via @caterkingapp/ui, React Query, Supabase Realtime.
+  - Frontend: Next.js 15 (App Router, React 18 Server Components), Tailwind + ShadCN via @codemachine/ui, React Query, Supabase Realtime.
   - Backend: Next.js API routes, Supabase Postgres with RLS, Supabase Edge Functions for heuristics.
   - Database: Supabase Postgres with JSONB for recipes.
   - Messaging/Queues: Supabase Realtime channels.

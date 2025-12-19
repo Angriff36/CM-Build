@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { createClient } from '@caterkingapp/supabase/client';
-import type { Database } from '@caterkingapp/supabase/database.types';
+import { createClient } from '@codemachine/supabase/client';
+import type { Database } from '@codemachine/supabase/database.types';
 import { useRealtimeSync } from './useRealtimeSync';
 
 type Event = Database['public']['Tables']['events']['Row'];

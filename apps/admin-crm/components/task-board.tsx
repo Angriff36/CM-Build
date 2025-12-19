@@ -17,13 +17,8 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { FixedSizeList as List } from 'react-window';
 import { useDroppable } from '@dnd-kit/core';
-import { useAssignments } from '@caterkingapp/shared/hooks/useAssignments';
-import { useTasks } from '@caterkingapp/shared/hooks/useTasks';
-import { useStaff } from '@caterkingapp/shared/hooks/useStaff';
-// @ts-ignore - Module resolution issue
-import { createClient } from '@caterkingapp/supabase';
-import type { Database } from '@caterkingapp/supabase';
-import { useRealtimeSync } from '@caterkingapp/shared/hooks/useRealtimeSync';
+import { createClient } from '@codemachine/supabase';
+import type { Database } from '@codemachine/supabase';
 import { OfflineBanner } from './offline-banner';
 
 type Task = Database['public']['Tables']['tasks']['Row'];
@@ -39,38 +34,57 @@ interface TaskBoardProps {
 }
 
 export function TaskBoard({ eventId }: TaskBoardProps) {
-  const { data: tasks = [], isLoading, refetch } = useTasks({ eventId });
-  const { data: staff = [] } = useStaff();
-  const { assignTask } = useAssignments();
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [staff, setStaff] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [companyId, setCompanyId] = useState<string | null>(null);
+  const supabase = createClient();
 
   useEffect(() => {
-    const getCompanyId = async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setCompanyId(user?.user_metadata?.company_id || null);
-    };
-    getCompanyId();
-  }, []);
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        // Get current user and company
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) throw new Error('Not authenticated');
 
-  // Real-time subscription
-  const realtimeState = useRealtimeSync({
-    channelConfig: {
-      name: companyId ? `company:${companyId}:tasks` : 'task_changes',
-      postgresChanges: [
-        {
-          event: '*',
-          schema: 'public',
-          table: 'tasks',
-        },
-      ],
-    },
-    queryKeysToInvalidate: [],
-    onPostgresChange: () => refetch(),
-    enablePollingOnDisconnect: true,
-  });
+        // Fetch tasks and staff
+        let tasksQuery = supabase.from('tasks').select(
+          `
+            *,
+            assigned_user:users(id, display_name),
+            event:events(id, name)
+          `,
+        );
+
+        if (eventId) {
+          tasksQuery = tasksQuery.eq('event_id', eventId);
+        }
+
+        const [tasksResult, staffResult] = await Promise.all([
+          tasksQuery
+            .order('priority', { ascending: false })
+            .order('created_at', { ascending: false }),
+
+          supabase.from('users').select('id, display_name, status').eq('status', 'active'),
+        ]);
+
+        if (tasksResult.error) throw tasksResult.error;
+        if (staffResult.error) throw staffResult.error;
+
+        setTasks(tasksResult.data || []);
+        setStaff(staffResult.data || []);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [eventId]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -79,7 +93,7 @@ export function TaskBoard({ eventId }: TaskBoardProps) {
     }),
   );
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;
 
@@ -90,7 +104,36 @@ export function TaskBoard({ eventId }: TaskBoardProps) {
     const staffMember = staff.find((s: any) => s.id === newAssigneeId);
     if (staffMember || newAssigneeId === 'unassigned') {
       const assigneeId = newAssigneeId === 'unassigned' ? null : newAssigneeId;
-      assignTask({ task_id: taskId, user_id: assigneeId });
+
+      try {
+        const { error } = await supabase
+          .from('tasks')
+          .update({ assigned_user_id: assigneeId })
+          .eq('id', taskId);
+
+        if (error) throw error;
+
+        // Refetch data
+        let refetchQuery = supabase.from('tasks').select(
+          `
+            *,
+            assigned_user:users(id, display_name),
+            event:events(id, name)
+          `,
+        );
+
+        if (eventId) {
+          refetchQuery = refetchQuery.eq('event_id', eventId);
+        }
+
+        const { data: updatedTasks } = await refetchQuery
+          .order('priority', { ascending: false })
+          .order('created_at', { ascending: false });
+
+        if (updatedTasks) setTasks(updatedTasks);
+      } catch (error) {
+        console.error('Error assigning task:', error);
+      }
     }
   };
 
@@ -110,7 +153,6 @@ export function TaskBoard({ eventId }: TaskBoardProps) {
 
   return (
     <div className="flex h-full">
-      {!realtimeState.isConnected && <OfflineBanner />}
       {/* Task Board */}
       <div className="flex-1 p-4">
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -209,7 +251,7 @@ export function TaskBoard({ eventId }: TaskBoardProps) {
       {/* Staffing Sidebar */}
       <div className="w-64 bg-gray-50 p-4">
         <h3 className="font-semibold mb-4">Staff Presence</h3>
-        {staff.map((staffMember: Staff) => (
+        {staff.map((staffMember: any) => (
           <div
             key={staffMember.id}
             className="flex items-center justify-between mb-3 p-2 bg-white rounded"

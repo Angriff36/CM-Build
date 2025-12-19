@@ -37,33 +37,33 @@ export type Database = {
       audit_logs: {
         Row: {
           action: string
-          actor_id: string | null
           company_id: string
           created_at: string
           diff: Json | null
           entity_id: string
           entity_type: string
           id: string
+          user_id: string | null
         }
         Insert: {
           action: string
-          actor_id?: string | null
           company_id: string
           created_at?: string
           diff?: Json | null
           entity_id: string
           entity_type: string
           id?: string
+          user_id?: string | null
         }
         Update: {
           action?: string
-          actor_id?: string | null
           company_id?: string
           created_at?: string
           diff?: Json | null
           entity_id?: string
           entity_type?: string
           id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -73,31 +73,54 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
         ]
       }
       combined_task_groups: {
         Row: {
           aggregated_quantity: number
-          base_task_ids: string[]
+          approved_by_user_id: string | null
+          base_task_ids: Json
           company_id: string
           created_at: string
+          heuristic_metadata: Json
           id: string
+          unit: string | null
         }
         Insert: {
           aggregated_quantity: number
-          base_task_ids: string[]
+          approved_by_user_id?: string | null
+          base_task_ids?: Json
           company_id: string
           created_at?: string
+          heuristic_metadata?: Json
           id?: string
+          unit?: string | null
         }
         Update: {
           aggregated_quantity?: number
-          base_task_ids?: string[]
+          approved_by_user_id?: string | null
+          base_task_ids?: Json
           company_id?: string
           created_at?: string
+          heuristic_metadata?: Json
           id?: string
+          unit?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "combined_task_groups_approved_by_user_id_fkey"
+            columns: ["approved_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "combined_task_groups_company_id_fkey"
             columns: ["company_id"]
@@ -134,13 +157,43 @@ export type Database = {
         }
         Relationships: []
       }
+      display_snapshots: {
+        Row: {
+          captured_at: string
+          company_id: string
+          id: string
+          payload: Json
+        }
+        Insert: {
+          captured_at?: string
+          company_id: string
+          id?: string
+          payload?: Json
+        }
+        Update: {
+          captured_at?: string
+          company_id?: string
+          id?: string
+          payload?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "display_snapshots_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           company_id: string
           created_at: string
-          description: string | null
           id: string
+          location: string | null
           name: string
+          notes: string | null
           scheduled_at: string
           status: Database["public"]["Enums"]["event_status"]
           updated_at: string
@@ -148,9 +201,10 @@ export type Database = {
         Insert: {
           company_id: string
           created_at?: string
-          description?: string | null
           id?: string
+          location?: string | null
           name: string
+          notes?: string | null
           scheduled_at: string
           status?: Database["public"]["Enums"]["event_status"]
           updated_at?: string
@@ -158,9 +212,10 @@ export type Database = {
         Update: {
           company_id?: string
           created_at?: string
-          description?: string | null
           id?: string
+          location?: string | null
           name?: string
+          notes?: string | null
           scheduled_at?: string
           status?: Database["public"]["Enums"]["event_status"]
           updated_at?: string
@@ -180,9 +235,11 @@ export type Database = {
           checksum: string | null
           company_id: string
           created_at: string
+          duration: number | null
           id: string
           status: string
           storage_path: string
+          thumbnail_url: string | null
           type: string
           updated_at: string
           url: string
@@ -191,9 +248,11 @@ export type Database = {
           checksum?: string | null
           company_id: string
           created_at?: string
+          duration?: number | null
           id?: string
           status?: string
           storage_path: string
+          thumbnail_url?: string | null
           type: string
           updated_at?: string
           url: string
@@ -202,9 +261,11 @@ export type Database = {
           checksum?: string | null
           company_id?: string
           created_at?: string
+          duration?: number | null
           id?: string
           status?: string
           storage_path?: string
+          thumbnail_url?: string | null
           type?: string
           updated_at?: string
           url?: string
@@ -222,27 +283,33 @@ export type Database = {
       method_documents: {
         Row: {
           company_id: string
-          content_url: string
           created_at: string
           id: string
-          recipe_id: string
-          type: string
+          last_reviewed_by: string | null
+          skill_level: string | null
+          steps: Json
+          title: string
+          video_refs: Json
         }
         Insert: {
           company_id: string
-          content_url: string
           created_at?: string
           id?: string
-          recipe_id: string
-          type: string
+          last_reviewed_by?: string | null
+          skill_level?: string | null
+          steps?: Json
+          title: string
+          video_refs?: Json
         }
         Update: {
           company_id?: string
-          content_url?: string
           created_at?: string
           id?: string
-          recipe_id?: string
-          type?: string
+          last_reviewed_by?: string | null
+          skill_level?: string | null
+          steps?: Json
+          title?: string
+          video_refs?: Json
         }
         Relationships: [
           {
@@ -253,10 +320,87 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "method_documents_recipe_id_fkey"
-            columns: ["recipe_id"]
+            foreignKeyName: "method_documents_last_reviewed_by_fkey"
+            columns: ["last_reviewed_by"]
             isOneToOne: false
-            referencedRelation: "recipes"
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_preferences: {
+        Row: {
+          channel: string
+          company_id: string
+          enabled: boolean
+          id: string
+          quiet_hours: string | null
+          user_id: string
+        }
+        Insert: {
+          channel: string
+          company_id: string
+          enabled?: boolean
+          id?: string
+          quiet_hours?: string | null
+          user_id: string
+        }
+        Update: {
+          channel?: string
+          company_id?: string
+          enabled?: boolean
+          id?: string
+          quiet_hours?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_preferences_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      realtime_subscriptions: {
+        Row: {
+          channel_name: string
+          company_id: string
+          device_id: string | null
+          id: string
+          last_heartbeat_at: string | null
+          last_seen_event_id: string | null
+        }
+        Insert: {
+          channel_name: string
+          company_id: string
+          device_id?: string | null
+          id?: string
+          last_heartbeat_at?: string | null
+          last_seen_event_id?: string | null
+        }
+        Update: {
+          channel_name?: string
+          company_id?: string
+          device_id?: string | null
+          id?: string
+          last_heartbeat_at?: string | null
+          last_seen_event_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "realtime_subscriptions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
             referencedColumns: ["id"]
           },
         ]
@@ -302,16 +446,251 @@ export type Database = {
           },
         ]
       }
+      role_assignments: {
+        Row: {
+          company_id: string
+          granted_at: string
+          granted_by: string
+          id: string
+          revoked_at: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          granted_at?: string
+          granted_by: string
+          id?: string
+          revoked_at?: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          granted_at?: string
+          granted_by?: string
+          id?: string
+          revoked_at?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_assignments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "role_assignments_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "role_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_schedules: {
+        Row: {
+          company_id: string
+          event_id: string | null
+          id: string
+          role_override: Database["public"]["Enums"]["user_role"] | null
+          shift_end: string
+          shift_start: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          event_id?: string | null
+          id?: string
+          role_override?: Database["public"]["Enums"]["user_role"] | null
+          shift_end: string
+          shift_start: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          event_id?: string | null
+          id?: string
+          role_override?: Database["public"]["Enums"]["user_role"] | null
+          shift_end?: string
+          shift_start?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_schedules_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_schedules_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_schedules_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stations: {
+        Row: {
+          company_id: string
+          id: string
+          name: string
+          sort_order: number
+          type: string
+        }
+        Insert: {
+          company_id: string
+          id?: string
+          name: string
+          sort_order?: number
+          type: string
+        }
+        Update: {
+          company_id?: string
+          id?: string
+          name?: string
+          sort_order?: number
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_comments: {
+        Row: {
+          author_id: string
+          body: string
+          company_id: string
+          created_at: string
+          id: string
+          task_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          company_id: string
+          created_at?: string
+          id?: string
+          task_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          company_id?: string
+          created_at?: string
+          id?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_comments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_comments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_similarity_suggestions: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          similarity_score: number
+          suggested_task_id: string
+          task_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          similarity_score: number
+          suggested_task_id: string
+          task_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          similarity_score?: number
+          suggested_task_id?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_similarity_suggestions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_similarity_suggestions_suggested_task_id_fkey"
+            columns: ["suggested_task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_similarity_suggestions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tasks: {
         Row: {
           assigned_user_id: string | null
+          combined_group_id: string | null
           company_id: string
           created_at: string
           event_id: string | null
           id: string
-          meta: Json | null
+          instructions_ref: string | null
           name: string
-          priority: string | null
+          priority: Database["public"]["Enums"]["task_priority"] | null
           quantity: number
           recipe_id: string | null
           status: Database["public"]["Enums"]["task_status"]
@@ -321,13 +700,14 @@ export type Database = {
         }
         Insert: {
           assigned_user_id?: string | null
+          combined_group_id?: string | null
           company_id: string
           created_at?: string
           event_id?: string | null
           id?: string
-          meta?: Json | null
+          instructions_ref?: string | null
           name: string
-          priority?: string | null
+          priority?: Database["public"]["Enums"]["task_priority"] | null
           quantity?: number
           recipe_id?: string | null
           status?: Database["public"]["Enums"]["task_status"]
@@ -337,13 +717,14 @@ export type Database = {
         }
         Update: {
           assigned_user_id?: string | null
+          combined_group_id?: string | null
           company_id?: string
           created_at?: string
           event_id?: string | null
           id?: string
-          meta?: Json | null
+          instructions_ref?: string | null
           name?: string
-          priority?: string | null
+          priority?: Database["public"]["Enums"]["task_priority"] | null
           quantity?: number
           recipe_id?: string | null
           status?: Database["public"]["Enums"]["task_status"]
@@ -357,6 +738,13 @@ export type Database = {
             columns: ["assigned_user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_combined_group_id_fkey"
+            columns: ["combined_group_id"]
+            isOneToOne: false
+            referencedRelation: "combined_task_groups"
             referencedColumns: ["id"]
           },
           {
@@ -382,9 +770,53 @@ export type Database = {
           },
         ]
       }
-      users: {
+      undo_tokens: {
         Row: {
           company_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          task_id: string
+          token: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          task_id: string
+          token: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          task_id?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "undo_tokens_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "undo_tokens_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          avatar_url: string | null
+          company_id: string
+          contact_info: Json
           created_at: string
           display_name: string | null
           id: string
@@ -393,7 +825,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          avatar_url?: string | null
           company_id: string
+          contact_info?: Json
           created_at?: string
           display_name?: string | null
           id: string
@@ -402,7 +836,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          avatar_url?: string | null
           company_id?: string
+          contact_info?: Json
           created_at?: string
           display_name?: string | null
           id?: string
@@ -425,15 +861,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_my_company_id: { Args: never; Returns: string }
-      get_my_role: {
-        Args: never
-        Returns: Database["public"]["Enums"]["user_role"]
-      }
+      [_ in never]: never
     }
     Enums: {
-      event_status: "draft" | "published" | "completed" | "archived"
-      task_status: "pending" | "claimed" | "completed" | "verified"
+      event_status: "scheduled" | "active" | "complete" | "archived"
+      task_priority: "low" | "normal" | "high" | "urgent"
+      task_status: "available" | "claimed" | "in_progress" | "completed"
       user_role: "owner" | "manager" | "event_lead" | "staff"
     }
     CompositeTypes: {
@@ -565,8 +998,9 @@ export const Constants = {
   },
   public: {
     Enums: {
-      event_status: ["draft", "published", "completed", "archived"],
-      task_status: ["pending", "claimed", "completed", "verified"],
+      event_status: ["scheduled", "active", "complete", "archived"],
+      task_priority: ["low", "normal", "high", "urgent"],
+      task_status: ["available", "claimed", "in_progress", "completed"],
       user_role: ["owner", "manager", "event_lead", "staff"],
     },
   },

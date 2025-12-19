@@ -1,7 +1,7 @@
 @startuml component_overview
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
-title CaterKing Platform - Component Overview
+title CodeMachine Platform - Component Overview
 
 ' =============================================================================
 ' Narrative:

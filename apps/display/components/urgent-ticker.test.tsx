@@ -39,7 +39,7 @@ describe('UrgentTicker utils', () => {
     expect(envCadence).toBe(3000);
 
     // Test with default
-    const defaultCadence = parseInt(undefined || '5000', 10);
+    const defaultCadence = parseInt(process.env.URGENT_TICKER_CADENCE || '5000', 10);
     expect(defaultCadence).toBe(5000);
   });
 

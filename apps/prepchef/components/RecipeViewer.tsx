@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { useRecipe } from '@caterkingapp/shared/hooks/useRecipe';
+import { useRecipe } from '@codemachine/shared/hooks/useRecipe';
 import { MediaGallery } from './MediaGallery';
 import { OfflineBanner } from './offline-banner';
 

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { z } from 'zod';
-import { EventSchema, CreateEventRequestSchema, Event } from '@caterkingapp/shared/dto/events';
+import { EventSchema, CreateEventRequestSchema, Event } from '@codemachine/shared/dto/events';
 
 type EventFormData = z.infer<typeof CreateEventRequestSchema>;
 

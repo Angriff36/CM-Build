@@ -1,4 +1,4 @@
-# @caterkingapp/shared
+# @codemachine/shared
 
 ## RPC Usage and Idempotency Expectations
 

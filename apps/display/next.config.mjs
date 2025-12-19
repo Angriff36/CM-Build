@@ -9,6 +9,7 @@ const withBundleAnalyzer =
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  transpilePackages: ['@codemachine/ui', '@codemachine/shared', '@codemachine/supabase'],
   experimental: {
     typedRoutes: true,
   },

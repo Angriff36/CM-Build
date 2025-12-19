@@ -12,9 +12,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      '@caterkingapp/shared': path.resolve(__dirname, '../../libs/shared/src'),
-      '@caterkingapp/supabase': path.resolve(__dirname, '../../libs/supabase/src'),
-      '@caterkingapp/ui': path.resolve(__dirname, '../../libs/ui/src'),
+      '@codemachine/shared': path.resolve(__dirname, '../../libs/shared/src'),
+      '@codemachine/supabase': path.resolve(__dirname, '../../libs/supabase/src'),
+      '@codemachine/ui': path.resolve(__dirname, '../../libs/ui/src'),
     },
   },
 });

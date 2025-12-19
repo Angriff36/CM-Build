@@ -3,10 +3,10 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-import { useRecipe } from '@caterkingapp/shared/hooks/useRecipe';
+import { useRecipe } from '@codemachine/shared/hooks/useRecipe';
 import { RecipeViewer } from '../apps/prepchef/components/RecipeViewer';
 
-vi.mock('@caterkingapp/shared/hooks/useRecipe', () => ({
+vi.mock('@codemachine/shared/hooks/useRecipe', () => ({
   useRecipe: vi.fn(),
 }));
 

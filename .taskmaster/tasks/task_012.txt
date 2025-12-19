@@ -1,0 +1,111 @@
+# Task ID: 12
+# Title: Implement PrepChef toast notifications with undo support and real-time backend integration
+# Status: pending
+# Dependencies: 11
+# Priority: high
+# Description: Add a unified toast feedback system to PrepChef mobile with undo functionality for key actions, fully integrated with the Supabase backend and feature flags for safe rollout.
+# Details:
+Owner: @business-logic (primary), @ui-ux
+Complexity: 6/10
+
+Scope & Files:
+- Target feedback/notification layer in `apps/prepchef-mobile/`, e.g. `providers/ToastProvider.tsx`, `hooks/useToast.ts`, `components/Toast.tsx`.
+- Integrate with task actions and other critical flows (e.g. task completion, cancellation).
+
+Functional Requirements:
+- Show non-blocking **toast messages** for user actions (task status changes, errors, network issues) with succinct descriptions.
+- For reversible actions (e.g. marking a task as completed), provide an **Undo** affordance within the toast for a limited time window (e.g. 5–10 seconds).
+- Undo must be **fully backed by Supabase**: the system must revert the previous change in the database, not just in local UI state.
+- Preserve current API contracts and data model; do not add breaking changes.
+- Ensure no simulated (client-only) operations remain for the supported flows.
+
+Implementation Notes:
+- Prefer using any existing notification components from `@codemachine/ui` (e.g. `Toast`, `Banner`) and extend them if necessary in `@codemachine/ui` instead of forking new patterns.
+- Implement a ToastContext with API like:
+```ts
+// apps/prepchef-mobile/providers/ToastProvider.tsx
+export interface ToastOptions {
+  id?: string;
+  message: string;
+  type?: 'success' | 'error' | 'info';
+  actionLabel?: string; // e.g. 'Undo'
+  onAction?: () => Promise<void> | void;
+  durationMs?: number;
+}
+
+const ToastContext = createContext<{ showToast: (opts: ToastOptions) => void } | null>(null);
+```
+- Wire `showToast` into task action handlers (from Task 11). Example pattern:
+```ts
+async function onPrimaryActionPress(task: Task) {
+  const prevStatus = task.status;
+  const action = primaryActionForStatus[task.status];
+  try {
+    const updated = await updateTaskStatus(task.id, action.nextStatus);
+    showToast({
+      message: `Task ${action.label.toLowerCase()}ed`,
+      type: 'success',
+      actionLabel: 'Undo',
+      onAction: async () => {
+        await updateTaskStatus(task.id, prevStatus);
+      },
+      durationMs: 8000,
+    });
+  } catch (e) {
+    showToast({ message: 'Failed to update task', type: 'error' });
+  }
+}
+```
+- Use Flagsmith flag, e.g. `prepchef_toast_undo`, to enable/disable undo functionality without removing the base toast system.
+- Ensure the component tree remains SSR-compatible; do not access `window` at module top-level.
+
+Accessibility & Performance:
+- Ensure toast is announced to assistive technologies using ARIA live regions (for web builds) or platform-specific accessibility announcements for native.
+- Keep the toast rendering lightweight; limit the number of concurrent toasts and cap updates per second.
+
+Acceptance Criteria:
+- Successful actions surface a toast within 200ms of completion, describing the outcome.
+- Undo is available for at least all task status changes that are reversible and correctly reverts backend state on Supabase.
+- No simulated state-only undos; database reflects final state after undo or timer expiry.
+- Feature is controllable via Flagsmith and is fully backward compatible when disabled.
+- Toast appearance and interaction patterns are consistent with the design system guidelines.
+
+# Test Strategy:
+Owner: @qa-automation
+
+Automated Tests:
+- Unit tests for ToastContext and `useToast` hook in `apps/prepchef-mobile/providers/__tests__/ToastProvider.test.tsx`:
+  - Verify that calling `showToast` renders a toast with correct message and type.
+  - Simulate clicking the `Undo` action and assert that the provided `onAction` callback is called.
+- Integration tests for task undo behavior:
+  - Mock Supabase `updateTaskStatus` and assert that it is called first with `nextStatus` and then with `prevStatus` when undo is activated.
+
+Manual Tests:
+- In PrepChef on a test device, trigger each primary action (start/pause/resume/complete) and confirm a toast appears with expected text and an Undo button where applicable.
+- Trigger multiple actions in quick succession to ensure toasts stack or replace each other gracefully and do not block core UI.
+- Use assistive technology (screen reader) to confirm that toast content is announced.
+
+Regression & Performance:
+- Confirm that enabling/disabling `prepchef_toast_undo` via Flagsmith does not cause runtime errors and that base flows still work.
+- Monitor for dropped frames when many toasts appear; verify no perceivable impact on scrolling or tap responsiveness.
+- Run a short UAT session with at least 3 kitchen staff to validate that the feedback and undo behavior are clear and useful; capture issues for subsequent fixes.
+
+# Subtasks:
+## 1. Implement ToastContext, Provider, and base toast UI with undo-capable actions [pending]
+### Dependencies: None
+### Description: Create a shared ToastContext/Provider in apps/prepchef-mobile that exposes a showToast API with undo-capable actions, backed by existing @codemachine/ui toast components.
+### Details:
+1) Add ToastOptions interface and ToastContext to apps/prepchef-mobile/providers/ToastProvider.tsx matching the specified API (message, type, actionLabel, onAction, durationMs, optional id). 2) Implement ToastProvider that manages a small in-memory queue of active toasts, handles auto-dismiss via timers, and renders a toast list using existing @codemachine/ui components (e.g. Toast/Banner) or minimal wrappers in apps/prepchef-mobile/components/Toast.tsx. 3) Ensure onAction supports async functions and that the toast UI disables the action button while the undo action is running and handles errors (e.g. show error toast). 4) Create a hooks/useToast.ts hook that reads ToastContext and throws or no-ops if used outside the provider. 5) Ensure SSR-compatibility by avoiding window access at module top-level and only interacting with timers/effects inside React hooks. 6) Keep the visual design aligned with design system tokens (colors, typography, spacing) and support basic variants for success, error, and info.
+
+## 2. Wire toast notifications with Supabase-backed undo into task action handlers [pending]
+### Dependencies: 12.1
+### Description: Connect the toast system to task action handlers so that task status changes and related flows surface toasts with Supabase-backed undo that reverts the backend state.
+### Details:
+1) In task action handlers implemented for Task 11 (e.g. in apps/prepchef-mobile/domain/taskActions and UI components like TaskCard, TaskDetailScreen, PrimaryActionButton), inject useToast and call showToast on successful Supabase-backed status changes. 2) Follow the provided onPrimaryActionPress pattern: capture prevStatus, execute updateTaskStatus(task.id, action.nextStatus), then display a success toast with an Undo action that calls updateTaskStatus(task.id, prevStatus) using the same Supabase API, ensuring no client-only simulated state remains. 3) Ensure all reversible task status transitions (e.g. completed, cancelled, started) use the undo pattern, while irreversible actions omit undo. 4) Handle failures by showing error toasts when updateTaskStatus or undo fails, preserving existing API contracts and models. 5) Confirm final task state always matches Supabase after either undo execution or toast timeout expiry, and that no stale optimistic-only state persists in the UI.
+
+## 3. Add accessibility, feature-flag control, tests, and performance limits for toast undo system [pending]
+### Dependencies: 12.1, 12.2
+### Description: Implement ARIA/accessibility behavior, Flagsmith-based undo gating, automated tests, and safeguards for concurrent toast performance in the PrepChef toast system.
+### Details:
+1) Integrate Flagsmith flag (e.g. prepchef_toast_undo) so that undo actions and UI are conditionally enabled while the base toast notifications remain available when the flag is off; ensure backward compatibility and safe rollout paths. 2) For web builds, ensure toasts are exposed via ARIA live regions (e.g. role="status" or aria-live="polite"/"assertive" as appropriate), and for native builds use platform-specific accessibility announcements so screen readers receive toast messages. 3) Add limits on the number of concurrent visible toasts (e.g. max N stacked toasts, dropping or merging extras) and ensure timer and state updates are throttled to avoid excessive re-renders. 4) Validate that toast appearance and interaction patterns match design system guidelines (spacing, motion, colors) and remain consistent across platforms. 5) Confirm no SSR issues are introduced by feature flag checks or accessibility hooks (e.g. guard against window/document usage at module scope).
+

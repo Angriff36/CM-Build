@@ -3,13 +3,13 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-import { createClient } from '@caterkingapp/supabase/client';
-import { useTasks } from '@caterkingapp/shared/hooks/useTasks';
+import { createClient } from '@codemachine/supabase/client';
+import { useTasks } from '@codemachine/shared/hooks/useTasks';
 import { TaskDashboard } from '../apps/prepchef/components/TaskDashboard';
 import { TaskFilters } from '../apps/prepchef/components/TaskFilters';
 import { TaskRow } from '../apps/prepchef/components/TaskRow';
 
-vi.mock('@caterkingapp/shared/hooks/useTasks', () => ({
+vi.mock('@codemachine/shared/hooks/useTasks', () => ({
   useTasks: vi.fn(),
 }));
 
@@ -32,14 +32,14 @@ const buildSupabaseClient = (userId: string | null = 'user1') => {
   };
 };
 
-vi.mock('@caterkingapp/supabase/client', () => {
+vi.mock('@codemachine/supabase/client', () => {
   const client = buildSupabaseClient();
   return {
     createClient: vi.fn(() => client),
   };
 });
 
-vi.mock('@caterkingapp/ui', () => ({
+vi.mock('@codemachine/ui', () => ({
   Button: ({ children, onClick, disabled, className, variant }: any) => (
     <button onClick={onClick} disabled={disabled} className={className} data-variant={variant}>
       {children}

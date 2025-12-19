@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { createClient } from '@caterkingapp/supabase/client';
-import { Button } from '@caterkingapp/ui';
+import { createClient } from '@codemachine/supabase';
 
 interface TaskFiltersProps {
-  onFilterChange: (filters: { eventId?: string; status?: string[]; search?: string }) => void;
-  initialFilters?: { eventId?: string; status?: string[]; search?: string };
+  onFilterChange: (filters: {
+    event_id?: string;
+    status?: string[];
+    priority?: string[];
+    search?: string;
+  }) => void;
+  initialFilters?: { event_id?: string; status?: string[]; priority?: string[]; search?: string };
 }
 
 interface Event {
@@ -17,6 +21,13 @@ const STATUS_OPTIONS = [
   { value: 'claimed', label: 'Claimed' },
   { value: 'in_progress', label: 'In Progress' },
   { value: 'completed', label: 'Completed' },
+];
+
+const PRIORITY_OPTIONS = [
+  { value: 'urgent', label: 'Urgent' },
+  { value: 'high', label: 'High' },
+  { value: 'normal', label: 'Normal' },
+  { value: 'low', label: 'Low' },
 ];
 
 export function TaskFilters({ onFilterChange, initialFilters = {} }: TaskFiltersProps) {
@@ -48,6 +59,14 @@ export function TaskFilters({ onFilterChange, initialFilters = {} }: TaskFilters
     handleFilterChange({ status: updated });
   };
 
+  const togglePriority = (priority: string) => {
+    const current = filters.priority || [];
+    const updated = current.includes(priority)
+      ? current.filter((p) => p !== priority)
+      : [...current, priority];
+    handleFilterChange({ priority: updated });
+  };
+
   return (
     <section className="mb-6 space-y-4" aria-label="Task filters">
       <div>
@@ -74,8 +93,8 @@ export function TaskFilters({ onFilterChange, initialFilters = {} }: TaskFilters
         </label>
         <select
           id="event"
-          value={filters.eventId || ''}
-          onChange={(e) => handleFilterChange({ eventId: e.target.value || undefined })}
+          value={filters.event_id || ''}
+          onChange={(e) => handleFilterChange({ event_id: e.target.value || undefined })}
           className="w-full px-3 py-2 h-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           aria-describedby="event-help"
         >
@@ -95,21 +114,50 @@ export function TaskFilters({ onFilterChange, initialFilters = {} }: TaskFilters
         <legend className="block text-sm font-medium mb-2">Filter by Status</legend>
         <div className="flex flex-wrap gap-2" role="group" aria-label="Status filters">
           {STATUS_OPTIONS.map((option) => (
-            <Button
+            <button
               key={option.value}
-              variant={(filters.status || []).includes(option.value) ? 'primary' : 'outline'}
               onClick={() => toggleStatus(option.value)}
-              className="h-12 px-4 min-w-[100px]"
+              className={`h-12 px-4 min-w-[100px] rounded-md border transition-colors ${
+                (filters.status || []).includes(option.value)
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+              }`}
               aria-pressed={(filters.status || []).includes(option.value)}
               aria-describedby={`status-${option.value}-help`}
             >
               {option.label}
-            </Button>
+            </button>
           ))}
         </div>
         {STATUS_OPTIONS.map((option) => (
           <p key={option.value} id={`status-${option.value}-help`} className="sr-only">
             Toggle filter for {option.label.toLowerCase()} tasks
+          </p>
+        ))}
+      </fieldset>
+
+      <fieldset>
+        <legend className="block text-sm font-medium mb-2">Filter by Priority</legend>
+        <div className="flex flex-wrap gap-2" role="group" aria-label="Priority filters">
+          {PRIORITY_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => togglePriority(option.value)}
+              className={`h-12 px-4 min-w-[100px] rounded-md border transition-colors ${
+                (filters.priority || []).includes(option.value)
+                  ? 'bg-orange-600 text-white border-orange-600'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+              }`}
+              aria-pressed={(filters.priority || []).includes(option.value)}
+              aria-describedby={`priority-${option.value}-help`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+        {PRIORITY_OPTIONS.map((option) => (
+          <p key={option.value} id={`priority-${option.value}-help`} className="sr-only">
+            Toggle filter for {option.label.toLowerCase()} priority tasks
           </p>
         ))}
       </fieldset>

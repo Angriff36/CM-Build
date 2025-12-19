@@ -5,8 +5,8 @@ import { LayoutClient } from './layout-client';
 import '../globals.css';
 
 export const metadata: Metadata = {
-  title: 'Display | CaterKing Platform',
-  description: 'Kitchen display system for CaterKing',
+  title: 'Display | CodeMachine Platform',
+  description: 'Kitchen display system for CodeMachine',
 };
 
 export default function Layout({ children }: { children: ReactNode }) {

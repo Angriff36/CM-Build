@@ -20,13 +20,24 @@ test.describe('App Smoke Tests', () => {
           const errors: string[] = [];
           page.on('console', (msg) => {
             if (msg.type() === 'error') {
-              errors.push(msg.text());
+              const errorText = msg.text();
+              // Ignore localStorage permissions errors in test environment
+              if (!errorText.includes('Permissions check failed')) {
+                errors.push(errorText);
+              }
             }
           });
 
           // Listen for page errors (uncaught exceptions)
           page.on('pageerror', (error) => {
             errors.push(error.message);
+          });
+
+          // Listen for network failures
+          page.on('response', (response) => {
+            if (response.status() === 404) {
+              errors.push(`404: ${response.url()}`);
+            }
           });
 
           // Navigate to page

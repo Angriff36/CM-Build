@@ -4,7 +4,7 @@ const config: Config = {
   content: [
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './node_modules/@caterkingapp/ui/**/*.{js,ts,jsx,tsx}',
+    './node_modules/@codemachine/ui/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {

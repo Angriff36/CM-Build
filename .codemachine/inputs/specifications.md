@@ -536,9 +536,9 @@ All Supabase queries use generated types from libs/supabase/src/types.ts
 
 Code Organization
 
-All imports use @caterkingapp/* path aliases
+All imports use @codemachine/* path aliases
 
-Example: import { Button } from '@caterkingapp/ui'
+Example: import { Button } from '@codemachine/ui'
 
 Direct relative imports between apps/libs are prohibited
 
@@ -556,7 +556,7 @@ UI Layer
 
 Tailwind CSS
 
-ShadCN UI (via @caterkingapp/ui shared library)
+ShadCN UI (via @codemachine/ui shared library)
 
 All UI components sourced from libs/ui
 

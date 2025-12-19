@@ -1,0 +1,37 @@
+# Task ID: 16
+# Title: Standardize design tokens and shared components in @codemachine/ui
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Create a unified design token system and shared component library updates in @codemachine/ui to
+# Details:
+
+
+# Test Strategy:
+
+
+# Subtasks:
+## 1. Audit existing tokens and components for inconsistencies [pending]
+### Dependencies: None
+### Description: Conduct a comprehensive audit of current design tokens and shared components in @codemachine/ui to identify inconsistencies, duplicates, and gaps across colors, typography, spacing, and components.
+### Details:
+Review packages/@codemachine/ui/tokens/, components/, and usage in apps like admin-crm-web, display-kiosk, prepchef-mobile. Document findings in a report with examples of inconsistencies like varying color values or spacing units. Use tools like grep or linters for code search.
+
+## 2. Define unified typography, color, and spacing tokens [pending]
+### Dependencies: 16.1
+### Description: Create a standardized set of design tokens for typography scales, color palette, and spacing system following semantic naming conventions like category.concept.property.
+### Details:
+Base on audit results and project needs (kiosk readability from Task 14, WCAG touch targets from Task 11, high-contrast modes). Use JSON format compatible with W3C spec, ensure accessibility (WCAG AA contrast). Examples: color.background.primary, spacing.inset.medium, typography.heading.kiosk.
+
+## 3. Refactor and update key shared components to use new tokens [pending]
+### Dependencies: 16.2
+### Description: Update critical shared UI components in @codemachine/ui (e.g. cards, charts, tables, buttons) to consume the new unified design tokens, removing hardcoded values.
+### Details:
+Prioritize components used in dependent tasks: KPI cards/bulk actions (Task 15), kiosk typography/themes (Task 14), touch targets (Task 11). Use CSS custom properties or Tailwind for token integration. Handle themes like high-contrast mode.
+
+## 4. Add documentation, Storybook stories, and regression tests [pending]
+### Dependencies: 16.3
+### Description: Document the new token system and updated components, enhance Storybook with interactive examples, and implement tests to prevent regressions.
+### Details:
+Create README.md with token overview, usage guidelines, code snippets per best practices. Add Storybook pages for tokens/components with controls for themes. Include accessibility audits. Publish to Storybook for team review.
+

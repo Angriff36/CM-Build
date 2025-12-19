@@ -1,7 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(pnpm --filter @caterkingapp/prepchef build:*)",
+      "Bash(pnpm --filter @codemachine/prepchef build:*)",
       "Bash(find:*)"
     ]
   },

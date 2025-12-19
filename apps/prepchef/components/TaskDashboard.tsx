@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createClient } from '@caterkingapp/supabase';
-import { useTasks } from '@caterkingapp/shared/hooks/useTasks';
-import { useRealtimeSync } from '@caterkingapp/shared/hooks/useRealtimeSync';
+import { createClient } from '@codemachine/supabase';
+import { useTasks } from '@codemachine/shared/hooks/useTasks';
+import { useRealtimeSync } from '@codemachine/shared/hooks/useRealtimeSync';
 import { OfflineBanner } from './offline-banner';
 import { TaskFilters } from './TaskFilters';
 import { TaskRow } from './TaskRow';

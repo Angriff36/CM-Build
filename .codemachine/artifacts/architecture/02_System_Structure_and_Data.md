@@ -88,7 +88,7 @@
 | Layer | Technology | Notes |
 | --- | --- | --- |
 | Architectural Style | Modular monolithic Turbo repo (Next.js + Supabase) | Apps orchestrate via shared libraries, avoiding microservice fragmentation. |
-| Frontend Applications | Next.js 15 App Router, React 18 Server Components, Tailwind CSS, ShadCN via `@caterkingapp/ui` | PrepChef, CaterKing Lite, Admin CRM, and Display apps reuse identical primitives. |
+| Frontend Applications | Next.js 15 App Router, React 18 Server Components, Tailwind CSS, ShadCN via `@codemachine/ui` | PrepChef, CaterKing Lite, Admin CRM, and Display apps reuse identical primitives. |
 | State Management | React Server Components + React Query + Supabase Realtime | Initial fetch via server components, client cache + realtime maintain freshness. |
 | Shared Libraries | `libs/ui`, `libs/shared`, `libs/supabase`, `libs/rag`, `libs/mcp` | Typed exports only, design system + domain contracts + data helpers. |
 | Backend Logic | Next.js API routes (Edge/Node) + Supabase SQL/RPC + Supabase Edge Functions | Mutations flow through stored procedures, idempotency tokens, and optional compute workers. |
@@ -244,7 +244,7 @@
         ' =============================================================================
         note right of shared_libs
           Libraries enforce named exports only; no defaults.
-          Apps may only import via @caterkingapp/* aliases.
+          Apps may only import via @codemachine/* aliases.
         end note
         note bottom of supabase_services
           Every table carries company_id and RLS policies.

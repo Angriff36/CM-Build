@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AssignTaskRequest } from '../dto/tasks';
 import type { TaskDTO } from '../types';
-import { createClient } from '@caterkingapp/supabase/client';
+import { createClient } from '@codemachine/supabase/client';
 
 export function useAssignments() {
   const queryClient = useQueryClient();

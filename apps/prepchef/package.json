@@ -1,10 +1,10 @@
 {
-  "name": "@caterkingapp/prepchef",
+  "name": "@codemachine/prepchef",
   "version": "0.0.1",
   "private": true,
   "description": "PrepChef staff experience powered by Next.js",
   "scripts": {
-    "dev": "next dev --port 9001",
+    "dev": "next dev --port 3001",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx",
@@ -12,10 +12,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@caterkingapp/shared": "workspace:*",
-    "@caterkingapp/supabase": "workspace:*",
-    "@caterkingapp/ui": "workspace:*",
-    "@tailwindcss/postcss": "^4.1.18",
+    "@codemachine/shared": "workspace:*",
+    "@codemachine/supabase": "workspace:*",
+    "@codemachine/ui": "workspace:*",
     "@tanstack/react-query": "^5.90.12",
     "focus-trap-react": "^11.0.4",
     "next": "^14.2.0",
@@ -36,7 +35,7 @@
     "eslint": "^9.3.0",
     "jsdom": "^23.2.0",
     "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.17",
+    "tailwindcss": "^3.4.0",
     "typescript": "^5.4.5",
     "vitest": "^1.6.0"
   }

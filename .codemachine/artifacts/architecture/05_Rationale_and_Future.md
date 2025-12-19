@@ -33,7 +33,7 @@ Each subsection captures why a decision was made, what trade-offs were accepted,
 26. Decision: Mandate idempotent RPC operations supporting retry tokens for all mutations. Trade-off: RPC definitions require consistent metadata, but user experience stays smooth under flaky networks.
 27. Decision: Keep heuristics engine deterministic and flag-toggled, deferring ML complexity. Trade-off: manual tuning needed, but operations remain transparent and explainable.
 28. Decision: Emphasize ADR referencing blueprint anchors for change traceability. Trade-off: documentation energies remain high, but cross-architect alignment stays intact.
-29. Decision: Force typed imports via `@caterkingapp/*` alias to avoid cross-app relative imports. Trade-off: initial path memorization but ensures modular boundaries.
+29. Decision: Force typed imports via `@codemachine/*` alias to avoid cross-app relative imports. Trade-off: initial path memorization but ensures modular boundaries.
 30. Decision: Require change approval board for migrations touching RLS or tenancy. Trade-off: longer review cycles but necessary for security-critical layers.
 
 <!-- anchor: 4-2-alternatives -->

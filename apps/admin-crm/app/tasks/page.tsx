@@ -1,12 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TaskBoard } from '../../components/task-board';
-import { useEvents } from '@caterkingapp/shared/hooks/useEvents';
+import { createClient } from '@codemachine/supabase';
 
 export default function TasksPage() {
   const [selectedEventId, setSelectedEventId] = useState<string>('');
-  const { data: events = [] } = useEvents();
+  const [events, setEvents] = useState<any[]>([]);
+  const supabase = createClient();
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      const { data, error } = await supabase
+        .from('events')
+        .select('id, name, scheduled_at, status')
+        .order('scheduled_at', { ascending: true });
+
+      if (!error && data) {
+        setEvents(data);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   return (
     <div className="h-screen flex flex-col">

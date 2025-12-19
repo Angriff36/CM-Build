@@ -1,0 +1,39 @@
+{
+  "name": "cmp-context-memory",
+  "version": "0.1.0",
+  "description": "Context Memory Protocol - State Freezing for AI Agent Development",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "cmp": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "prepublishOnly": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/cmp-context-memory.git"
+  },
+  "homepage": "https://github.com/yourusername/cmp-context-memory#readme",
+  "bugs": {
+    "url": "https://github.com/yourusername/cmp-context-memory/issues"
+  },
+  "dependencies": {
+    "commander": "^11.1.0",
+    "fast-glob": "^3.3.2",
+    "fs-extra": "^11.2.0",
+    "typescript": "^5.3.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.10.0",
+    "jest": "^29.7.0"
+  },
+  "keywords": ["ai", "context", "memory", "protocol", "state", "freezing"],
+  "author": "Platforms Team",
+  "license": "MIT"
+}

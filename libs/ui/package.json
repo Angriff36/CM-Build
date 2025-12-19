@@ -1,7 +1,7 @@
 {
-  "name": "@caterkingapp/ui",
+  "name": "@codemachine/ui",
   "version": "0.0.1",
-  "description": "Shared tokens and primitive components for the CaterKing platform",
+  "description": "Shared tokens and primitive components for the CodeMachine platform",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

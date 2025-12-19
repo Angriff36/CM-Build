@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['@caterkingapp/ui', '@caterkingapp/shared'],
+  transpilePackages: ['@codemachine/ui', '@codemachine/shared'],
 };
 
 export default nextConfig;

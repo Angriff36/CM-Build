@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@caterkingapp/supabase';
-import { isFeatureEnabled } from '@caterkingapp/shared';
+import { createClient } from '@codemachine/supabase';
+import { isFeatureEnabled } from '@codemachine/shared';
 
 interface Suggestion {
   id: string;

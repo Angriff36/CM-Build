@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { OfflineBanner } from '../components/offline-banner';
-import { useRealtimeSync } from '@caterkingapp/shared/hooks/useRealtimeSync';
+import { useRealtimeSync } from '@codemachine/shared/hooks/useRealtimeSync';
 
 export function LayoutClient({ children }: { children: React.ReactNode }) {
   const [isKiosk, setIsKiosk] = useState(false);

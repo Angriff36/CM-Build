@@ -1,0 +1,78 @@
+# Task ID: 14
+# Title: Enhance Display kiosk typography, density, and high-contrast theme for distance readability
+# Status: pending
+# Dependencies: 13
+# Priority: high
+# Description: Redesign the Display kiosk UI to be legible from 6–10 feet with a kiosk-specific typography scale, reduced visual density, and a high-contrast mode while maintaining 60fps performance.
+# Details:
+Owner: @ui-ux
+Complexity: 7/10
+
+Scope & Files:
+- Kiosk app: `apps/display-kiosk/`.
+- Shared tokens & themes: `packages/@codemachine/ui/tokens/`, `packages/@codemachine/ui/theme/`.
+
+Functional Requirements:
+- Define a **kiosk typography scale** with font sizes and line heights that are readable from 6–10 feet.
+- Reduce information density to prioritize key information (e.g. current orders, status) with sufficient spacing.
+- Implement a **high-contrast mode** toggle that significantly increases contrast between foreground and background.
+- Ensure kiosk maintains 60fps under typical operational loads.
+
+Implementation Notes:
+- Extend design tokens for typography:
+```ts
+// packages/@codemachine/ui/tokens/typography.ts
+export const typography = {
+  kioskHeading: { fontSize: 32, lineHeight: 40 },
+  kioskSubheading: { fontSize: 24, lineHeight: 32 },
+  kioskBody: { fontSize: 20, lineHeight: 28 },
+};
+```
+- In `apps/display-kiosk/components/OrderList.tsx` and main screen components, apply kiosk typography tokens and increased spacing using layout tokens.
+- Simplify layouts to avoid overly dense tables; prefer large rows/cards with clear status indicators.
+- Implement a `kioskHighContrast` theme variant in `@codemachine/ui/theme/` with WCAG AA-compliant color pairs.
+- Add a kiosk-level toggle (feature flag + runtime toggle in admin UI) to switch between default and high-contrast themes, e.g. via context or existing theming hooks.
+- Avoid heavy animations; use simple CSS transitions if needed and keep DOM node count reasonable for 60fps.
+
+Acceptance Criteria:
+- Main kiosk screen text (headings and primary data) is readable from at least 8 feet in a controlled test.
+- High-contrast mode yields contrast ratios meeting or exceeding WCAG 2.1 AA thresholds for text and UI components.
+- Kiosk app scrolls and updates at or near 60fps on target kiosk hardware during simulated busy periods.
+- Typography and spacing changes are implemented via shared tokens so they can be reused and managed centrally.
+
+# Test Strategy:
+Owner: @qa-automation
+
+Manual Tests:
+- Conduct a distance readability test: open the main kiosk screens on a kiosk display and verify that core information (order number, status, timing) is readable and distinguishable at 8–10 feet for multiple testers.
+- Verify high-contrast mode:
+  - Toggle on and off and confirm all screens update colors correctly.
+  - Use color contrast analysis tools to confirm AA compliance.
+
+Automated / Performance Tests:
+- Use browser performance profiling on kiosk screens under load (simulated frequent order updates) and verify frame rate is ~60fps with no long tasks >50ms.
+- Add visual regression tests (e.g. via Storybook + screenshot testing) for default vs high-contrast themes to prevent accidental regressions.
+
+Accessibility Tests:
+- Run axe-core on kiosk screens to ensure the new theme and typography do not introduce accessibility violations.
+- Verify that contrast ratios remain compliant in both light and high-contrast themes.
+
+# Subtasks:
+## 1. Define kiosk-specific typography and layout tokens [pending]
+### Dependencies: None
+### Description: Create and extend design tokens in @codemachine/ui for kiosk typography scale (font sizes/line heights readable from 6-10ft) and increased spacing to reduce density, based on kiosk UX best practices for large, legible fonts and ample whitespace.
+### Details:
+Update packages/@codemachine/ui/tokens/typography.ts with kioskHeading (32px/40lh), kioskSubheading (24px/32lh), kioskBody (20px/28lh); add layout tokens for spacing (e.g. kioskSpacingLarge: 24px). Ensure tokens support distance readability per WCAG and kiosk guidelines[1][3][7].
+
+## 2. Refactor Display kiosk screens using new tokens and reduce density [pending]
+### Dependencies: 14.1
+### Description: Apply kiosk typography/layout tokens to OrderList.tsx and main screens in apps/display-kiosk/; simplify layouts to large rows/cards prioritizing key info (orders/status) with reduced density and sufficient spacing.
+### Details:
+Replace dense tables with spacious cards/rows using kiosk tokens; increase padding/margins via layout tokens; remove non-essential elements per simplicity best practices[1][2][4]. Keep DOM lightweight for perf.
+
+## 3. Implement high-contrast theme toggle with WCAG validation and perf testing [pending]
+### Dependencies: 14.1, 14.2
+### Description: Add kioskHighContrast theme variant in @codemachine/ui/theme/ with WCAG AA colors; implement runtime toggle via context/feature flag; ensure 60fps under load with simple transitions.
+### Details:
+Define high-contrast colors meeting WCAG 2.1 AA (contrast >=4.5:1); add admin UI toggle; test perf on kiosk hardware during busy simulations; avoid heavy animations[1][3][5].
+

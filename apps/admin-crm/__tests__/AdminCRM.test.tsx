@@ -4,25 +4,25 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
 // Mock hooks - define mocks inline to avoid hoisting issues
-vi.mock('@caterkingapp/shared/hooks/useEvents', () => ({
+vi.mock('@codemachine/shared/hooks/useEvents', () => ({
   useEvents: vi.fn(),
 }));
-vi.mock('@caterkingapp/shared/hooks/useStaff', () => ({
+vi.mock('@codemachine/shared/hooks/useStaff', () => ({
   useStaff: vi.fn(),
 }));
-vi.mock('@caterkingapp/shared/hooks/useTasks', () => ({
+vi.mock('@codemachine/shared/hooks/useTasks', () => ({
   useTasks: vi.fn(),
 }));
-vi.mock('@caterkingapp/shared/hooks/useAssignments', () => ({
+vi.mock('@codemachine/shared/hooks/useAssignments', () => ({
   useAssignments: vi.fn(),
 }));
-vi.mock('@caterkingapp/shared/hooks/useRecipe', () => ({
+vi.mock('@codemachine/shared/hooks/useRecipe', () => ({
   useRecipe: vi.fn(),
 }));
-vi.mock('@caterkingapp/shared/hooks/useToast', () => ({
+vi.mock('@codemachine/shared/hooks/useToast', () => ({
   useToast: vi.fn(),
 }));
-vi.mock('@caterkingapp/shared/hooks/useUser', () => ({
+vi.mock('@codemachine/shared/hooks/useUser', () => ({
   useUser: vi.fn(),
 }));
 
@@ -31,13 +31,13 @@ import { EventForm } from '../components/EventForm';
 import { RecipeEditor } from '../components/RecipeEditor';
 import EventsPage from '../app/events/page';
 import StaffPage from '../app/staff/page';
-import { useEvents } from '@caterkingapp/shared/hooks/useEvents';
-import { useStaff } from '@caterkingapp/shared/hooks/useStaff';
-import { useTasks } from '@caterkingapp/shared/hooks/useTasks';
-import { useAssignments } from '@caterkingapp/shared/hooks/useAssignments';
-import { useRecipe } from '@caterkingapp/shared/hooks/useRecipe';
-import { useToast } from '@caterkingapp/shared/hooks/useToast';
-import { useUser } from '@caterkingapp/shared/hooks/useUser';
+import { useEvents } from '@codemachine/shared/hooks/useEvents';
+import { useStaff } from '@codemachine/shared/hooks/useStaff';
+import { useTasks } from '@codemachine/shared/hooks/useTasks';
+import { useAssignments } from '@codemachine/shared/hooks/useAssignments';
+import { useRecipe } from '@codemachine/shared/hooks/useRecipe';
+import { useToast } from '@codemachine/shared/hooks/useToast';
+import { useUser } from '@codemachine/shared/hooks/useUser';
 
 const TestWrapper = ({ children }: { children: React.ReactNode }) => {
   const queryClient = new QueryClient({
@@ -717,7 +717,7 @@ describe('AdminCRM Components', () => {
         }),
       });
 
-      vi.doMock('@caterkingapp/supabase/client', () => ({
+      vi.doMock('@codemachine/supabase/client', () => ({
         createClient: mockCreateClient,
       }));
 

@@ -11,51 +11,51 @@ const mockUseAssignments = vi.fn();
 const mockUseToast = vi.fn();
 const mockUseUser = vi.fn();
 
-vi.mock('@caterkingapp/shared/hooks/useEvents', () => ({
+vi.mock('@codemachine/shared/hooks/useEvents', () => ({
   useEvents: mockUseEvents,
 }));
-vi.mock('@caterkingapp/shared/hooks/useStaff', () => ({
+vi.mock('@codemachine/shared/hooks/useStaff', () => ({
   useStaff: mockUseStaff,
 }));
-vi.mock('@caterkingapp/shared/hooks/useTasks', () => ({
+vi.mock('@codemachine/shared/hooks/useTasks', () => ({
   useTasks: mockUseTasks,
 }));
-vi.mock('@caterkingapp/shared/hooks/useAssignments', () => ({
+vi.mock('@codemachine/shared/hooks/useAssignments', () => ({
   useAssignments: mockUseAssignments,
 }));
-vi.mock('@caterkingapp/shared/hooks/useToast', () => ({
+vi.mock('@codemachine/shared/hooks/useToast', () => ({
   useToast: mockUseToast,
 }));
-vi.mock('@caterkingapp/shared/hooks/useUser', () => ({
+vi.mock('@codemachine/shared/hooks/useUser', () => ({
   useUser: mockUseUser,
 }));
-vi.mock('@caterkingapp/shared/hooks/useStaff', () => ({
+vi.mock('@codemachine/shared/hooks/useStaff', () => ({
   useStaff: vi.fn(),
 }));
-vi.mock('@caterkingapp/shared/hooks/useTasks', () => ({
+vi.mock('@codemachine/shared/hooks/useTasks', () => ({
   useTasks: vi.fn(),
 }));
-vi.mock('@caterkingapp/shared/hooks/useAssignments', () => ({
+vi.mock('@codemachine/shared/hooks/useAssignments', () => ({
   useAssignments: vi.fn(),
 }));
 const mockUseRecipe = vi.fn();
-vi.mock('@caterkingapp/shared/hooks/useRecipe', () => ({
+vi.mock('@codemachine/shared/hooks/useRecipe', () => ({
   useRecipe: mockUseRecipe,
 }));
-vi.mock('@caterkingapp/shared/hooks/useToast', () => ({
+vi.mock('@codemachine/shared/hooks/useToast', () => ({
   useToast: vi.fn(),
 }));
-vi.mock('@caterkingapp/shared/hooks/useUser', () => ({
+vi.mock('@codemachine/shared/hooks/useUser', () => ({
   useUser: vi.fn(),
 }));
 
 // Import hooks
-import { useEvents } from '@caterkingapp/shared/hooks/useEvents';
-import { useStaff } from '@caterkingapp/shared/hooks/useStaff';
-import { useTasks } from '@caterkingapp/shared/hooks/useTasks';
-import { useAssignments } from '@caterkingapp/shared/hooks/useAssignments';
-import { useToast } from '@caterkingapp/shared/hooks/useToast';
-import { useUser } from '@caterkingapp/shared/hooks/useUser';
+import { useEvents } from '@codemachine/shared/hooks/useEvents';
+import { useStaff } from '@codemachine/shared/hooks/useStaff';
+import { useTasks } from '@codemachine/shared/hooks/useTasks';
+import { useAssignments } from '@codemachine/shared/hooks/useAssignments';
+import { useToast } from '@codemachine/shared/hooks/useToast';
+import { useUser } from '@codemachine/shared/hooks/useUser';
 
 // Import components
 import { EventForm } from '../apps/admin-crm/components/EventForm';

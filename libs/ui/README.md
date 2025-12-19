@@ -1,4 +1,4 @@
-# @caterkingapp/ui
+# @codemachine/ui
 
 Shared design tokens, Tailwind configuration, and UI primitives for CaterKing.
 
@@ -7,14 +7,14 @@ Shared design tokens, Tailwind configuration, and UI primitives for CaterKing.
 Import tokens:
 
 ```ts
-import { PALETTE, CSS_VARIABLES } from '@caterkingapp/ui';
+import { PALETTE, CSS_VARIABLES } from '@codemachine/ui';
 ```
 
 Extend Tailwind config in apps:
 
 ```ts
 // tailwind.config.ts
-import uiConfig from '@caterkingapp/ui/tailwind.config';
+import uiConfig from '@codemachine/ui/tailwind.config';
 
 export default {
   presets: [uiConfig],

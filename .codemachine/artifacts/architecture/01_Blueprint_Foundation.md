@@ -54,7 +54,7 @@
 *   **Architectural Style:** Modular monolithic Turbo repo with clearly bounded contexts, leveraging Next.js App Router plus Supabase-managed backend services; no microservice fragmentation until multi-location throughput exceeds Supabase limits.
     *   All business logic resides inside typed domain modules under `libs/shared` or Supabase SQL functions; app folders only orchestrate composition.
     *   Edge-compatible routes must be pure and avoid stateful libraries outside approved adapters.
-*   **Frontend:** Next.js 15 (App Router, React 18 Server Components), Tailwind + ShadCN via `@caterkingapp/ui`, React Query for client cache, TanStack Router patterns discouraged.
+*   **Frontend:** Next.js 15 (App Router, React 18 Server Components), Tailwind + ShadCN via `@codemachine/ui`, React Query for client cache, TanStack Router patterns discouraged.
     *   Prep-focused clients (apps/prepchef, apps/caterking) must prioritize streaming server components for initial payloads, then hydrate React Query for mutations.
     *   Admin CRM and kiosk display share layout primitives but cannot fork design tokens; they consume the same design system exports.
     *   Progressive Web App remains phase-1 mobile target; React Native/Expo work must reuse state machines and hooks from shared packages without duplicating logic.

@@ -1,0 +1,111 @@
+# Task ID: 13
+# Title: Implement cross-platform WCAG 2.1 AA accessibility baseline (keyboard, focus, ARIA)
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Establish a shared accessibility layer and patterns to achieve WCAG 2.1 AA compliance across PrepChef, Admin CRM, and Display, focusing on keyboard navigation, focus management, and ARIA semantics.
+# Details:
+Owner: @ui-ux (primary), @business-logic
+Complexity: 8/10
+
+Scope & Files:
+- Shared UI library: `packages/@codemachine/ui/` (buttons, inputs, dialogs, modals, lists, toasts, DnD).
+- App-level accessibility configs:
+  - `apps/admin-crm-web/` (web dashboard).
+  - `apps/display-kiosk/` (kiosk web app).
+  - `apps/prepchef-mobile/` web/native bridges as applicable.
+
+Functional Requirements:
+- Ensure **full keyboard navigation** on web apps (Admin CRM, Display) for all interactive elements.
+- Implement consistent **focus management**: visible focus indicators, logical tab order, and focus trapping in modals/overlays.
+- Add missing **ARIA labels/roles** to interactive components and status messages.
+- Integrate automated accessibility testing (axe-core) into CI (high-level wiring; detailed testing suite in Task 20 analog later, partially here).
+
+Implementation Notes:
+- In `@codemachine/ui`:
+  - Update `Button`, `IconButton`, `Link`, `Input`, `Checkbox`, `Select`, `Dialog`, etc. to:
+    - Forward `aria-*` props.
+    - Ensure correct `role` and `tabIndex` (default 0 for interactive elements not naturally focusable).
+    - Provide visible `:focus-visible` styles using design tokens.
+- Implement a `FocusScope` or reuse an existing one to trap focus inside modals/drawers.
+- Provide helper components/hooks, e.g. `useAriaLive`:
+```ts
+// packages/@codemachine/ui/src/hooks/useAriaLive.tsx
+export function useAriaLive(regionId = 'cm-aria-live') {
+  const [message, setMessage] = useState('');
+  // Render a visually hidden live region at app root via a provider.
+  return { announce: setMessage };
+}
+```
+- For Admin CRM pages (e.g. `apps/admin-crm-web/pages/**/*.tsx`):
+  - Ensure headings follow a proper hierarchy (h1, h2, h3).
+  - Ensure landmark roles (`main`, `nav`, `header`, `footer`) are present.
+  - Audit all forms to ensure labels are linked to inputs (`htmlFor`/`id` and `aria-labelledby`).
+- For Display kiosk:
+  - Ensure kiosk elements that are interactive or informational for assistive tech have correct roles and labels, even if typically touch-only.
+- Introduce axe-core checks in web test setup, e.g. `apps/admin-crm-web/tests/accessibility.test.ts` using `jest-axe`.
+
+Acceptance Criteria:
+- All web UI components used in Admin CRM and Display are keyboard focusable and operable (no mouse-only interactions).
+- Visible focus indicator meets contrast and visibility expectations across themes.
+- Screen readers correctly announce:
+  - Link and button labels.
+  - Form field labels and error messages.
+  - Toasts and status messages via aria-live.
+- axe-core baseline scans on key flows show no critical violations and pass at least 95% WCAG 2.1 AA checks by count.
+- No degradation in performance greater than 5% in measured page load or interaction timing metrics.
+
+# Test Strategy:
+Owner: @qa-automation
+
+Automated Tests:
+- Add `jest-axe` tests for representative pages/components in Admin CRM and Display (e.g. dashboard page, main kiosk screen) ensuring `expect(await axe(container)).toHaveNoViolations()` for critical violations.
+- Add unit tests in `@codemachine/ui` verifying that:
+  - `Button` forwards `aria-label` and `aria-describedby`.
+  - `Dialog` correctly traps focus and restores it on close.
+
+Manual Tests:
+- Keyboard-only walkthroughs on Admin CRM and Display:
+  - Verify tab/shift+tab order is logical and cyclical in modals.
+  - Confirm that all functionality is available without a mouse.
+- Screen reader passes (NVDA/JAWS/VoiceOver) on:
+  - Admin CRM main dashboard.
+  - At least one critical data entry form.
+  - Main kiosk display screen.
+
+Regression & Performance:
+- Run Lighthouse accessibility audits on key pages and capture scores; confirm >=95 for accessibility.
+- Use browser devtools performance panel to verify that added accessibility props/styles do not introduce noticeable layout thrash or script overhead.
+- Ensure SSR output remains valid HTML with correct ARIA attributes and no hydration warnings.
+
+# Subtasks:
+## 1. Update shared @codemachine/ui components with ARIA and focus props [pending]
+### Dependencies: None
+### Description: Enhance UI components like Button, Input, Dialog, etc., to forward aria-* props, set correct roles/tabIndex, and add visible :focus-visible styles using design tokens.
+### Details:
+Target packages/@codemachine/ui/src/components/ (Button, IconButton, Link, Input, Checkbox, Select, Dialog, etc.). Ensure tabIndex=0 for interactive elements, forwardRef for aria props, and CSS focus styles meeting WCAG contrast. Update TypeScript interfaces to include aria props.
+
+## 2. Implement focus trapping and management for modals and overlays [pending]
+### Dependencies: 13.1
+### Description: Create or enhance FocusScope component/hook to trap focus inside modals, drawers, and overlays, ensuring logical tab order and escape key handling.
+### Details:
+In packages/@codemachine/ui/src/components/FocusScope.tsx or hooks/useFocusTrap.ts. Use roving tabindex or focus management libs if available; ensure :focus-visible indicators; handle Shift+Tab wraparound.
+
+## 3. Apply app-level accessibility fixes for Admin CRM and Display apps [pending]
+### Dependencies: 13.1
+### Description: Audit and fix headings hierarchy, add landmark roles (main, nav), link form labels to inputs, and ensure ARIA for kiosk elements in Admin CRM and Display.
+### Details:
+Update apps/admin-crm-web/pages/**/*.tsx for h1-h6 order, <main role='main'>, htmlFor/id on labels. For apps/display-kiosk/, add roles/labels to interactive/info elements despite touch-primary.
+
+## 4. Integrate axe-core and jest-axe into CI and test setups [pending]
+### Dependencies: 13.1, 13.3
+### Description: Wire automated accessibility testing with axe-core into web app CI pipelines and create baseline tests for representative pages/components.
+### Details:
+Add jest-axe to apps/admin-crm-web/tests/accessibility.test.ts and apps/display-kiosk/; configure in package.json/jest.config.js; run on PRs via turbo/CI; target 95% pass rate.
+
+## 5. Develop aria-live helpers and conduct manual accessibility testing [pending]
+### Dependencies: 13.1, 13.2, 13.3
+### Description: Implement useAriaLive hook for toasts/status messages; perform comprehensive keyboard, screen reader, and WCAG validation across all apps.
+### Details:
+Create packages/@codemachine/ui/src/hooks/useAriaLive.tsx as specified; test announcements for toasts/errors. Manual: full keyboard flows, NVDA/JAWS/VoiceOver on buttons/forms/modals, focus indicator contrast checks.
+

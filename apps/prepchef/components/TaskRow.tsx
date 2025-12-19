@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from '@caterkingapp/ui';
+import { Button } from '@codemachine/ui';
 import { RecipeViewer } from './RecipeViewer';
 
 interface Task {

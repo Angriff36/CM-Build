@@ -3,10 +3,10 @@ import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useDisplayData } from '../hooks/useDisplayData';
-import { useRealtimeSync } from '@caterkingapp/shared';
+import { useRealtimeSync } from '@codemachine/shared';
 
 // Mock the supabase client
-vi.mock('@caterkingapp/supabase/client', () => ({
+vi.mock('@codemachine/supabase/client', () => ({
   createClient: vi.fn(() => ({
     auth: {
       getUser: vi.fn(() =>
@@ -17,7 +17,7 @@ vi.mock('@caterkingapp/supabase/client', () => ({
 }));
 
 // Mock the shared package
-vi.mock('@caterkingapp/shared', () => ({
+vi.mock('@codemachine/shared', () => ({
   useRealtimeSync: vi.fn(() => ({
     isConnected: true,
     connectionAttempts: 0,

@@ -2,15 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { z } from 'zod';
-import { useRecipe } from '@caterkingapp/shared/hooks/useRecipe';
-import { useToast } from '@caterkingapp/shared/hooks/useToast';
+import { useRecipe } from '@codemachine/shared/hooks/useRecipe';
+import { useToast } from '@codemachine/shared/hooks/useToast';
 import { OfflineBanner } from './offline-banner';
 import {
   RecipeSchema,
   IngredientSchema,
   Recipe,
   Ingredient,
-} from '@caterkingapp/shared/dto/recipes';
+} from '@codemachine/shared/dto/recipes';
 
 interface RecipeEditorProps {
   recipeId: string;
@@ -153,7 +153,7 @@ export function RecipeEditor({ recipeId }: RecipeEditorProps) {
 
     try {
       // Import Supabase client
-      const { createClient } = await import('@caterkingapp/supabase');
+      const { createClient } = await import('@codemachine/supabase');
       const supabase = createClient();
 
       setUploadProgress(20);

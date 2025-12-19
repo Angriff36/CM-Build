@@ -1,5 +1,5 @@
 {
-  "name": "@caterkingapp/display",
+  "name": "@codemachine/display",
   "version": "0.0.1",
   "private": true,
   "description": "Display app for kiosks with summary cards and urgent ticker",
@@ -12,9 +12,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@caterkingapp/shared": "workspace:*",
-    "@caterkingapp/ui": "workspace:*",
-    "@caterkingapp/supabase": "workspace:*",
+    "@codemachine/shared": "workspace:*",
+    "@codemachine/ui": "workspace:*",
+    "@codemachine/supabase": "workspace:*",
     "@tanstack/react-query": "^5.90.12",
     "next": "^14.2.0",
     "react": "^18.3.1",

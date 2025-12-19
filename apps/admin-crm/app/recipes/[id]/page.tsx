@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useParams } from 'next/navigation';
-import { useUser } from '@caterkingapp/shared/hooks/useUser';
+import { useUser } from '@codemachine/shared/hooks/useUser';
 import { RecipeEditor } from '../../../components/RecipeEditor';
 
 export default function RecipePage() {

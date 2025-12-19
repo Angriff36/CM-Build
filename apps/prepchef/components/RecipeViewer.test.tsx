@@ -1,11 +1,11 @@
 import React from 'react';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { RecipeViewer } from './RecipeViewer';
-import { useRecipe } from '@caterkingapp/shared/hooks/useRecipe';
+import { useRecipe } from '@codemachine/shared/hooks/useRecipe';
 import { vi, describe, it, beforeEach, expect } from 'vitest';
 
 // Mock the hook
-vi.mock('@caterkingapp/shared/hooks/useRecipe');
+vi.mock('@codemachine/shared/hooks/useRecipe');
 
 const mockUseRecipe = vi.mocked(useRecipe);
 

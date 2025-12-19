@@ -1,9 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useStaff } from '@caterkingapp/shared/hooks/useStaff';
-import { useToast } from '@caterkingapp/shared/hooks/useToast';
-import { useUser } from '@caterkingapp/shared/hooks/useUser';
+
+// Force dynamic rendering to avoid static generation issues with hooks
+export const dynamic = 'force-dynamic';
+import { useStaff } from '@codemachine/shared/hooks/useStaff';
+import { useToast } from '@codemachine/shared/hooks/useToast';
+import { useUser } from '@codemachine/shared/hooks/useUser';
 import { StaffAssignment } from '../../components/StaffAssignment';
 import { OfflineBanner } from '../../components/offline-banner';
 

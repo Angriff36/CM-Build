@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { mapSupabaseError } from '@caterkingapp/shared/utils/errors';
+import { mapSupabaseError } from '@codemachine/shared/utils/errors';
 
 const SCHEMA_VERSION = '1.2';
 

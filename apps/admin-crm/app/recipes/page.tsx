@@ -2,10 +2,13 @@
 
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { createClient } from '@caterkingapp/supabase';
-import { useToast } from '@caterkingapp/shared/hooks/useToast';
-import { useUser } from '@caterkingapp/shared/hooks/useUser';
+import { createClient } from '@codemachine/supabase';
+import { useToast } from '@codemachine/shared/hooks/useToast';
+import { useUser } from '@codemachine/shared/hooks/useUser';
 import Link from 'next/link';
+
+// Force dynamic rendering to avoid static generation issues with hooks
+export const dynamic = 'force-dynamic';
 
 interface Recipe {
   id: string;

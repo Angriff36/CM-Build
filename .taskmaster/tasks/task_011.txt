@@ -1,0 +1,112 @@
+# Task ID: 11
+# Title: Implement PrepChef single-tap primary action flow with WCAG-compliant touch targets
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Redesign PrepChef mobile task interactions to use a single primary action per task, ensure all touch targets meet the 44px WCAG 2.1 AA minimum, and wire these actions to real backend APIs instead of simulated behavior.
+# Details:
+Owner: @ui-ux (primary), @business-logic
+Complexity: 7/10
+
+Scope & Files:
+- Target the PrepChef mobile app within the Turbo monorepo, e.g. `apps/prepchef-mobile/`.
+- Identify all main task interaction screens and components, e.g. `screens/TaskListScreen.tsx`, `screens/TaskDetailScreen.tsx`, `components/TaskCard.tsx`, `components/PrimaryActionButton.tsx`.
+
+Functional Requirements:
+- Replace multiple competing action buttons on a task (e.g. Start, Pause, Done, More) with a single context-aware **primary action button** per task card and in the task detail view.
+- Ensure all interactive elements (buttons, list items, icons that trigger actions) have a minimum hit area of 44x44px while preserving existing layouts as much as possible.
+- All task state transitions must call the real Supabase-backed APIs, preserving existing API contracts; remove or gate any simulated behavior behind feature flags.
+- Maintain backward compatibility with existing data and workflows.
+- Latency requirement: touch interactions must render visual feedback (pressed state) within 100ms.
+
+Implementation Notes:
+- Use existing design system components from `@codemachine/ui` such as `Button`, `IconButton`, `Touchable`, updating sizing props to meet 44px targets.
+- Where icons are used as interactive controls, wrap them with a touchable container that enforces min width/height and increased padding.
+- Implement a state machine or simple mapping for the primary action per task status, for example:
+```ts
+// apps/prepchef-mobile/domain/taskActions.ts
+export type TaskStatus = 'pending' | 'in_progress' | 'paused' | 'completed';
+
+export type PrimaryAction = {
+  label: string;
+  icon: IconName;
+  nextStatus: TaskStatus;
+};
+
+export const primaryActionForStatus: Record<TaskStatus, PrimaryAction> = {
+  pending:   { label: 'Start',  icon: 'play',  nextStatus: 'in_progress' },
+  in_progress: { label: 'Pause',  icon: 'pause', nextStatus: 'paused' },
+  paused:    { label: 'Resume', icon: 'play',  nextStatus: 'in_progress' },
+  completed: { label: 'Reopen', icon: 'undo',  nextStatus: 'in_progress' },
+};
+
+export async function updateTaskStatus(taskId: string, nextStatus: TaskStatus) {
+  const { data, error } = await supabase
+    .from('tasks')
+    .update({ status: nextStatus })
+    .eq('id', taskId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+```
+- Integrate the above helper in `TaskCard` and `TaskDetailScreen` primary button handlers.
+- Use the existing feature flag system (Flagsmith) to gate the new single-tap flow, e.g. `flags.prepchef_single_tap_flow`, to allow rollback.
+- Ensure all components remain server-side renderable (no client-only APIs during initial render; gate them behind `useEffect` or dynamic import with `ssr: false` if strictly necessary, keeping SSR for main screens).
+
+Accessibility & Performance:
+- Confirm minimum touch target by using design tokens for spacing/sizing that map to >=44px on target devices (tablet DPIs used in kitchens).
+- Avoid adding heavy libraries; keep any added computations O(1) per rendered task card to avoid jank.
+
+Acceptance Criteria:
+- 100% of interactive elements on main PrepChef task screens have hit areas >=44x44px (verified via design token mapping and manual inspection).
+- Each task shows exactly one clearly labeled primary action in list and detail views, with correct state transitions.
+- All primary actions call existing Supabase APIs with no simulated/no-op actions remaining on critical paths.
+- Interaction feedback appears within 100ms on representative kitchen tablets.
+- Feature can be toggled on/off via Flagsmith without breaking legacy flows.
+
+# Test Strategy:
+Owner: @qa-automation
+
+Automated Tests:
+- Add unit tests for `primaryActionForStatus` and `updateTaskStatus` in `apps/prepchef-mobile/domain/__tests__/taskActions.test.ts`.
+- Add integration tests with React Native Testing Library for `TaskCard` and `TaskDetailScreen` to verify that the correct primary action is rendered for each status and that pressing it calls the API with the expected payload.
+
+Manual Tests:
+- On real kitchen tablets, navigate through the PrepChef main task lists and detail views and confirm that all touch targets can be reliably tapped with a thumb and visually meet or exceed 44px.
+- Use Chrome DevTools/React Native devtools with device emulation to verify clickable area bounding boxes.
+- Flip the `prepchef_single_tap_flow` feature flag on/off and verify that:
+  - With flag ON: single primary action flow is active and functional.
+  - With flag OFF: legacy multi-button flow functions as before.
+
+Regression & Performance:
+- Measure tap-to-visual-feedback latency with profiling tools; confirm <=100ms on test devices.
+- Run a smoke test of key PrepChef flows (view tasks, start, pause, complete) to ensure no API errors or data integrity issues.
+- Verify server-side rendering of screens still completes successfully in the monorepo build.
+
+# Subtasks:
+## 1. Audit and update touch targets to 44px across TaskListScreen, TaskDetailScreen, TaskCard [pending]
+### Dependencies: None
+### Description: Review all interactive elements in specified screens and components, update sizing, padding using design system tokens to ensure minimum 44x44px hit areas while preserving layouts.
+### Details:
+Target files: screens/TaskListScreen.tsx, screens/TaskDetailScreen.tsx, components/TaskCard.tsx, components/PrimaryActionButton.tsx. Use @codemachine/ui Button, IconButton, Touchable with min width/height props and increased padding for icons. Verify on kitchen tablet DPIs.
+
+## 2. Implement primaryActionForStatus state machine and Supabase API integration [pending]
+### Dependencies: 11.1
+### Description: Create taskActions.ts with status-to-action mapping and real Supabase updateTaskStatus function, integrate into TaskCard and TaskDetailScreen primary button handlers.
+### Details:
+Implement exact code structure from notes: TaskStatus type, PrimaryAction type, primaryActionForStatus record, async updateTaskStatus using supabase.from('tasks').update(). Integrate in button onPress handlers with visual feedback within 100ms using pressed state.
+
+## 3. Integrate Flagsmith feature flag gating and backward compatibility [pending]
+### Dependencies: 11.2
+### Description: Gate new single-tap flow behind flags.prepchef_single_tap_flow, preserve legacy multi-button flows when flag off, ensure SSR compatibility by gating APIs in useEffect.
+### Details:
+Use existing Flagsmith SDK, conditional rendering of primary button vs legacy buttons. Gate Supabase calls behind flag and useEffect/dynamic imports (ssr: false if needed). Maintain data/workflow compatibility.
+
+## 4. Add comprehensive tests and performance validation for 100ms feedback [pending]
+### Dependencies: 11.3
+### Description: Implement unit/integration tests for components and APIs, validate interaction latency, confirm WCAG touch targets and state transitions meet acceptance criteria.
+### Details:
+Unit tests: taskActions.test.ts for mapping/API. Integration: React Native Testing Library for TaskCard/TaskDetailScreen verifying single primary action, correct transitions. Performance: measure pressed state render time on devices. Axe tests for accessibility.
+

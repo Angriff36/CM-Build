@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { createClient } from '@caterkingapp/supabase';
+import { createClient } from '@codemachine/supabase';
 import { Recipe, RecipeSchema } from '../dto/recipes';
 import { useRealtimeSync } from './useRealtimeSync';
 

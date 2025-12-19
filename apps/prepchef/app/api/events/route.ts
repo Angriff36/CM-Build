@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@caterkingapp/supabase';
-import { mapSupabaseError } from '@caterkingapp/shared/utils/errors';
+import { createClient } from '@codemachine/supabase';
+import { mapSupabaseError } from '@codemachine/shared/utils/errors';
 
 const SCHEMA_VERSION = '1.0';
 
@@ -16,7 +16,6 @@ export async function GET(request: NextRequest) {
       id,
       name,
       scheduled_at,
-      description,
       status
     `);
 

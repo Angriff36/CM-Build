@@ -53,7 +53,7 @@ The monorepo enforces strict separation of concerns with shared libraries under 
 
 ### Import Rules
 
-- Use path aliases defined in `tsconfig.base.json`: `@caterkingapp/ui`, `@caterkingapp/shared`, `@caterkingapp/supabase`
+- Use path aliases defined in `tsconfig.base.json`: `@codemachine/ui`, `@codemachine/shared`, `@codemachine/supabase`
 - No relative imports across apps; all shared code via aliases
 - No direct database access from apps; route through `libs/supabase`
 
@@ -63,9 +63,9 @@ Path aliases enforce the shared-library-only architecture:
 
 ```typescript
 // Correct: Import from shared libraries
-import { Button } from '@caterkingapp/ui';
-import { TaskStatus } from '@caterkingapp/shared';
-import { supabase } from '@caterkingapp/supabase';
+import { Button } from '@codemachine/ui';
+import { TaskStatus } from '@codemachine/shared';
+import { supabase } from '@codemachine/supabase';
 
 // Incorrect: Direct relative imports
 import Button from '../../../libs/ui/src/Button';
@@ -84,7 +84,7 @@ When adding new UI components:
    npx shadcn@latest add <component-name>
    ```
 3. Export from `libs/ui/src/index.ts`
-4. Use in apps via `@caterkingapp/ui` alias
+4. Use in apps via `@codemachine/ui` alias
 5. Add Storybook stories and tests
 
 All components must support gloves-friendly tap targets and accessibility standards.

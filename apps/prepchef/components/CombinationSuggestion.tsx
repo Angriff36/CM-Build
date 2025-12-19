@@ -1,12 +1,7 @@
 'use client';
 
-import React from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createClient } from '@caterkingapp/supabase/client';
-import { Button } from '@caterkingapp/ui';
-import { useCombinationSuggestions } from '@caterkingapp/shared/hooks/useCombinationSuggestions';
-import { useToast } from '@caterkingapp/shared/hooks/useToast';
-import { OfflineBanner } from './offline-banner';
+import React, { useState, useEffect } from 'react';
+import { createClient } from '@codemachine/supabase';
 
 interface Suggestion {
   id: string;
@@ -38,129 +33,76 @@ interface CombinationSuggestionProps {
 }
 
 export function CombinationSuggestion({ companyId }: CombinationSuggestionProps) {
-  const queryClient = useQueryClient();
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
   const supabase = createClient();
-  const { addToast } = useToast();
-  const {
-    data: suggestions = [],
-    isLoading,
-    realtimeState,
-  } = useCombinationSuggestions({ companyId });
 
-  const acceptMutation = useMutation({
-    mutationFn: async (suggestion: Suggestion) => {
-      // TODO: Implement combine_tasks RPC function
-      throw new Error('combine_tasks RPC function not implemented yet');
+  useEffect(() => {
+    fetchSuggestions();
+  }, [companyId]);
 
-      // const { error } = await supabase.rpc('combine_tasks', {
-      //   task_ids: [suggestion.task_id, suggestion.suggested_task_id],
-      // });
-      // if (error) throw error;
-      // TODO: Log telemetry when audit_logs table is available
-      // await supabase.from('audit_logs').insert({
-      //   action: 'task_combination_accepted',
-      //   entity_type: 'task_similarity_suggestion',
-      //   entity_id: suggestion.id,
-      //   details: { similarity_score: suggestion.similarity_score },
-      // });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['combinationSuggestions'] });
-      addToast('Tasks combined successfully', 'success');
-    },
-    onError: (error) => {
-      addToast(`Failed to combine tasks: ${error.message}`, 'error');
-    },
-  });
+  const fetchSuggestions = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('task_similarity_suggestions')
+        .select(
+          `
+          *,
+          task:tasks(id, name, quantity, unit),
+          suggested_task:tasks(id, name, quantity, unit)
+        `,
+        )
+        .eq('company_id', companyId)
+        .gte('similarity_score', 0.8)
+        .order('similarity_score', { ascending: false })
+        .limit(5);
 
-  const rejectMutation = useMutation({
-    mutationFn: async (suggestionId: string) => {
-      // TODO: Implement when task_similarity_suggestions table exists
-      throw new Error('task_similarity_suggestions table not implemented yet');
+      if (!error && data) {
+        setSuggestions(data);
+      }
+    } catch (error) {
+      console.error('Error fetching suggestions:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      // const { error } = await supabase
-      //   .from('task_similarity_suggestions')
-      //   .delete()
-      //   .eq('id', suggestionId);
-      // if (error) throw error;
-      // // Log telemetry
-      // await supabase.from('audit_logs').insert({
-      //   action: 'task_combination_rejected',
-      //   entity_type: 'task_similarity_suggestion',
-      //   entity_id: suggestionId,
-      // });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['combinationSuggestions'] });
-      addToast('Suggestion rejected', 'success');
-    },
-    onError: (error) => {
-      addToast(`Failed to reject suggestion: ${error.message}`, 'error');
-    },
-  });
+  if (loading) {
+    return (
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <div className="text-yellow-800">Loading task combination suggestions...</div>
+      </div>
+    );
+  }
 
-  if (isLoading) return <div>Loading suggestions...</div>;
-  if (suggestions.length === 0) return null;
+  if (suggestions.length === 0) {
+    return null;
+  }
 
   return (
-    <>
-      <div className="mb-6">
+    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+      <h3 className="text-lg font-semibold text-yellow-900 mb-3">Task Combination Suggestions</h3>
+      <div className="space-y-2">
         {suggestions.map((suggestion) => (
           <div
             key={suggestion.id}
-            className="border border-gray-200 rounded-lg p-4 mb-4 bg-yellow-50 relative"
-            role="alert"
-            aria-live="polite"
+            className="flex items-center justify-between bg-white rounded p-3"
           >
-            <button
-              onClick={() => rejectMutation.mutate(suggestion.id)}
-              disabled={rejectMutation.isPending}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-              aria-label="Dismiss suggestion"
-            >
-              ×
-            </button>
-            <div className="flex justify-between items-start mb-4 pr-8">
-              <div className="flex-1 grid grid-cols-2 gap-4">
-                <div>
-                  <h3 className="font-semibold">Task A</h3>
-                  <p>{suggestion.task.name}</p>
-                  <p>
-                    Quantity: {suggestion.task.quantity} {suggestion.task.unit}
-                  </p>
-                  <p>Status: {suggestion.task.status}</p>
-                </div>
-                <div>
-                  <h3 className="font-semibold">Task B</h3>
-                  <p>{suggestion.suggested_task.name}</p>
-                  <p>
-                    Quantity: {suggestion.suggested_task.quantity} {suggestion.suggested_task.unit}
-                  </p>
-                  <p>Status: {suggestion.suggested_task.status}</p>
-                </div>
+            <div className="flex-1">
+              <div className="font-medium text-gray-900">
+                Combine: {suggestion.task?.name} + {suggestion.suggested_task?.name}
+              </div>
+              <div className="text-sm text-gray-600">
+                Similarity: {Math.round(suggestion.similarity_score * 100)}%
               </div>
             </div>
-            <div className="flex gap-2">
-              <Button
-                onClick={() => acceptMutation.mutate(suggestion)}
-                disabled={acceptMutation.isPending}
-                variant="primary"
-              >
-                Accept
-              </Button>
-              <Button
-                onClick={() => rejectMutation.mutate(suggestion.id)}
-                disabled={rejectMutation.isPending}
-                variant="outline"
-              >
-                Reject
-              </Button>
-            </div>
+            <button className="px-3 py-1 bg-yellow-600 text-white rounded text-sm hover:bg-yellow-700 transition-colors">
+              Combine Tasks
+            </button>
           </div>
         ))}
       </div>
-      {!realtimeState.isConnected && <OfflineBanner mode="realtime" />}
-    </>
+    </div>
   );
 }

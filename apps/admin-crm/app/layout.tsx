@@ -4,7 +4,7 @@ import { Providers } from './providers';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Admin CRM | CaterKing Platform',
+  title: 'Admin CRM | CodeMachine Platform',
   description: 'Admin interface for event and task management',
 };
 

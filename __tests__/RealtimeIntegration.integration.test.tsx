@@ -1,15 +1,15 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useRealtimeSync } from '@caterkingapp/shared/hooks/useRealtimeSync';
-import { useEvents } from '@caterkingapp/shared/hooks/useEvents';
-import { useStaff } from '@caterkingapp/shared/hooks/useStaff';
-import { useRecipe } from '@caterkingapp/shared/hooks/useRecipe';
-import { useCombinationSuggestions } from '@caterkingapp/shared/hooks/useCombinationSuggestions';
-import { useUser } from '@caterkingapp/shared/hooks/useUser';
-import { createClient } from '@caterkingapp/supabase/client';
+import { useRealtimeSync } from '@codemachine/shared/hooks/useRealtimeSync';
+import { useEvents } from '@codemachine/shared/hooks/useEvents';
+import { useStaff } from '@codemachine/shared/hooks/useStaff';
+import { useRecipe } from '@codemachine/shared/hooks/useRecipe';
+import { useCombinationSuggestions } from '@codemachine/shared/hooks/useCombinationSuggestions';
+import { useUser } from '@codemachine/shared/hooks/useUser';
+import { createClient } from '@codemachine/supabase/client';
 
 // Mock Supabase client
-jest.mock('@caterkingapp/supabase/client', () => ({
+jest.mock('@codemachine/supabase/client', () => ({
   createClient: jest.fn(),
 }));
 

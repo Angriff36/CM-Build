@@ -33,7 +33,7 @@
     ],
     "input_files": ["supabase/migrations/0003_task_lifecycle.sql", "docs/security/rls_policies.md"],
     "deliverables": "- SQL functions enforcing role permissions, idempotency keys, undo token issuance, audit logging, and realtime NOTIFY payloads.\n        - Shared DTO definitions + Zod schemas for requests/responses, reused by API + UI.\n        - README snippet detailing RPC usage and idempotency expectations.",
-    "acceptance_criteria": "Supabase tests cover success/failure paths; DTOs exported via `@caterkingapp/shared/tasks`; audit logs show sample entries; idempotency proved via repeated invocation tests.",
+    "acceptance_criteria": "Supabase tests cover success/failure paths; DTOs exported via `@codemachine/shared/tasks`; audit logs show sample entries; idempotency proved via repeated invocation tests.",
     "dependencies": ["I2.T1"],
     "parallelizable": false,
     "done": true

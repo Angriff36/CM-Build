@@ -4,11 +4,11 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-import { useCombinationSuggestions } from '@caterkingapp/shared/hooks/useCombinationSuggestions';
-import { ToastProvider, useToast } from '@caterkingapp/shared/hooks/useToast';
+import { useCombinationSuggestions } from '@codemachine/shared/hooks/useCombinationSuggestions';
+import { ToastProvider, useToast } from '@codemachine/shared/hooks/useToast';
 import { CombinationSuggestion } from '../components/CombinationSuggestion';
 
-vi.mock('@caterkingapp/supabase/client', () => ({
+vi.mock('@codemachine/supabase/client', () => ({
   createClient: vi.fn(() => ({
     rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
     from: vi.fn(() => ({
@@ -17,11 +17,11 @@ vi.mock('@caterkingapp/supabase/client', () => ({
   })),
 }));
 
-vi.mock('@caterkingapp/shared/hooks/useCombinationSuggestions', () => ({
+vi.mock('@codemachine/shared/hooks/useCombinationSuggestions', () => ({
   useCombinationSuggestions: vi.fn(),
 }));
 
-vi.mock('@caterkingapp/shared/hooks/useToast', () => ({
+vi.mock('@codemachine/shared/hooks/useToast', () => ({
   useToast: vi.fn(),
   ToastProvider: ({ children }: { children: React.ReactNode }) => children,
 }));

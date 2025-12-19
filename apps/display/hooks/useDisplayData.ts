@@ -1,7 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState, useCallback } from 'react';
-import { createClient } from '@caterkingapp/supabase';
-import { useRealtimeSync } from '@caterkingapp/shared';
+import { useState, useCallback } from 'react';
+import { createClient } from '@codemachine/supabase';
 
 interface DisplaySummaryResponse {
   cards: Array<{
@@ -37,44 +36,75 @@ export function useDisplayData(options: UseDisplayDataOptions = {}) {
   const [offlineBanner, setOfflineBanner] = useState(false);
   const [connectionAttempts, setConnectionAttempts] = useState(0);
   const [lastSuccessfulFetch, setLastSuccessfulFetch] = useState<Date | null>(null);
-  const [companyId] = useState<string>('mock-company');
+  const supabase = createClient();
 
   const query = useQuery({
     queryKey: ['display-summary', options],
     queryFn: async () => {
-      // Return mock data for development/testing
+      // Fetch real data from Supabase
+      const [tasksResult, usersResult] = await Promise.all([
+        supabase
+          .from('tasks')
+          .select(
+            `
+            *,
+            assigned_user:users(id, display_name),
+            event:events(id, name)
+          `,
+          )
+          .in('status', ['claimed', 'in_progress'])
+          .order('priority', { ascending: false }),
+
+        supabase.from('users').select('id, display_name, status').eq('status', 'active'),
+      ]);
+
+      if (tasksResult.error) throw tasksResult.error;
+      if (usersResult.error) throw usersResult.error;
+
+      const tasks = tasksResult.data || [];
+      const users = usersResult.data || [];
+
+      const activeTasks = tasks.filter((t) => t.status === 'in_progress').length;
+      const assignedTasks = tasks.filter((t) => t.status === 'claimed').length;
+      const completedTasks = await supabase
+        .from('tasks')
+        .select('id')
+        .eq('status', 'completed')
+        .then(({ data }) => data?.length || 0);
+
+      const assignments = tasks.map((task) => ({
+        task_id: task.id,
+        user_display_name: task.assigned_user?.display_name || 'Unassigned',
+        status: task.status,
+        priority: task.priority,
+        task_name: task.name,
+        event_name: task.event?.name,
+      }));
+
       return {
         cards: [
           {
             type: 'active_tasks',
-            count: 5,
-            urgent: false,
+            count: activeTasks,
+            urgent: tasks.some((t) => t.priority === 'urgent'),
           },
           {
             type: 'assigned_tasks',
-            count: 3,
-            urgent: false,
+            count: assignedTasks,
+            urgent: tasks.some((t) => t.priority === 'urgent' && t.status === 'claimed'),
           },
           {
             type: 'completed_tasks',
-            count: 12,
+            count: completedTasks,
+            urgent: false,
+          },
+          {
+            type: 'active_staff',
+            count: users.length,
             urgent: false,
           },
         ],
-        assignments: [
-          {
-            task_id: 'task-1',
-            user_display_name: 'Chef John',
-            status: 'in-progress',
-            priority: 'medium',
-          },
-          {
-            task_id: 'task-2',
-            user_display_name: 'Chef Sarah',
-            status: 'pending',
-            priority: 'high',
-          },
-        ],
+        assignments,
         captured_at: new Date().toISOString(),
         staleness_ms: 0,
         realtime_channel: 'company:display_snapshots',

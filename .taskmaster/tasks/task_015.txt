@@ -1,0 +1,90 @@
+# Task ID: 15
+# Title: Build Admin CRM operations dashboard with accessible KPIs and bulk operations
+# Status: pending
+# Dependencies: 13
+# Priority: medium
+# Description: Create a comprehensive Admin CRM dashboard that surfaces key kitchen KPIs with clear hierarchy and supports accessible bulk operations on entities (e.g. orders, tasks).
+# Details:
+Owner: @business-logic (primary), @ui-ux
+Complexity: 8/10
+
+Scope & Files:
+- Admin CRM web app: `apps/admin-crm-web/pages/dashboard.tsx` (or feature module), `components/dashboard/`.
+- Shared UI: `@codemachine/ui` for cards, charts, tables, bulk action bars.
+
+Functional Requirements:
+- Display primary **operational KPIs** (e.g. orders in progress, average prep time, overdue items, station load) in a clear, prioritized layout.
+- Provide **bulk operations** (e.g. assign, reassign, change status) on relevant resources with proper confirmation and accessibility.
+- Ensure drag-and-drop (DnD) interactions, if used (e.g. reassigning tasks), are accessible and keyboard-operable.
+
+Implementation Notes:
+- Design dashboard layout with sections:
+  - KPI summary row using cards: `KpiCard` component.
+  - Detailed lists/tables for actionable items.
+- Use Supabase queries (respecting existing schema and RLS policies) to fetch KPIs. Example pseudo-query:
+```ts
+const { data: orders } = await supabase
+  .from('orders')
+  .select('id,status,created_at,completed_at,station_id');
+// Compute metrics in the app or via existing views.
+```
+- Implement `KpiCard` in `@codemachine/ui` if not existing, accepting aria attributes and focus states for keyboard users.
+- For bulk operations:
+  - Use a table or list with checkboxes to select multiple rows.
+  - Provide bulk action bar that appears when one or more items are selected.
+  - Ensure all interactions are available via keyboard and labeled appropriately.
+- For DnD accessibility:
+  - Use or extend any existing DnD utility that supports keyboard navigation.
+  - Provide alternative controls (e.g. dropdowns) to perform equivalent actions without drag-and-drop.
+
+Acceptance Criteria:
+- Dashboard shows at least 3–5 key KPIs, updated in near real time (on refresh or short polling/WS if already present in the system) based on live Supabase data.
+- Bulk operations can be performed on at least one resource type, validated on backend and respecting existing API contracts.
+- Keyboard users can:
+  - Navigate all KPI cards and lists.
+  - Select and operate bulk actions.
+  - Access an alternative to DnD where necessary.
+- Visual hierarchy clearly emphasizes the most important metrics and actions as determined by product/design.
+
+# Test Strategy:
+Owner: @qa-automation
+
+Automated Tests:
+- Unit/integration tests for `KpiCard` and bulk action components to validate keyboard interaction, ARIA attributes, and selection logic.
+- API integration tests (or contract tests) ensuring that bulk action endpoints are invoked with correct payloads and handle RLS constraints gracefully.
+
+Manual Tests:
+- Verify that the dashboard loads KPIs correctly for different roles (e.g. manager vs staff) respecting existing authentication/authorization.
+- Perform bulk operations via mouse and keyboard only, confirming updates persist in Supabase and are reflected in subsequent views.
+- Validate that an equivalent, non-DnD interaction path exists for any DnD-based operation.
+
+Accessibility & UX Tests:
+- Run axe-core scans on the dashboard page to confirm no high-severity issues.
+- Conduct heuristic evaluation with at least one UX reviewer focusing on information hierarchy and clarity.
+- Confirm that focus order through KPI cards and bulk action controls matches visual order and user expectations.
+
+# Subtasks:
+## 1. Design and implement KPI cards and dashboard layout with Supabase queries [pending]
+### Dependencies: None
+### Description: Create the KPI summary row using KpiCard components and detailed lists/tables, integrating Supabase queries for real-time operational KPIs like orders in progress and average prep time.
+### Details:
+Implement in apps/admin-crm-web/pages/dashboard.tsx and components/dashboard/. Use @codemachine/ui for cards. Fetch data via Supabase respecting RLS, compute metrics client-side. Ensure prioritized layout with visual hierarchy per best practices[1][2][4].
+
+## 2. Build accessible bulk operations with checkboxes and action bar [pending]
+### Dependencies: 15.1
+### Description: Implement bulk operations for resources like orders and tasks, including selection checkboxes, bulk action bar, and confirmation dialogs.
+### Details:
+Add table/list with checkboxes in dashboard components. Show action bar on selection for assign/reassign/status change. Use shared UI from @codemachine/ui. Ensure keyboard navigation and ARIA labels for accessibility.
+
+## 3. Add keyboard and DnD alternatives for full WCAG compliance [pending]
+### Dependencies: 15.1, 15.2
+### Description: Ensure all interactions including drag-and-drop are keyboard operable, with alternative controls like dropdowns for reassigning tasks.
+### Details:
+Extend DnD utilities for keyboard support. Add ARIA attributes to KpiCard and bulk components. Provide non-DnD alternatives. Test with high contrast and screen readers.
+
+## 4. Conduct integration tests, axe-core scans, and role-based validation [pending]
+### Dependencies: 15.1, 15.2, 15.3
+### Description: Run comprehensive tests including unit/integration, accessibility scans, and validate data with RLS policies.
+### Details:
+Cover KpiCard, bulk actions, keyboard/DnD. Test backend validation for bulk ops. Verify role-based data visibility and near real-time updates via polling/WS.
+
